@@ -12,7 +12,7 @@ export default function Home() {
             {/*<NavBar />*/}
             <div className="relative flex min-h-screen flex-col justify-center items-center self-stretch bg-[url('/background.png')] bg-repeat bg-contain bg-center">
                 <div className="absolute inset-0 bg-black opacity-60"></div>
-                <div className="flex flex-col justify-center items-center gap-5 py-6 px-12 max-w-[480px] w-1/4 aspect-square h-auto rounded-2xl bg-[rgba(39,42,45,20%)] backdrop-blur-lg animate-fadeIn">
+                <div className="flex flex-col justify-center items-center gap-5 py-6 px-12 lg:w-[540px] md:w-[500px] sm:w-[460px] aspect-square h-auto rounded-2xl bg-[rgba(39,42,45,20%)] backdrop-blur-lg animate-fadeIn transition-all">
                     <div className="flex flex-col justify-center items-center self-stretch gap-8">
                         {/*header section*/}
                         <div className="flex self-stretch flex-col justify-center items-center">
@@ -44,7 +44,7 @@ function InputField({
             <span className="material-symbols-outlined">
                 {icon}
             </span>
-            <div className="flex flex-col grow gap-1.5">
+            <div className="flex flex-col w-full gap-1.5">
                 <label className="text-xs font-bold text-blue-200">{label}</label>
                 <input type={type}
                        className="grow bg-transparent font-light text-xl border-b-2 border-gray-500 focus:outline-none focus:border-b-blue-500 "/>
