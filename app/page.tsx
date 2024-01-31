@@ -40,7 +40,7 @@ function InputField({
     type = 'text'
 }){
     return (
-        <div className="flex items-center grow gap-3 ">
+        <div className="flex items-center self-stretch gap-3">
             <span className="material-symbols-outlined">
                 {icon}
             </span>

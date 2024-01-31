@@ -5,7 +5,7 @@ export function PrimaryButton({
     icon = '',}) {
     return (
         <>
-            <div className="flex grow justify-center items-center bg-blue-400 rounded-full p-1.5">
+            <div className="flex grow justify-center items-center bg-blue-400 rounded-full p-1.5 hover:bg-blue-600">
                 <p className="text-sm font-semibold">登入</p>
                 <span className="material-symbols-outlined">
                     {icon}
