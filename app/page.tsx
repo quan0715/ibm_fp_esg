@@ -44,10 +44,10 @@ function InputField({
             <span className="material-symbols-outlined">
                 {icon}
             </span>
-            <div className="flex flex-col w-full gap-1.5">
+            <div className="flex flex-col grow gap-1.5">
                 <label className="text-xs font-bold text-blue-200">{label}</label>
                 <input type={type}
-                       className="grow bg-transparent font-light text-xl border-b-2 border-gray-500 focus:outline-none focus:border-b-blue-500 "/>
+                       className="bg-transparent font-light text-xl border-b-2 border-gray-500 focus:outline-none focus:border-b-blue-500 "/>
             </div>
         </div>
     )
