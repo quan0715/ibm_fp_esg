@@ -4,14 +4,22 @@ export function PrimaryButton({
     label = 'label',
     icon = '',}) {
     return (
-        <>
-            <div className="flex grow justify-center items-center bg-blue-400 rounded-full p-1.5 hover:bg-blue-600">
-                <p className="text-sm font-semibold">登入</p>
-                <span className="material-symbols-outlined">
+        <button className="flex basis-full justify-between items-center bg-primary rounded-md px-4 py-3 hover:rounded-full">
+            <div className="text-sm text-black font-semibold">{label} </div>
+            <span className="material-symbols-outlined text-black text-2xl">
                     {icon}
                 </span>
-                <span className=""></span>
-            </div>
-        </>
+        </button>
+    );
+}
+
+export function SecondaryButton({
+label = 'label',
+icon = '',}) {
+    return (
+        <button className="flex basis-full justify-between items-center bg-[#272A2D] rounded-md px-4 py-3 hover:rounded-full ">
+            <div className="text-sm text-primary font-semibold">{label}  </div>
+            <span className="material-symbols-outlined text-primary text-2xl">{icon}</span>
+        </button>
     );
 }
