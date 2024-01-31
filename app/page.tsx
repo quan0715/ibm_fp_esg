@@ -14,7 +14,7 @@ export default function Auth() {
     );
 }
 
-export function IBMLogoImage({}) {
+function IBMLogoImage({}) {
     return (
         <div className="bg-auto bg-center bg-no-repeat w-44 h-16 bg-[url('/IBM_logo_w.png')]"></div>
     );
@@ -24,7 +24,7 @@ interface AuthFormFrameProps {
     title: string
 }
 
-export function AuthFormFrame({title = "LOGIN"}: {title: string}) {
+function AuthFormFrame({title = "LOGIN"}: AuthFormFrameProps) {
     // const formTitle = "智慧永續 ESG 平台";
     return (
         <div className="animate-fadeIn transition-all">
@@ -48,7 +48,7 @@ export function AuthFormFrame({title = "LOGIN"}: {title: string}) {
     );
 }
 
-export function AuthBackgroundSurface({children}: Readonly<{ children: React.ReactNode }>) {
+function AuthBackgroundSurface({children}: Readonly<{ children: React.ReactNode }>) {
     return (
         <div
             className= "relative flex min-h-screen flex-col justify-center items-center self-stretch bg-[url('/background.png')] bg-repeat bg-contain bg-center">
