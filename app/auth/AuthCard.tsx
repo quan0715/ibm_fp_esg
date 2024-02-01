@@ -6,7 +6,7 @@ import {ThemeSwitcher} from "@/app/ui/components/ThemeSwitcher";
 export function AuthCard({children}: { children: React.ReactNode }) {
     return (
         <Card
-            // isBlurred={true}
+            isBlurred={true}
             shadow={"lg"}
             radius={"sm"}
             className="animate-fadeIn transition-all w-screen md:w-[540px] h-screen md:h-auto bg-white/50 dark:bg-default-100/50 shadow-2xl">
