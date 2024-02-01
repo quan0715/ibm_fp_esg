@@ -6,10 +6,10 @@ export function PasswordObscureSwitcher({isPasswordVisible, onClick}: Readonly<{
     return (
         <Button
             color={"default"}
-            variant={"faded"}
+            variant={"flat"}
             onClick={onClick}
             isIconOnly={true}>
-            <MaterialIcon icon={isPasswordVisible ? "visibility_off" : "visibility"} className={""}/>
+            <MaterialIcon icon={!isPasswordVisible ? "visibility_off" : "visibility"} className={""}/>
         </Button>
     );
 }

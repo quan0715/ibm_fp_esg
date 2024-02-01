@@ -75,7 +75,7 @@ function AuthLoginFormFrame({title = "LOGIN"}: AuthLoginFormFrameProps) {
                 />
 
             </div>
-            <div className="flex flex-row justify-center items-center self-stretch gap-2.5 py-3 px-1">
+            <div className="flex flex-col md:flex-row  justify-center items-center self-stretch gap-2.5 py-3 px-1">
                 <Button color="default"
                         variant="shadow"
                         fullWidth={true}
