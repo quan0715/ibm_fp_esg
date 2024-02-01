@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Noto_Sans_TC } from "next/font/google";
 import "@/app/ui/globals.css";
 import React from "react";
+import {NextUIProvider} from "@nextui-org/react";
+import {Provider} from "@/app/provider";
 
 const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] });
 
@@ -16,8 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <html lang="en">
-        <body className={`${notoSansTC.className} antialiased`}>{children}</body>
+      <html lang="en" className={"dark"}>
+        <body className={`${notoSansTC.className} antialiased`}>
+            <Provider>{children}</Provider>
+        </body>
       </html>
   );
 }
