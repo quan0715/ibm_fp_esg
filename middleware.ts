@@ -5,6 +5,7 @@ export const runtime = 'nodejs'
 
 const privateRoute: Array<string> = [
     "/",
+    "/dashboard",
 ]
 
 const apiBaseRoute: string = "/api"
@@ -20,7 +21,7 @@ export default auth( async (req)  =>{
     if(session?.user){
         // console.log('User', session.user)
         if(req.nextUrl.pathname.startsWith(authBaseRoute)){
-            return NextResponse.redirect(new URL('/', req.url))
+            return NextResponse.redirect(new URL('/dashboard', req.url))
         }
         return null;
     }

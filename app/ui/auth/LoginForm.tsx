@@ -85,7 +85,7 @@ export function LoginForm() {
         <form onSubmit={handleSubmit(onLogin)}>
             <AuthCard>
                 <div className={"flex flex-col justify-center items-center"}>
-                    <IBMLogoImage/>
+                    <IBMLogoImage width="xl"/>
                     <p className="text-xl font-semibold">{"登入"}</p></div>
                 <div className="flex flex-col self-stretch gap-5">
                     <Input {...usernameFieldRegister}/>
