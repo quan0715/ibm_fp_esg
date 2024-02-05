@@ -2,7 +2,7 @@ import React from "react";
 
 type MaterialIconProps = {
     icon: string,
-    className: string,
+    className?: string,
 }
 
 export function MaterialIcon({icon = "account_circle", className = ""}: MaterialIconProps) {
