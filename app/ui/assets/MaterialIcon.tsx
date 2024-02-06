@@ -7,7 +7,7 @@ type MaterialIconProps = {
 
 export function MaterialIcon({icon = "account_circle", className = ""}: MaterialIconProps) {
     return (
-        <span className={"material-symbols-outlined " + className}>
+        <span className={"material-symbols-outlined aspect-square" + className}>
             {icon}
         </span>
     );

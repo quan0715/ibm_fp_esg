@@ -3,7 +3,7 @@
 import {useTheme} from "next-themes";
 import React, { useEffect, useState } from "react";
 import {Button} from "@nextui-org/react";
-import {MaterialIcon} from "@/app/ui/components/MaterialIcon";
+import {MaterialIcon} from "@/app/ui/assets/MaterialIcon";
 
 
 export function ThemeSwitcher() {

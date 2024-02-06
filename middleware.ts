@@ -17,12 +17,17 @@ export default auth( async (req)  =>{
     const session = await auth()
     console.log('protected middleware')
     console.log(req.nextUrl.pathname)
-    // const session = await auth()
+    console.log('Session', session)
+
     if(session?.user){
         // console.log('User', session.user)
         if(req.nextUrl.pathname.startsWith(authBaseRoute)){
             return NextResponse.redirect(new URL('/dashboard', req.url))
+        }if(req.nextUrl.pathname.startsWith(apiBaseRoute)){
+            console.log('API')
+            return null;
         }
+        
         return null;
     }
     else if(req.nextUrl.pathname.startsWith(authBaseRoute)){
@@ -33,6 +38,7 @@ export default auth( async (req)  =>{
 })
 
 export const config = {
-    matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+    matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+    // matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 }
 

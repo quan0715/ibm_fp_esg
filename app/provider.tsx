@@ -1,22 +1,22 @@
 'use client'
+import React from 'react'
 import { NextUIProvider } from '@nextui-org/react'
 import { ThemeProvider as NextThemeProvider } from 'next-themes'
-import {SessionProvider} from "next-auth/react";
-import {Session} from "next-auth";
-// import {auth} from "@/app/api/auth/[...nextauth]/auth";
+// import { useRouter } from 'next/navigation'
 
 interface ProviderProps {
     children: React.ReactNode
 }
-export async function Provider({children }:ProviderProps) {
-    // const session = await auth();
+export function Providers({children }:ProviderProps) {
+    // const router = useRouter();
     return (
-       // <SessionProvider session={session}>
-           <NextUIProvider>
-               <NextThemeProvider attribute="class" defaultTheme="dark">
-                   {children}
-               </NextThemeProvider>
-           </NextUIProvider>
-       // </SessionProvider>
+        // <React.StrictMode>
+        <NextUIProvider>
+            <NextThemeProvider attribute="class" defaultTheme="dark">
+                {children}
+            </NextThemeProvider>
+        </NextUIProvider>
+        // </React.StrictMode>
+        
     )
 }

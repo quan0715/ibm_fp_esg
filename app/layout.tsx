@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_TC } from "next/font/google";
 import "@/app/ui/globals.css";
 import React from "react";
-import {Provider} from "@/app/provider";
+import {Providers} from "@/app/provider";
 import {AppNavBar} from "@/app/ui/components/AppNavBar";
 
 const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] });
@@ -20,9 +20,9 @@ export default function RootLayout({
   return (
       <html lang="en">
         <body className={`${notoSansTC.className} antialiased`}>
-            <Provider>
+            <Providers>
               {children}
-            </Provider>
+            </Providers>
         </body>
       </html>
   );

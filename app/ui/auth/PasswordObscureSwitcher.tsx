@@ -1,5 +1,5 @@
 import {Button} from "@nextui-org/react";
-import {MaterialIcon} from "@/app/ui/components/MaterialIcon";
+import {MaterialIcon} from "@/app/ui/assets/MaterialIcon";
 import React from "react";
 
 export function PasswordObscureSwitcher({isPasswordVisible, onClick}:{ isPasswordVisible: boolean, onClick: () => void }) {

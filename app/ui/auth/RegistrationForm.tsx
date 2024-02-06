@@ -4,9 +4,9 @@ import {useForm} from "react-hook-form";
 import {registerAction} from "@/actions/registerAction";
 import {PasswordObscureSwitcher} from "@/app/ui/auth/PasswordObscureSwitcher";
 import {AuthCard} from "@/app/ui/auth/AuthCard";
-import {IBMLogoImage} from "@/app/ui/components/IBMLogo";
+import {IBMLogoImage} from "@/app/ui/assets/IBMLogo";
 import {Button, Chip, Input} from "@nextui-org/react";
-import {MaterialIcon} from "@/app/ui/components/MaterialIcon";
+import {MaterialIcon} from "@/app/ui/assets/MaterialIcon";
 import Link from "next/link";
 
 
@@ -130,8 +130,8 @@ export function RegistrationForm() {
                             type={"submit"}
                             isDisabled={!isValid}
                             isLoading={isSubmitting}>
-                        註冊帳號
-                        <MaterialIcon icon={"app_registration"} className={isSubmitting ? "hidden" : ""}/>
+                        <p className="text-background">註冊帳號</p>
+                        <MaterialIcon icon={"app_registration"} className={isSubmitting ? "text-background hidden" : "text-background"}/>
                     </Button>
                 </div>
             </AuthCard>

@@ -2,9 +2,9 @@ import {useForm} from "react-hook-form";
 import React, {useState} from "react";
 import {PasswordObscureSwitcher} from "@/app/ui/auth/PasswordObscureSwitcher";
 import {AuthCard} from "@/app/ui/auth/AuthCard";
-import {IBMLogoImage} from "@/app/ui/components/IBMLogo";
+import {IBMLogoImage} from "@/app/ui/assets/IBMLogo";
 import {Button, Input, Chip} from "@nextui-org/react";
-import {MaterialIcon} from "@/app/ui/components/MaterialIcon";
+import {MaterialIcon} from "@/app/ui/assets/MaterialIcon";
 import {loginAction} from "@/actions/loginActions";
 import Link from "next/link";
 
@@ -104,8 +104,8 @@ export function LoginForm() {
                             isDisabled={!isValid}
                             isLoading={isSubmitting}
                             type={"submit"}>
-                        <p>前往登入</p>
-                        <MaterialIcon icon={"login"} className={isSubmitting ? "hidden" : ""}/>
+                        <p className="text-background">登入</p>
+                        <MaterialIcon icon={"login"} className={isSubmitting ? "text-background hidden" : "text-background"}/>
                     </Button>
                 </div>
             </AuthCard>

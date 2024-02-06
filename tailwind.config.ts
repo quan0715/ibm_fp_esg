@@ -14,10 +14,6 @@ const config: Config = {
       // colors:{
       //   primary: "#B0CBFF"
       // },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
       keyframes: {
         'fade-in': {
           '0%': {opacity: '0'},
@@ -30,7 +26,48 @@ const config: Config = {
     },
   },
   plugins: [
-      nextui()
+      nextui({
+        themes:{
+          light:{
+            colors:{
+              default: "#FFFFFF",
+              primary: {
+                DEFAULT: "#1B53FF",
+                100: "#B0CBFF",
+                200: "#7FA3FF",
+                300: "#4D7BFF",
+                400: "#1B53FF",
+                500: "#0033CC",
+                600: "#002699",
+                700: "#001966",
+                800: "#000D33",
+                900: "#000000",
+              },
+              foreground: "#000000",
+              background: "#F5F5F5",
+            }
+          },
+          dark:{
+            colors:{
+              default: "#272A2D",
+              primary: {
+                DEFAULT: "#B0CBFF",
+                100: "#B0CBFF",
+                200: "#7FA3FF",
+                300: "#4D7BFF",
+                400: "#1B53FF",
+                500: "#0033CC",
+                600: "#002699",
+                700: "#001966",
+                800: "#000D33",
+                900: "#000000",
+              },
+              foreground: "#FFFFFF",
+              background: "#131313",
+            }
+          }
+        }
+      })
   ],
 };
 export default config;
