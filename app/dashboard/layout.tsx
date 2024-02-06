@@ -6,10 +6,11 @@ import { DashboardTabBar } from "@/app/ui/components/DashboardTabBar";
 import { TextDataCard } from "@/app/ui/components/data/DataCard";
 
 // export const revalidate = 1000;
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardLayout({children}: {children: React.ReactNode}) {
-  const urlPath = process.env.NODE_ENV === "development" ? "http://127.0.0.1:3000" : process.env.NEXT_PUBLIC_API_URL;
-    const data = await fetch(`${urlPath}/api/data`,{
+//   const urlPath = process.env.NODE_ENV === "development" ? "http://127.0.0.1:3000" : process.env.NEXT_PUBLIC_API_URL;
+    const data = await fetch(`/api/data`,{
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
