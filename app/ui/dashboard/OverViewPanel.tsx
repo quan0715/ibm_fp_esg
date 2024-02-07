@@ -39,7 +39,7 @@ const overViewData = [
 // row-start-${index % 2} col-start-${index % 2} col-end-${(index % 2)+1}
 export function OverViewPanel() {
   return (
-    <div className="grid bg-background p-4 gap-5">
+    <div className="grid bg-background gap-5 md:p-4">
       <DashboardCard 
         title={"快速監測數據"} 
         className="grid grid-row-1 row-start-1 col-start-1 col-end-3 ">

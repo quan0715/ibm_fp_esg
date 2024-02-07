@@ -11,7 +11,7 @@ export function DashboardPageHeader({title = "Dashboard", children}: DashboardPa
     return (
         <div className="flex w-full py-8 px-8 items-center justify-between bg-foreground/10">
             <p className="text-4xl font-light">{title}</p>
-            <div className="flex gap-10">
+            <div className="gap-10 hidden md:flex">
                 {children}
             </div>
         </div>

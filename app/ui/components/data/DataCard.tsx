@@ -36,10 +36,10 @@ export function SingleDataCard({
         <div className="flex flex-col items-start p-4 w-fit gap-1">
             { 
                 typeof icon === "string" ?
-                <MaterialIcon icon={icon} className=" text-primary bg-background rounded-full p-1" /> : icon
+                <MaterialIcon icon={icon} className=" text-primary bg-background rounded-lg p-1" /> : icon
             }
             <p className="text-2xl font-semibold">{data}</p>
-            <p className="text-medium font-light text-foreground/80">{label}</p>
+            <p className="text-sm font-light text-foreground/80">{label}</p>
         </div>
     );
 }
