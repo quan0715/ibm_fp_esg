@@ -15,7 +15,7 @@ interface DashboardTabBarProps{
 export function DashboardTabBar({tabConfig, children, ...props}: DashboardTabBarProps) {
 
   const path = usePathname();  
-  console.log("Current Path", path);
+  // console.log("Current Path", path);
   return (
     <div className="flex flex-col w-full px-8 items-start justify-between bg-foreground/10">
         <Tabs 
@@ -31,7 +31,7 @@ export function DashboardTabBar({tabConfig, children, ...props}: DashboardTabBar
                 tabContent: "group-data-[selected=true]:text-primary text-[16px] ",
             }}>
             {tabConfig.map((tab, index) => (
-              console.log(tab),
+              // console.log(tab),
                 <Tab key={tab.href} title={tab.title} href={tab.href}>
                 </Tab>
             ))}

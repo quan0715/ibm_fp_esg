@@ -10,18 +10,18 @@ export const dynamic = 'force-dynamic'
 
 export default async function DashboardLayout({children}: {children: React.ReactNode}) {
 //   const urlPath = process.env.NODE_ENV === "development" ? "http://127.0.0.1:3000" : process.env.NEXT_PUBLIC_API_URL;
-    const data = await fetch(`/api/data`,{
+    const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/data`,{
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         },
         next: {
-            'revalidate': 10
+            'revalidate': 1
         }
     })
 
     const json = await data.json();
-    console.log(json);
+    // console.log(json);
     const time = new Date(json.time);
 
   return (

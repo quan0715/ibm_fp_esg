@@ -15,16 +15,16 @@ const authBaseRoute = "/auth"
 
 export default auth( async (req)  =>{
     const session = await auth()
-    console.log('protected middleware')
-    console.log(req.nextUrl.pathname)
-    console.log('Session', session)
+    // console.log('protected middleware')
+    // console.log(req.nextUrl.pathname)
+    // console.log('Session', session)
 
     if(session?.user){
         // console.log('User', session.user)
         if(req.nextUrl.pathname.startsWith(authBaseRoute)){
             return NextResponse.redirect(new URL('/dashboard', req.url))
         }if(req.nextUrl.pathname.startsWith(apiBaseRoute)){
-            console.log('API')
+            // console.log('API')
             return null;
         }
         

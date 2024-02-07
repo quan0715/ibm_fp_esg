@@ -22,7 +22,7 @@ export default function Dashboard({ params }: { params: { subPage: string } }) {
 
     const currentPage = dashboardConfig.pages['HOME'];
     const subPage = currentPage?.subPage[params.subPage];
-    console.log(params.subPage);
+    // console.log(params.subPage);
     return (
         <div className={"text-xl flex flex-col flex-grow w-full h-full justify-center items-center"}>
             <DashboardTabBar tabConfig={
