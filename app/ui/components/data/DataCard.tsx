@@ -33,7 +33,7 @@ export function SingleDataCard({
     children
 }: SingleDataCardProps) {
     return (
-        <div className="flex flex-col items-start p-4 w-fit gap-1">
+        <div className="flex flex-col w-full items-start p-4 gap-1 bg-default rounded-lg">
             { 
                 typeof icon === "string" ?
                 <MaterialIcon icon={icon} className=" text-primary bg-background rounded-lg p-1" /> : icon

@@ -20,7 +20,7 @@ type AppNavBarProps = {
 
 export function AppNavBar({children}: AppNavBarProps) {
   return (
-    <Navbar  maxWidth="full" className="bg-foreground/10" position="sticky" classNames={{
+    <Navbar  maxWidth="full" className="bg-default" position="sticky" classNames={{
         item: [
           "flex",
           "relative",

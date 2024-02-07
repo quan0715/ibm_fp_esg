@@ -2,7 +2,7 @@
 import { DashboardCard } from "@/app/ui/components/DashboardCard"
 import { SingleDataCard } from "@/app/ui/components/data/DataCard"
 import { MaterialIcon } from "@/app/ui/assets/MaterialIcon"
-import { CardBody } from "@nextui-org/card"
+import { Card,CardBody } from "@nextui-org/card"
 import { Divider } from "@nextui-org/react"
 const overViewData = [
   {
@@ -40,22 +40,23 @@ const overViewData = [
 export function OverViewPanel() {
   return (
     <div className="grid bg-background gap-5 md:p-4">
-      <DashboardCard 
-        title={"快速監測數據"} 
-        className="grid grid-row-1 row-start-1 col-start-1 col-end-3 ">
-          <div className="grid gap-1 grid-row-2 md:grid-row-1">
+      <div 
+        // title={"快速監測數據"} 
+        className="grid grid-row-1 row-start-1 col-start-1 col-end-3 bg-ba">
+          <div className="grid gap-5 grid-row-2 md:grid-row-1">
             {
               overViewData.map((data, index) => {
                 return (
-                  <div key={index} className={`row-start-${(index % 2) + 1} md:row-start-1 md:col-start-auto`}>
+                  <Card key={index} className={`row-start-${(index % 2) + 1} md:row-start-1 md:col-start-auto`}>
                     <SingleDataCard key={index} data={data.data} label={data.label} icon={data.icon} />
                     {/* <Divider orientation="vertical" className="hidden md:block" /> */}
-                  </div>
+                  </Card>
                 )
               })
             }
           </div>    
-      </DashboardCard>
+      </div>
+      
       <DashboardCard title={"本週發電量趨勢"} className="row-start-2 col-start-1 col-end-3 md:row-start-2 md:col-start-1 md:col-end-2">
           {"本週發電量趨勢"}
       </DashboardCard>

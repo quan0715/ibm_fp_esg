@@ -13,7 +13,7 @@ interface DashboardCardProps extends CardProps {
 export function DashboardCard({title, children, ...props}: DashboardCardProps) {
     const {className, ...rest} = props;
   return (
-    <Card radius="sm" className={"bg-foreground/10 " + className} {...rest} >
+    <Card radius="sm" className={"bg-default " + className} {...rest} >
         <CardHeader className="font-light">{title}</CardHeader>
         <Divider/>
         <CardBody className="">

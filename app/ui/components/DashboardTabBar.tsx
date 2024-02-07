@@ -17,7 +17,7 @@ export function DashboardTabBar({tabConfig, children, ...props}: DashboardTabBar
   const path = usePathname();  
   // console.log("Current Path", path);
   return (
-    <div className="flex flex-col w-full px-8 items-start justify-between bg-foreground/10">
+    <div className="flex flex-col w-full px-8 items-start justify-between bg-default">
         <Tabs 
             {...props}
             aria-label="Options" 
