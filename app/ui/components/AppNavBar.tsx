@@ -41,11 +41,11 @@ export function AppNavBar({children}: AppNavBarProps) {
             <p className="text-lg px-4">IBM 智慧永續ESG平台</p>
             {/* <IBMLogoImage width="xs"/> */}
         </NavbarBrand>
-        <NavbarContent className="hidden md:flex gap-4" justify="center">
+        <NavbarContent className=" gap-4" justify="center">
                 {
                     Object.keys(dashboardConfig.pages).map((page) => {
                         return (
-                            <NavbarItem key={page} >
+                            <NavbarItem className="hidden md:flex" key={page} >
                                 {page}
                             </NavbarItem>
                         );

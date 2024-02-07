@@ -5,7 +5,7 @@ import { usePathname} from "next/navigation";
 import { DashboardCard } from "@/app/ui/components/DashboardCard";
 import { dashboardConfig } from "@/lib/dashboard";
 
-const currentPage = "HOME";
+// const currentPage = "HOME";
 
 
 function Placeholder({label} : {label: string}) {

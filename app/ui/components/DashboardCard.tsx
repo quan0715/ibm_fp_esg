@@ -14,7 +14,7 @@ export function DashboardCard({title, children, ...props}: DashboardCardProps) {
     const {className, ...rest} = props;
   return (
     <Card radius="sm" className={"bg-default " + className} {...rest} >
-        <CardHeader className="font-light">{title}</CardHeader>
+        <CardHeader className="font-light text-lg">{title}</CardHeader>
         <Divider/>
         <CardBody className="">
             {children}
