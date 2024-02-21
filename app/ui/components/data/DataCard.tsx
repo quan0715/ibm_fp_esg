@@ -9,7 +9,7 @@ export function TextDataCard({label = "label", data = "data"}: TextDataCardProps
     return (
         <div className="flex flex-col items-end">
             <p className="text-medium font-light text-foreground/80">{label}</p>
-            <p className="text-medium font-semibold">{data}</p>
+            <p className="text-medium font-semibold" suppressHydrationWarning>{data}</p>
         </div>
     );
 }

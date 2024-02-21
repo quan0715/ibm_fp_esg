@@ -58,7 +58,7 @@ const dashboardConfig: AppConfigType = {
                 path: '/workOrder',
                 component: OverViewPanel
             }, 
-            'Asset' :{
+            'asset' :{
                 name: '資產管理',
                 path: '/asset',
                 component: OverViewPanel
