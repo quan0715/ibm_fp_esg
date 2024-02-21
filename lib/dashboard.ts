@@ -9,6 +9,7 @@ type SubPageType = {
 type PageType = {
     name: string,
     path: string,
+    default: string,
     subPage: {
         [key: string]: SubPageType
     }
@@ -17,7 +18,9 @@ type PageType = {
 type AppConfigType = {
     // version: string,
     name: string,
+    path: string,
     description?: string,
+    default: string,
     pages: {
         [key: string]: PageType
     },
@@ -25,10 +28,13 @@ type AppConfigType = {
 
 const dashboardConfig: AppConfigType = {
   name: 'IBM 智慧永續ESG平台',
+  path: '/dashboard',
+  default: '/home',
   pages: {
-    "HOME" : {
+    "home" : {
         name: 'HOME',
         path: '/home',
+        default: '/overView',
         subPage:{
             'overView' : {
                 name: '資料總覽',
@@ -42,20 +48,41 @@ const dashboardConfig: AppConfigType = {
             }, 
         }
     },
-    "Asset Management" : {
+    "asset_management" : {
         name: 'Asset Management',
-        path: '/asset',
+        path: '/asset_management',
+        default: '/workOrder',
         subPage:{
-            'overview' : {
-                name: '總覽',
-                path: '/overview',
+            'workOrder' : {
+                name: '工單',
+                path: '/workOrder',
                 component: OverViewPanel
             }, 
+            'Asset' :{
+                name: '資產管理',
+                path: '/asset',
+                component: OverViewPanel
+            }
+        }
+    },
+    "operation" : {
+        name: 'Operation',
+        path: '/operation',
+        default: '/performance',
+        subPage:{
+            'performance' : {
+                name: '效能分析',
+                path: '/performance',
+                component: OverViewPanel
+            }, 
+            'alarms':{
+                name: '警報',
+                path: '/alarms',
+                component: OverViewPanel
+            }
         }
     },
   }
 }  
 
-export { dashboardConfig}
-// export
-// function 
+export { dashboardConfig }

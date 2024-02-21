@@ -1,12 +1,11 @@
-
 'use client'
 import { DashboardTabBar } from "@/app/ui/components/DashboardTabBar";
 import { usePathname} from "next/navigation";
 import { DashboardCard } from "@/app/ui/components/DashboardCard";
 import { dashboardConfig } from "@/lib/dashboard";
-
-// const currentPage = "HOME";
-
+import { DashboardPageHeader } from "@/app/ui/components/DashboardPageHeader";
+import { TextDataCard } from "@/app/ui/components/data/DataCard";
+import { time } from "console";
 
 function Placeholder({label} : {label: string}) {
     return (
@@ -18,18 +17,26 @@ function Placeholder({label} : {label: string}) {
     );
 }
 
-export default function Dashboard({ params }: { params: { subPage: string } }) {
+export default function Page({ params }: { params: { subPage: string } }) {
 
-    const currentPage = dashboardConfig.pages['HOME'];
-    const subPage = currentPage?.subPage[params.subPage];
-    // console.log(params.subPage);
+    const pathName = usePathname();
+    const pageName = pathName.split("/")[2];
+    console.log("Current Path", pageName);
+
+    // const currentPage = dashboardConfig.pages[pageName];
+    const pageConfig = dashboardConfig.pages[pageName];
+    const subPage = pageConfig?.subPage[params.subPage];
+    console.log(params.subPage);
     return (
         <div className={"text-xl flex flex-col flex-grow w-full h-full justify-center items-center"}>
+            <DashboardPageHeader title={pageConfig.name}>
+                <TextDataCard label="上次更新時間" data={(new Date()).toLocaleString()}/>
+            </DashboardPageHeader>
             <DashboardTabBar tabConfig={
-                Object.values(currentPage.subPage).map((subPage) => {
+                Object.values(pageConfig.subPage).map((subPage) => {
                     return {
                         title: subPage.name,
-                        href: `/dashboard${subPage.path}`
+                        href: `${dashboardConfig.path}${pageConfig.path}${subPage.path}`
                     };
                 })
             }/>
