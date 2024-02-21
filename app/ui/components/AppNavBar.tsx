@@ -1,4 +1,3 @@
-'use client'
 import {  
     Navbar,
     NavbarBrand,
@@ -8,28 +7,17 @@ import {
     NavbarMenu,
     NavbarMenuItem,
 } from "@nextui-org/navbar";
-import { Link } from "@nextui-org/link";
+import Link from "next/link";
 import { dashboardConfig } from "@/lib/dashboard"
 
-// import { IBMLogoImage } from "../assets/IBMLogo";
 import { SignOutButton } from "../auth/SignOutButton";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { Button } from "@nextui-org/button";
-import { usePathname } from "next/navigation";
 
 type AppNavBarProps = {
-    children?: React.ReactNode;
+    children?: React.ReactNode,
+    pageName: string,
 };
-
-// type PageConfig = {
-//     title: string;
-//     href: string;
-// } 
-
-// interface DashboardPageProps{
-//     pageConfig: Array<PageConfig>;
-//     children?: React.ReactNode;
-// }
 
 const cssItem = [
     "flex",
@@ -46,27 +34,27 @@ const cssItem = [
     "data-[active=true]:after:bg-primary",
   ];
 
-export function AppNavBar({children}: AppNavBarProps) {
-    
-    const path = usePathname();  
-    console.log("Current Path", path);
-    
+export function AppNavBar({children, pageName}: AppNavBarProps) {
     return (
     <Navbar  maxWidth="full" className="bg-default" position="sticky" classNames={{item: cssItem}}>
         <NavbarBrand>
             <NavbarMenuToggle className=""/>
             <p className="text-lg px-4">{dashboardConfig.name}</p>
         </NavbarBrand>
-        <NavbarContent className=" gap-4" justify="center">
+        <NavbarContent className="gap-4" justify="center">
             {
                 Object.keys(dashboardConfig.pages).map((page) => {
                     const pageConfig = dashboardConfig.pages[page];
                     const pagePath = `${dashboardConfig.path}${pageConfig.path}`;
                     const pageHref = `${pagePath}${pageConfig.default}`;
+                    const isActive = pageName === pageConfig.name;
                     return (
                         <NavbarItem className="hidden md:flex" key={pageConfig.name}>
-                            <Button as={Link} color="primary" href={pageHref} variant={path.startsWith(pagePath) ? "bordered" : "light"} >
-                                {pageConfig.name}
+                            <Button 
+                                color="primary" 
+                                href={pageHref} 
+                                variant={isActive ? "bordered" : "light"}>
+                                <Link href={pageHref}>{pageConfig.name}</Link>
                             </Button>
                         </NavbarItem>
                     );
@@ -75,18 +63,18 @@ export function AppNavBar({children}: AppNavBarProps) {
             <ThemeSwitcher/>
             <SignOutButton/>
         </NavbarContent>
-        <NavbarMenu className="bg-inherited">
+        <NavbarMenu className="bg-inherited gap-4">
                 {
                     Object.keys(dashboardConfig.pages).map((page) => {
                         const pageConfig = dashboardConfig.pages[page];
                         const pagePath = `${dashboardConfig.path}${pageConfig.path}`;
                         const pageHref = `${pagePath}${pageConfig.default}`;
+                        const isActive = pageName === pageConfig.name;
                         return (
-                            <NavbarMenuItem key={page}>
-                                <Link href={pageHref} size="lg" color={path.startsWith(pagePath) ? "primary" : "foreground"}>{pageConfig.name}</Link>
-                                {/* <Button as={Link} color="primary" href={pageHref} variant={path.startsWith(pagePath) ? "bordered" : "light"} > */}
-                                {/* {pageConfig.name} */}
-                            {/* </Button> */}
+                            <NavbarMenuItem key={page} isActive={isActive}>
+                                <Link href={pageHref} className="text-xl">
+                                    {pageConfig.name}
+                                </Link>  
                             </NavbarMenuItem>
                         );
                     })

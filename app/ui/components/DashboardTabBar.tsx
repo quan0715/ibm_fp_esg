@@ -1,23 +1,19 @@
 'use client'
+import { dashboardConfig } from "@/lib/dashboard";
 import {Tabs, Tab} from "@nextui-org/tabs";
 import { usePathname } from "next/navigation";
-type TabConfig = {
-    title: string;
-    href: string;
-    icon?: React.ReactNode;
-}
 
 interface DashboardTabBarProps{
-  tabConfig: Array<TabConfig>;  
+  pageName: string;  
   children?: React.ReactNode;
 }
 
-export function DashboardTabBar({tabConfig, children, ...props}: DashboardTabBarProps) {
-
-  const path = usePathname();  
-  // console.log("Current Path", path);
+export function DashboardTabBar({pageName, children, ...props}: DashboardTabBarProps) {
+  const path = usePathname();
+  const pageConfig = dashboardConfig.pages[pageName];
+  console.log("pageConfig", pageConfig);
   return (
-    <div className="flex flex-col w-full px-8 items-start justify-between bg-default overflow-scroll">
+    <div className="flex flex-col w-full px-8 items-start justify-between bg-default">
         <Tabs 
             {...props}
             aria-label="Options" 
@@ -25,15 +21,21 @@ export function DashboardTabBar({tabConfig, children, ...props}: DashboardTabBar
             variant="underlined"
             selectedKey={path}
             classNames={{
-                tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider",
-                cursor: "w-full bg-primary",
-                tab: "max-w-fit px-8 h-12",
-                tabContent: "group-data-[selected=true]:text-primary text-[16px]",
+                tabList: "gap-6 w-full rounded-none border-divider",
+                tab: "max-w-fit",
+                tabContent: "group-data-[selected=true]:text-primary text-lg",
             }}>
-            {tabConfig.map((tab, index) => (
-                <Tab key={tab.href} title={tab.title} href={tab.href}>
-                </Tab>
-            ))}
+            {
+                Object.keys(pageConfig.subPage).map((subPageName) => {
+                    const subPageConfig = pageConfig.subPage[subPageName];
+                    // console.log("subPageConfig", subPageConfig);
+                    const tabHref = [dashboardConfig.path, pageConfig.path, subPageConfig.path].join('');
+                    return (
+                        <Tab key={tabHref} href={tabHref} title={subPageConfig.name}>
+                        </Tab>
+                    );
+                })
+            }
         </Tabs>
     </div>
   );

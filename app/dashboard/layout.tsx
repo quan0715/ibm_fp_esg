@@ -7,31 +7,27 @@ import { TextDataCard } from "@/app/ui/components/data/DataCard";
 import { Divider } from "@nextui-org/react";
 
 // export const revalidate = 1000;
-export const dynamic = 'force-dynamic'
+// export const dynamic = 'force-dynamic'
 
 export default async function DashboardLayout({children}: {children: React.ReactNode}) {
-    const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/data`,{
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        next: {
-            'revalidate': 1
-        }
-    })
+    // const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/data`,{
+    //     method: 'GET',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     next: {
+    //         'revalidate': 1
+    //     }
+    // })
 
-    const json = await data.json();
-    // console.log(json);
-    const time = new Date(json.time);
+    // const json = await data.json();
+    // // console.log(json);
+    // const time = new Date(json.time);
 
   return (
       <div className={"flex h-screen flex-col flex-grow items-center justify-stretch self-stretch bg-background"}>
-            <div className={"text-xl flex flex-col flex-grow w-full justify-center items-center"}>
-            <AppNavBar/>
-            {/* <Divider/> */}
-            <Divider/>
-            {children} 
-        </div>
+        
+        {children}
       </div>
   );
 }

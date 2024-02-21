@@ -1,5 +1,5 @@
-import { OverViewPanel } from "@/app/ui/dashboard/OverViewPanel";
-import { SettingPanel } from "@/app/ui/dashboard/SettingPanel";
+import { OverViewPanel } from "@/app/ui/dashboard/panels/OverViewPanel";
+import { SettingPanel } from "@/app/ui/dashboard/panels/SettingPanel";
 
 type SubPageType = {
     name: string,
@@ -32,7 +32,7 @@ const dashboardConfig: AppConfigType = {
   default: '/home',
   pages: {
     "home" : {
-        name: 'HOME',
+        name: '主頁',
         path: '/home',
         default: '/overView',
         subPage:{
@@ -49,7 +49,7 @@ const dashboardConfig: AppConfigType = {
         }
     },
     "asset_management" : {
-        name: 'Asset Management',
+        name: '資產管理',
         path: '/asset_management',
         default: '/workOrder',
         subPage:{
@@ -59,14 +59,14 @@ const dashboardConfig: AppConfigType = {
                 component: OverViewPanel
             }, 
             'asset' :{
-                name: '資產管理',
+                name: '資產',
                 path: '/asset',
                 component: OverViewPanel
             }
         }
     },
     "operation" : {
-        name: 'Operation',
+        name: '運營狀況',
         path: '/operation',
         default: '/performance',
         subPage:{
