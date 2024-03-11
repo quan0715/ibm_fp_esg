@@ -1,6 +1,6 @@
 'use client'
 import { dashboardConfig } from "@/lib/dashboard";
-import {Tabs, Tab} from "@nextui-org/tabs";
+import { Tabs, Tab} from "@nextui-org/tabs";
 import { usePathname } from "next/navigation";
 
 interface DashboardTabBarProps{
@@ -21,9 +21,9 @@ export function DashboardTabBar({pageName, children, ...props}: DashboardTabBarP
             variant="underlined"
             selectedKey={path}
             classNames={{
-                tabList: "gap-6 w-full rounded-none border-divider",
+                tabList: "gap-8 w-full rounded-none border-divider",
                 tab: "max-w-fit",
-                tabContent: "group-data-[selected=true]:text-primary text-lg",
+                tabContent: "group-data-[selected=true]:text-primary text-lg p-4",
             }}>
             {
                 Object.keys(pageConfig.subPage).map((subPageName) => {

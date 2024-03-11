@@ -1,5 +1,5 @@
 'use client'
-import {  Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell} from "@nextui-org/react";
+import {  Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell} from "@nextui-org/table";
 import { DashboardCard } from "@/app/ui/components/DashboardCard"
 import { SingleDataCard } from "@/app/ui/components/data/DataCard"
 import { LineChart, Line, AreaChart, XAxis, CartesianGrid, YAxis, Tooltip, Area, ResponsiveContainer, ComposedChart, Legend, Label } from 'recharts';
@@ -133,8 +133,8 @@ function DataTableChart(){
 export function OverViewPanel() {
   return (
     <div className="grid bg-background gap-5 md:p-4">
-      <DashboardCard 
-        title={"快速監測數據"} 
+      <DashboardCard
+        title={"快速監測數據"}
         className="grid grid-row-1 row-start-1 col-start-1 col-end-3">
           <div className="grid gap-1 md:grid-row-1">
             {
@@ -146,10 +146,10 @@ export function OverViewPanel() {
                 )
               })
             }
-          </div>    
+          </div>
       </DashboardCard>
       <DashboardCard title={"本週發電量趨勢"} className="row-start-2 col-start-1 col-end-3 md:row-start-2 md:col-start-1 md:col-end-2">
-        <AreaChartPanel />
+        {/*<AreaChartPanel />*/}
       </DashboardCard>
       <DashboardCard title={"Asset 狀態簡表"} className="row-start-3 col-start-1 col-end-3 md:row-start-2 md:col-start-2 md:col-end-3">
         <DataTableChart/>

@@ -1,10 +1,12 @@
 import { OverViewPanel } from "@/app/ui/dashboard/panels/OverViewPanel";
+import { OperationPanel } from "@/app/ui/dashboard/panels/OperationPanel";
 import { SettingPanel } from "@/app/ui/dashboard/panels/SettingPanel";
+
 
 type SubPageType = {
     name: string,
     path: string,
-    component: () => JSX.Element,
+    component: () => JSX.Element | Promise<JSX.Element>,
 }
 type PageType = {
     name: string,
@@ -54,7 +56,7 @@ const dashboardConfig: AppConfigType = {
         default: '/workOrder',
         subPage:{
             'workOrder' : {
-                name: '工單',
+                name: '工單管理',
                 path: '/workOrder',
                 component: OverViewPanel
             }, 
@@ -73,7 +75,7 @@ const dashboardConfig: AppConfigType = {
             'performance' : {
                 name: '效能分析',
                 path: '/performance',
-                component: OverViewPanel
+                component: OperationPanel
             }, 
             'alarms':{
                 name: '警報',

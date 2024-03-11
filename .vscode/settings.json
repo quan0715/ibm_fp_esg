@@ -3,5 +3,8 @@
     "tailwindCSS.experimental.configFile": null,
     "editor.quickSuggestions": {
         "strings": "on"
-    }
+    },
+    "cSpell.words": [
+        "nextui"
+    ]
 }
