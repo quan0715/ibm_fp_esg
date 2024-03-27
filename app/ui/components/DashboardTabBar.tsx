@@ -1,5 +1,5 @@
 'use client'
-import { dashboardConfig } from "@/lib/dashboard";
+import { dashboardConfig } from "@/lib/dashboard.config";
 import { Tabs, Tab} from "@nextui-org/tabs";
 import { usePathname } from "next/navigation";
 
@@ -11,7 +11,7 @@ interface DashboardTabBarProps{
 export function DashboardTabBar({pageName, children, ...props}: DashboardTabBarProps) {
   const path = usePathname();
   const pageConfig = dashboardConfig.pages[pageName];
-  console.log("pageConfig", pageConfig);
+  // console.log("pageConfig", pageConfig);
   return (
     <div className="flex flex-col w-full px-8 items-start justify-between bg-default">
         <Tabs 

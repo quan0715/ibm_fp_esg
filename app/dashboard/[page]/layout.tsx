@@ -1,5 +1,5 @@
 import { DashboardTabBar } from "@/app/ui/components/DashboardTabBar";
-import { dashboardConfig } from "@/lib/dashboard";
+import { dashboardConfig } from "@/lib/dashboard.config";
 import { DashboardPageHeader } from "@/app/ui/components/DashboardPageHeader";
 import { TextDataCard } from "@/app/ui/components/data/DataCard";
 import { AppNavBar } from "@/app/ui/components/AppNavBar";

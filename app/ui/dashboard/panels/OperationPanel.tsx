@@ -1,20 +1,31 @@
 import { OperationDataTreeViewTable } from "@/app/ui/dashboard/tables/TreeViewTable";
-import { getOperationData } from "@/actions/dataActions";
-import { AssetOperationDataModel, AssetOperationDataTreeNodeModel} from "@/models/AssetOperationDataModel";
+import { getOperationData, getMonitoringGroupData } from "@/actions/dataActions";
+import {
+    AssetOperationDataSchemaModel,
+    GroupAssetOperationDataSchemaModel,
+    GroupAssetOperationDataNodeModel
+ } from "@/models/AssetOperationDataModel";
 
 
-// export const OperationalDataContext = createContext({})
-
-function buildDataTree(node: AssetOperationDataTreeNodeModel){
-    
-}
 
 export async function OperationPanel() {
-    const fetchOperationData = (await getOperationData()).data
-    // console.log(fetchOperationData)
+
+    const assetsData = (await getOperationData()).data
+    const dataList = await getMonitoringGroupData()
+    
+    const tree = GroupAssetOperationDataNodeModel.createRootNode()
+    tree.buildTree(dataList, assetsData)
+    // tree.log()
+
+    const treeList = tree.toList(assetsData).filter(
+        (item) => item.index !== -1
+    )
+
+
+    console.log(treeList)
     return (
         <div className="flex flex-row flex-grow gap-x-4">
-            <OperationDataTreeViewTable data={fetchOperationData}/>
+            <OperationDataTreeViewTable data={treeList}/>
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import { DashboardCard } from "@/app/ui/components/DashboardCard";
-import { dashboardConfig } from "@/lib/dashboard";
+import { dashboardConfig } from "@/lib/dashboard.config";
 function Placeholder({label} : {label: string}) {
     return (
         <div className="flex flex-col flex-grow bg-background w-full p-6">

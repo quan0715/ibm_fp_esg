@@ -8,7 +8,7 @@ import {
     NavbarMenuItem,
 } from "@nextui-org/navbar";
 import Link from "next/link";
-import { dashboardConfig } from "@/lib/dashboard"
+import { dashboardConfig } from "@/lib/dashboard.config"
 
 import { SignOutButton } from "../auth/SignOutButton";
 import { ThemeSwitcher } from "./ThemeSwitcher";

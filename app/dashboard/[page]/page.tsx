@@ -1,5 +1,5 @@
 import {redirect} from "next/navigation";
-import {dashboardConfig} from "@/lib/dashboard";
+import {dashboardConfig} from "@/lib/dashboard.config";
 
 export default function Dashboard({ params }: { params: { page: string } }) {
     const pageConfig = dashboardConfig.pages[params.page];
