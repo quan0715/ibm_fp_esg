@@ -41,7 +41,7 @@ function KPICard({title, kpiList} : {title: string, kpiList: KPIData[]}) {
         <DashboardCard>
             <DashboardCardHeader title={title}/>
             <DashboardCardContent>
-                <div className="w-full h-16 flex flex-row justify-center items-center space-x-2">
+                <div className="w-full h-16 flex flex-row justify-center items-center space-x-2 px-2 py-1">
                     {
                         getKPIListWithSeparator(kpiList)
                     }

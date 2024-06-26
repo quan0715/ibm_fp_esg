@@ -12,6 +12,7 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {Skeleton} from "@/components/ui/skeleton";
 import {KPIDisplayBlock} from "@/app/dashboard/ghg/_blocks/KPIDisplayBlock";
+import {OverviewLineChart} from "@/app/dashboard/ghg/_blocks/OverviewLineChart";
 
 function BarChartCard(){
     const data = [
@@ -72,25 +73,13 @@ function BarChartCard(){
 export default function Page() {
   return (
       <div className={"w-full h-full flex flex-col justify-start items-start space-y-2"}>
-          {/*<div className={"w-full flex flex-row rounded-xl shadow-sm p-3 bg-background space-x-2"}>*/}
-          {/*    <Button size={"icon"} variant={"ghost"}>*/}
-          {/*        <LuArrowLeft></LuArrowLeft>*/}
-          {/*    </Button>*/}
-          {/*    <Separator orientation="vertical"/>*/}
-          {/*    <Button size={"icon"} variant={"ghost"}>*/}
-          {/*        <LuRefreshCcw></LuRefreshCcw>*/}
-          {/*    </Button>*/}
-          {/*    <Separator orientation="vertical"/>*/}
-          {/*    <Button size={"icon"} variant={"ghost"}>*/}
-          {/*        <LuSaveAll></LuSaveAll>*/}
-          {/*    </Button>*/}
-          {/*</div>*/}
           <div className={"w-full h-full grid grid-cols-4 grid-rows-2 gap-4 "}>
               <div className={"col-span-1 row-span-1"}>
                 <KPIDisplayBlock/>
               </div>
-              <Skeleton className={"col-span-3 row-span-1 bg-blue-100"}>
-              </Skeleton>
+              <div className={"col-span-3 row-span-1"}>
+                <OverviewLineChart/>
+              </div>
               <div className={"col-span-1 row-span-2 bg-red-100"}>
                   <BarChartCard/>
               </div>

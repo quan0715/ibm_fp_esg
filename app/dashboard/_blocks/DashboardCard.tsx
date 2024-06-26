@@ -1,9 +1,12 @@
 
 import {Separator} from "@/components/ui/separator";
 import React from "react";
-export function DashboardCard({children} : {children: React.ReactNode}) {
+import {cn} from "@/lib/utils";
+export function DashboardCard({children , className} : {children: React.ReactNode, className?: string}) {
     return (
-        <div className={"w-full bg-background rounded-md"}>
+        <div className={cn(
+            "w-full bg-background rounded-md flex flex-col", className
+        )}>
             {children}
         </div>
     );
@@ -20,8 +23,9 @@ export function DashboardCardHeader({title} : {title: string}){
 
 export function DashboardCardContent({children} : {children?: React.ReactNode}){
     return (
-        <div className="w-full px-4 py-2">
+        <div className="flex-1 w-full p-2">
             {children}
         </div>
     )
 }
+
