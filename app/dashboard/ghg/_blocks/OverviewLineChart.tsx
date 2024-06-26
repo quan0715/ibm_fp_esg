@@ -125,8 +125,8 @@ export function OverviewLineChart() {
                     }}
                 >
                     <CartesianGrid strokeDasharray="4 4" />
-                    <XAxis dataKey="year" />
-                    {/*<YAxis />*/}
+                    <XAxis dataKey="year" axisLine={false}/>
+                    <YAxis hide/>
                     <Tooltip />
                     <Legend
                         content={(props) => {
@@ -136,9 +136,9 @@ export function OverviewLineChart() {
                                 <div className={"w-full flex flex-row space-x-4 justify-center items-center"} >
                                     {
                                         payload?.map((entry, index) => (
-                                            <div key={`item-${index}`} className={"flex flex-row justify-center items-center rounded-md space-x-2 px-3 py-[2px]"} style={
+                                            <div key={`item-${index}`} className={"flex flex-row justify-center items-center rounded-md space-x-2 px-3 py-[4px]"} style={
                                                 {
-                                                    backgroundColor: entry.color + "20"
+                                                    backgroundColor: entry.color + "10"
                                                 }
                                             }>
                                                 <div id={"dot"} className={"w-2 h-2 rounded-full"} style={
@@ -146,7 +146,7 @@ export function OverviewLineChart() {
                                                         backgroundColor: entry.color
                                                     }
                                                 }></div>
-                                                <div className={"text-sm text-foreground/90 font-semibold"}>
+                                                <div className={"text-sm text-gray-500 font-semibold"}>
                                                     {entry.value}
                                                 </div>
                                             </div>

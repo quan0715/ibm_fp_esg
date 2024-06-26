@@ -165,7 +165,7 @@ type ActionsProps = {
     onClick?: () => void;
     isHidden?: boolean;
 };
-export function ActionBar({
+function ActionBar({
                               isFormSubmitAction = false,
                               isHidden = false,
                               back = null,
