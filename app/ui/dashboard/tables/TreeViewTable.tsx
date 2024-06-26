@@ -5,7 +5,6 @@ import { Chip } from "@nextui-org/chip";
 import { Table, TableHeader, TableRow, TableCell, TableBody, TableColumn} from "@nextui-org/table";
 import { WindLevelIcon } from "@/app/ui/dashboard/components/WindLevelIcon";
 import { useState, useContext } from "react";
-import { MaterialIcon } from "@/app/ui/assets/MaterialIcon";
 import { AssetOperationDataSchema, AssetOperationDataSchemaModel } from "@/models/AssetOperationDataModel";
 import { set } from "zod";
 
@@ -105,11 +104,11 @@ export function OperationDataTreeViewTable({data} : {data: AssetOperationDataSch
                             } ))
                         }
                     } className={isExpandable ? "" : "opacity-0"}>
-                        {
-                            item.isExpanded
-                                ? <MaterialIcon icon={"expand_more"} className={``}></MaterialIcon>
-                                : <MaterialIcon icon={"expand_less"} className={``}></MaterialIcon>
-                        }
+                        {/*{*/}
+                        {/*    item.isExpanded*/}
+                        {/*        ? <MaterialIcon icon={"expand_more"} className={``}></MaterialIcon>*/}
+                        {/*        : <MaterialIcon icon={"expand_less"} className={``}></MaterialIcon>*/}
+                        {/*}*/}
                 </button>
                 <p>{item.assetName as string}</p>
             </div>

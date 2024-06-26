@@ -3,12 +3,12 @@ import { Noto_Sans_TC } from "next/font/google";
 import "@/app/globals.css";
 import React from "react";
 import {Providers} from "@/app/provider";
-import {AppNavBar} from "@/app/ui/components/AppNavBar";
+import {cn} from "@/lib/utils";
 
-const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] });
+const notoSansTC = Noto_Sans_TC({ subsets: ["latin"] , variable: "--font-sans"});
 
 export const metadata: Metadata = {
-  title: "IBM IOT DASHBOARD",
+  title: "IBM ESG PLATFORM",
   description: "The Next gen IOT Dashboard power by IBM",
 };
 
@@ -18,8 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <html lang="en">
-        <body className={`${notoSansTC.className} antialiased`}>
+      <html lang="en" suppressHydrationWarning>
+        <body className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            notoSansTC.variable
+        )}>
             <Providers>
               {children}
             </Providers>

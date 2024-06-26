@@ -1,9 +1,9 @@
 import {useState} from "react";
-import {loginAction} from "@/actions/loginActions"
+import {loginAction} from "@/app/auth/_actions/loginActions"
 import {useForm} from "react-hook-form";
 import { z } from "zod"
 import {zodResolver} from "@hookform/resolvers/zod";
-import {registerAction} from "@/actions/registerAction";
+import {registerAction} from "@/app/auth/_actions/registerAction";
 
 export function useToggleVisibility(initialState: boolean = false): [boolean, () => void] {
     const [isVisible, setIsVisible] = useState<boolean>(initialState)
