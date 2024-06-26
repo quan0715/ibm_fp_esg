@@ -9,8 +9,7 @@ import { Divider } from "@nextui-org/react";
 
 export default async function DashboardLayout({children}: {children: React.ReactNode}) {
   return (
-      <div className={"flex h-screen flex-col flex-grow items-center justify-stretch self-stretch bg-background"}>
-        
+      <div className={"flex h-screen flex-col flex-grow items-start justify-start self-stretch bg-background"}>
         {children}
       </div>
   );

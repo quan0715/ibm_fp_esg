@@ -17,8 +17,8 @@ export default function Page({ params }: { params: { subPage: string , page: str
     const subPage = pageConfig?.subPage[params.subPage];
     
     return (
-        <div className={"text-xl flex flex-col flex-grow w-full overflow-scroll"}>
-            <div className="flex flex-col flex-grow justify-start bg-background w-full p-4 ">
+        <div className={"p-4 text-xl flex flex-col flex-grow w-full justify-center items-center overflow-scroll"}>
+            <div className="flex flex-col flex-grow justify-center items-center bg-background w-full p-4 ">
                 {subPage.component ? <subPage.component/> : <Placeholder label={params.subPage}/> }
             </div>
         </div>

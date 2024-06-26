@@ -1,20 +1,36 @@
-import {Button, Card, CardBody, CardFooter, Input} from "@nextui-org/react";
 import React from "react";
 import {MaterialIcon} from "@/app/ui/assets/MaterialIcon";
-import {ThemeSwitcher} from "@/app/ui/components/ThemeSwitcher";
+import {ThemeSwitcher} from "@/components/blocks/customButtons/ThemeSwitcher";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import {IBMLogoImage} from "@/components/blocks/IBMLogo";
 
-export function AuthCard({children}: { children: React.ReactNode }) {
+type AuthCardProps = {
+    children: React.ReactNode
+    title: string // ui display
+    description: string // ui display
+}
+
+export function AuthCard({children, title, description}: AuthCardProps) {
     return (
         <Card
-            isBlurred={true}
-            shadow={"lg"}
-            radius={"sm"}
-            className="animate-fadeIn transition-all w-screen md:w-[540px] h-screen md:h-auto bg-background/50 shadow-2xl">
-                <CardBody className={"flex flex-col justify-center items-center gap-12 p-10 md:p-12 lg:p-14"}>
-                    {children}
-                </CardBody>
-            <CardFooter className={"flex justify-center space-x-4"}>
-                <span className="flex text-sm font-light">© 2024 IBM Corporation</span>
+            className="animate-fadeIn transition-all w-screen h-screen md:w-[540px] md:h-auto bg-background/80 shadow-2xl p-8 backdrop-blur-xl rounded-xl align-middle">
+            <CardHeader className={""}>
+                <IBMLogoImage width="sm"/>
+                <CardTitle className={"text-2xl font-bold"}>{title}</CardTitle>
+                <CardDescription className={"text-sm "}>{description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {children}
+            </CardContent>
+            <CardFooter className={"flex justify-center space-x-2"}>
+                <span className="flex text-sm font-light"> © 2024 IBM Corporation </span>
                 <ThemeSwitcher/>
             </CardFooter>
         </Card>

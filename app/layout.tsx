@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_TC } from "next/font/google";
-import "@/app/ui/globals.css";
+import "@/app/globals.css";
 import React from "react";
 import {Providers} from "@/app/provider";
 import {AppNavBar} from "@/app/ui/components/AppNavBar";

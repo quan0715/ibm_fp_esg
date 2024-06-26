@@ -41,7 +41,7 @@ const dashboardConfig: AppConfigType = {
             'overView' : {
                 name: '資料總覽',
                 path: '/overView',
-                component: OverViewPanel
+                component: SettingPanel
             }, 
             'setting' : {
                 name: '設定頁面',

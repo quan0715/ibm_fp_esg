@@ -1,5 +1,5 @@
 import { MaterialIcon } from "../../assets/MaterialIcon";
-
+import React from "react";
 interface TextDataCardProps {
     label?: string;
     data?: string;
@@ -8,8 +8,8 @@ interface TextDataCardProps {
 export function TextDataCard({label = "label", data = "data"}: TextDataCardProps) {
     return (
         <div className="flex flex-col items-end">
-            <p className="text-medium font-light text-foreground/80">{label}</p>
-            <p className="text-medium font-semibold" suppressHydrationWarning>{data}</p>
+            <p className="text-sm font-light text-foreground/80">{label}</p>
+            <p className="text-sm font-semibold" suppressHydrationWarning>{data}</p>
         </div>
     );
 }
