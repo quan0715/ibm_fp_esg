@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button";
-import {Eye, EyeOff} from "lucide-react";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 
 
 export function PasswordObscureSwitcher({isPasswordVisible, onClick}: {isPasswordVisible: boolean, onClick: () => void}) {
@@ -7,8 +7,8 @@ export function PasswordObscureSwitcher({isPasswordVisible, onClick}: {isPasswor
         <Button type={"button"} variant={"outline"} size={"icon"} onClick={onClick}>
             {
                 isPasswordVisible
-                    ? <Eye size={14}/>
-                    : <EyeOff size={14}/>
+                    ? <LuEye size={14}/>
+                    : <LuEyeOff size={14}/>
             }
         </Button>
     )
