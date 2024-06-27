@@ -140,10 +140,10 @@ export const Level1Menu: Level1MenuContentEntryProps[] = [
     ],
   },
 ];
-export function AppNavBar({ pageName }: { pageName: string }) {
+export function AppNavBar() {
   return (
     <div
-      className={"w-full flex flex-row justify-between items-center px-8 py-4"}
+      className={"w-full flex flex-row justify-between items-center px-6 py-2"}
     >
       <div className={"flex flex-row items-center"}>
         <Button size={"icon"} type={"button"} variant={"ghost"}>

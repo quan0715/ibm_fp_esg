@@ -1,24 +1,21 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardPageHeader } from "@/app/ui/components/DashboardPageHeader";
-import { TextDataCard } from "@/app/ui/components/data/DataCard";
-import { AppNavBar } from "@/app/dashboard/_components/AppNavBar";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 export default function Layout({
   children,
-  params,
+  locManagement,
+  data,
+  overall,
 }: {
-  params: { page: string };
   children: React.ReactNode;
+  locManagement: React.ReactNode;
+  data: React.ReactNode;
+  overall: React.ReactNode;
 }) {
-  console.log(params.page);
   return (
     <div className="w-full h-full flex flex-col flex-grow justify-start items-center bg-background">
-      <AppNavBar pageName={"data"} />
-      <Separator />
-      <DashboardPageHeader title={"GHG KPI"}>
-        <TextDataCard label="上次更新時間" data={new Date().toLocaleString()} />
-      </DashboardPageHeader>
+      <DashboardPageHeader title={"GHG KPI"}/>
       <Separator />
       <Tabs defaultValue="ghg_year" className="w-full h-full">
         <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
@@ -27,8 +24,18 @@ export default function Layout({
           <TabsTrigger value="ghg_data">GHG各廠區 RAW DATA</TabsTrigger>
         </TabsList>
         <Separator />
-        <div className={"w-full h-full p-4 bg-secondary"}>{children}</div>
-      </Tabs>
+        <div className="w-full h-full bg-secondary p-4">
+          <TabsContent value="ghg_year">
+            {overall}
+          </TabsContent> 
+          <TabsContent value="ghg_loc">
+            {locManagement}
+          </TabsContent>
+          <TabsContent  value="ghg_data">
+            {data}
+          </TabsContent>
+        </div>
+       </Tabs>
     </div>
   );
 }

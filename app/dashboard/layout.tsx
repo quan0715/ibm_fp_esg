@@ -5,6 +5,7 @@ import { DashboardTabBar } from "@/app/ui/components/DashboardTabBar";
 // import { AppNavBar } from "@/app/ui/dashboard/AppNavBar";
 import { TextDataCard } from "@/app/ui/components/data/DataCard";
 import { Divider } from "@nextui-org/react";
+import { Separator } from "@/components/ui/separator";
 
 export default async function DashboardLayout({
   children,
@@ -17,6 +18,8 @@ export default async function DashboardLayout({
         "flex h-screen flex-col flex-grow items-start justify-start self-stretch bg-background"
       }
     >
+      <AppNavBar />
+      <Separator />
       {children}
     </div>
   );

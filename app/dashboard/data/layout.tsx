@@ -16,8 +16,6 @@ export default function Layout({
 
   return (
     <div className="w-full h-full flex flex-col flex-grow justify-start items-center bg-background">
-      <AppNavBar pageName={"data"} />
-      {/*<Separator />*/}
       <DashboardPageHeader title={"廢水資料管理"}>
         <TextDataCard label="上次更新時間" data={new Date().toLocaleString()} />
       </DashboardPageHeader>

@@ -121,7 +121,7 @@ export function ByLocKPIBarChart() {
       <DashboardCardHeader title={"近5年排放量指標"} />
       <DashboardCardContent>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart width={150} height={40} data={data}>
+          <BarChart width={150} height={40} data={data} barGap={4} barSize={12}>
             <Tooltip />
             <Legend
               content={(props) => {
@@ -159,7 +159,9 @@ export function ByLocKPIBarChart() {
                 );
               }}
             />
-            <XAxis axisLine={false} dataKey={"loc"} fontSize={8}/>
+            <CartesianGrid strokeDasharray="3 3" />
+            <YAxis axisLine={false} fontSize={12}/>
+            <XAxis axisLine={false} dataKey={"loc"} fontSize={12}/>
             <Bar dataKey="target" fill="#7E27B6" name={"目標GHG排放濃度"} />
             <Bar dataKey="real" fill="#FFBA08" name={"核可GHG排放濃度"} />
             {/*<Bar dataKey="percentage" fill="#5590FF" strokeWidth={2} name={'目標達成率 '} />*/}

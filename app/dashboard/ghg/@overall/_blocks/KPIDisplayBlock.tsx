@@ -42,7 +42,7 @@ function KPICard({ title, kpiList }: { title: string; kpiList: KPIData[] }) {
           color: color,
         }}
       >
-        <h3 className="text-sm font-semibold">{title}</h3>
+        <h3 className="text-[12px] font-semibold">{title}</h3>
       </div>
     );
   }
@@ -51,7 +51,7 @@ function KPICard({ title, kpiList }: { title: string; kpiList: KPIData[] }) {
     <DashboardCard>
       <DashboardCardHeader title={title} />
       <DashboardCardContent>
-        <div className="w-full h-16 flex flex-row justify-center items-center space-x-2 px-2 py-1">
+        <div className="w-full h-16 lg:h-20 flex flex-row justify-center items-center space-x-2 px-2 py-1">
           {getKPIListWithSeparator(kpiList)}
         </div>
       </DashboardCardContent>
