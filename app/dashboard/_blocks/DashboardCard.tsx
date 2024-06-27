@@ -14,11 +14,13 @@ export function DashboardCard({children , className} : {children: React.ReactNod
 
 export function DashboardCardHeader({title} : {title: string}){
     return (
-        <div className="flex flex-col space-y-1.5">
-            <h3 className="text-lg font-light leading-none tracking-tight px-3 py-2">{title}</h3>
-            <Separator/>
-        </div>
-    )
+      <div className="flex flex-col space-y-1.5">
+        <h3 className="text-lg font-light leading-none tracking-tight px-3 py-2">
+          {title}
+        </h3>
+        <Separator />
+      </div>
+    );
 }
 
 export function DashboardCardContent({children} : {children?: React.ReactNode}){
