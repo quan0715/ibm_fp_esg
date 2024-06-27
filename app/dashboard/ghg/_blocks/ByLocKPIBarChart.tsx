@@ -95,6 +95,21 @@ export function ByLocKPIBarChart() {
       real: 843456,
     },
     {
+        loc: "Q3",
+        target: 119979,
+        real: 1113456,
+      },
+      {
+        loc: "UIO",
+        target: 419979,
+        real: 1323456,
+      },
+      {
+        loc: "UIT",
+        target: 419979,
+        real: 1323456,
+      },
+    {
       loc: "F3",
       target: 619979,
       real: 923456,
@@ -144,7 +159,7 @@ export function ByLocKPIBarChart() {
                 );
               }}
             />
-            <XAxis axisLine={false} dataKey={"loc"} />
+            <XAxis axisLine={false} dataKey={"loc"} fontSize={8}/>
             <Bar dataKey="target" fill="#7E27B6" name={"目標GHG排放濃度"} />
             <Bar dataKey="real" fill="#FFBA08" name={"核可GHG排放濃度"} />
             {/*<Bar dataKey="percentage" fill="#5590FF" strokeWidth={2} name={'目標達成率 '} />*/}

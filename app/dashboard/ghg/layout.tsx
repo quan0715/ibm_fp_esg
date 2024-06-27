@@ -20,7 +20,7 @@ export default function Layout({
         <TextDataCard label="上次更新時間" data={new Date().toLocaleString()} />
       </DashboardPageHeader>
       <Separator />
-      <Tabs defaultValue="account" className="w-full h-full">
+      <Tabs defaultValue="ghg_year" className="w-full h-full">
         <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
           <TabsTrigger value="ghg_year">GHG減量大盤</TabsTrigger>
           <TabsTrigger value="ghg_loc"> GHG減量廠管理</TabsTrigger>
