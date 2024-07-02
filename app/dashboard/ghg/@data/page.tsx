@@ -249,7 +249,10 @@ export default function Data() {
               <div className="flex flex-wrap justify-start items-center">
                 {phaseData.map((data) => {
                   return (
-                    <div className="flex justify-center items-center space-x-2 p-2">
+                    <div
+                      key={data.id}
+                      className="flex justify-center items-center space-x-2 p-2"
+                    >
                       <Checkbox id={data.id} />
                       <label
                         htmlFor="terms"
@@ -266,7 +269,10 @@ export default function Data() {
               <div className="flex flex-wrap justify-start items-center">
                 {columnData.map((data) => {
                   return (
-                    <div className="flex justify-center items-center space-x-2 p-2">
+                    <div
+                      key={data.id}
+                      className="flex justify-center items-center space-x-2 p-2"
+                    >
                       <Checkbox id={data.id} />
                       <label
                         htmlFor="terms"

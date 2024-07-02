@@ -59,7 +59,7 @@ function MenuContentEntry({
       <NavigationMenuLink
         className={cn(
           navigationMenuTriggerStyle(),
-          "w-full h-fit flex flex-row space-x-2 items-center justify-start",
+          "w-full h-fit flex flex-row space-x-2 items-center justify-start"
         )}
       >
         {icon ? icon : null}
@@ -189,7 +189,9 @@ export function AppNavBar() {
             <Button
               type="button"
               variant={"destructive"}
-              onClick={signOutAction}
+              onClick={async () => {
+                await signOutAction();
+              }}
             >
               登出
             </Button>

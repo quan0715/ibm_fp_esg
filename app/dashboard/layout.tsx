@@ -1,10 +1,5 @@
 import React from "react";
 import { AppNavBar } from "@/app/dashboard/_components/AppNavBar";
-import { DashboardPageHeader } from "@/app/ui/components/DashboardPageHeader";
-import { DashboardTabBar } from "@/app/ui/components/DashboardTabBar";
-// import { AppNavBar } from "@/app/ui/dashboard/AppNavBar";
-import { TextDataCard } from "@/app/ui/components/data/DataCard";
-import { Divider } from "@nextui-org/react";
 import { Separator } from "@/components/ui/separator";
 
 export default async function DashboardLayout({
