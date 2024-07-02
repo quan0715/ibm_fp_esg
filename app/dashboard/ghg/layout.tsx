@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DashboardPageHeader } from "@/app/ui/components/DashboardPageHeader";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
+import { DashboardPageHeader } from "../_blocks/DashboardPageHeader";
 export default function Layout({
   children,
   locManagement,
@@ -15,7 +15,7 @@ export default function Layout({
 }) {
   return (
     <div className="w-full h-full flex flex-col flex-grow justify-start items-center bg-background">
-      <DashboardPageHeader title={"GHG KPI"}/>
+      <DashboardPageHeader title={"GHG KPI"} />
       <Separator />
       <Tabs defaultValue="ghg_year" className="w-full h-full">
         <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
@@ -25,17 +25,11 @@ export default function Layout({
         </TabsList>
         <Separator />
         <div className="w-full h-full bg-secondary p-4">
-          <TabsContent value="ghg_year">
-            {overall}
-          </TabsContent> 
-          <TabsContent value="ghg_loc">
-            {locManagement}
-          </TabsContent>
-          <TabsContent  value="ghg_data">
-            {data}
-          </TabsContent>
+          <TabsContent value="ghg_year">{overall}</TabsContent>
+          <TabsContent value="ghg_loc">{locManagement}</TabsContent>
+          <TabsContent value="ghg_data">{data}</TabsContent>
         </div>
-       </Tabs>
+      </Tabs>
     </div>
   );
 }

@@ -2,7 +2,6 @@
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
 import { CardProps } from "@nextui-org/react";
-import { DashboardCard } from "@/app/ui/components/DashboardCard";
 import React, { useState } from "react";
 // import {MaterialIcon} from "@/app/ui/assets/MaterialIcon";
 
