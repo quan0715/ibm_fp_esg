@@ -2,7 +2,7 @@ import {
   DashboardCard,
   DashboardCardContent,
   DashboardCardHeader,
-} from "@/app/dashboard/_blocks/DashboardCard";
+} from "@/app/dashboard/_components/DashboardCard";
 import { Separator } from "@/components/ui/separator";
 
 type KPIData = {
@@ -24,7 +24,7 @@ function KPICard({ title, kpiList }: { title: string; kpiList: KPIData[] }) {
             color={kpiList[index].color ?? ""}
           />
           <h3 className="text-xl font-semibold px-1">{kpiList[index].value}</h3>
-        </div>,
+        </div>
       );
       if (index < kpiList.length - 1) {
         result.push(<Separator orientation={"vertical"} />);

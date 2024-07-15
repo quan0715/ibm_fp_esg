@@ -29,6 +29,7 @@ import { MdOutlineSettingsApplications } from "react-icons/md";
 import { SiWebauthn } from "react-icons/si";
 import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/auth/_actions/signOutAction";
+import { Separator } from "@radix-ui/react-separator";
 
 type MenuContentEntryProps = {
   key: string;
@@ -119,6 +120,12 @@ export const Level1Menu: Level1MenuContentEntryProps[] = [
         description: "廢棄物基本資料/對應資產/tool",
         icon: <MdAir size={24} />,
       },
+      {
+        key: "ghg",
+        label: "GHG Data 管理",
+        description: "GHG 年度大盤/歷史資歷/資料管理",
+        icon: <MdAir size={24} />,
+      },
     ],
   },
   {
@@ -143,9 +150,11 @@ export const Level1Menu: Level1MenuContentEntryProps[] = [
 export function AppNavBar() {
   return (
     <div
-      className={"w-full flex flex-row justify-between items-center px-6 py-2"}
+      className={
+        "w-full flex flex-row justify-between items-center px-6 py-2 h-14"
+      }
     >
-      <div className={"flex flex-row items-center"}>
+      <div className={"flex flex-row items-center h-14"}>
         <Button size={"icon"} type={"button"} variant={"ghost"}>
           <MenuIcon className="h-4 w-4" />
         </Button>

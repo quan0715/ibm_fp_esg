@@ -12,7 +12,7 @@ import {
   DashboardCard,
   DashboardCardContent,
   DashboardCardHeader,
-} from "../../_blocks/DashboardCard";
+} from "@/app/dashboard/_components/DashboardCard";
 
 import * as React from "react";
 
