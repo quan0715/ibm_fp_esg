@@ -21,10 +21,10 @@ export default function Layout({
       <Separator />
       <Tabs defaultValue="assets_org" className="w-full h-full">
         <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
-          <TabsTrigger value="assets_org">Organization Level1</TabsTrigger>
-          <TabsTrigger value="assets_fac">Factory Level2</TabsTrigger>
-          <TabsTrigger value="assets_phase">Phase Level2.5</TabsTrigger>
-          <TabsTrigger value="assets_dept">Department Level3</TabsTrigger>
+          <TabsTrigger value="assets_org">Organization 組織</TabsTrigger>
+          <TabsTrigger value="assets_fac">Site 廠區</TabsTrigger>
+          <TabsTrigger value="assets_phase">Phase</TabsTrigger>
+          <TabsTrigger value="assets_dept">Department 部門</TabsTrigger>
         </TabsList>
         <Separator />
         <div className="w-full h-full bg-secondary p-2">

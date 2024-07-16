@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+  return NextResponse.redirect(
+    new URL("/dashboard/location_and_asset/location", req.nextUrl)
+  );
 }

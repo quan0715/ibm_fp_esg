@@ -9,7 +9,7 @@ import {
   TableBody,
   TableColumn,
 } from "@nextui-org/table";
-import { WindLevelIcon } from "@/app/ui/dashboard/components/WindLevelIcon";
+import { WindLevelIcon } from "@/app/achieve/dashboard/components/WindLevelIcon";
 import { useState, useContext } from "react";
 import {
   AssetOperationDataSchema,
