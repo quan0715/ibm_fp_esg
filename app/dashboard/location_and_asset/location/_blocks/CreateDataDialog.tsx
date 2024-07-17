@@ -35,9 +35,9 @@ export function CreateDataDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"ghost"} className={"text-primary"}>
+        <Button variant={"ghost"} className={"text-blue-500"}>
           <LuPlus />
-          添加新組織資料
+          New
         </Button>
       </DialogTrigger>
       <DialogContent className={"transition-all duration-500 ease-linear"}>

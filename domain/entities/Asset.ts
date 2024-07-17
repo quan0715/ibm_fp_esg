@@ -5,6 +5,10 @@ interface AssetsDataInterface {
   name: string;
   description: string;
   type: AssetType;
+  parent: string | null;
+  parentType: AssetType | null;
+  children: string[] | null;
+  childrenType: AssetType | null;
 }
 
 interface LocationDataInterface {
@@ -17,53 +21,40 @@ interface LocationDataInterface {
   zip: string | null;
 }
 
-interface WithParent {
-  parent: string;
-  parentType: AssetType;
-}
-
-interface WithChildren {
-  children: string[];
-  childrenType: AssetType;
-}
-
-interface AssetLocationData
+export interface AssetLocationEntity
   extends LocationDataInterface,
     AssetsDataInterface {}
 
-interface OrganizationAssetLocData extends AssetLocationData, WithChildren {
-  type: AssetType.Organization;
-  parentType: AssetType.None;
-  childrenType: AssetType.Site;
-}
+const AssetLayerRules = {
+  [AssetType.Organization]: {
+    parentType: AssetType.None,
+    childrenType: AssetType.Site,
+  },
+  [AssetType.Site]: {
+    parentType: AssetType.Organization,
+    childrenType: AssetType.Phase,
+  },
+  [AssetType.Phase]: {
+    parentType: AssetType.Site,
+    childrenType: AssetType.Department,
+  },
+  [AssetType.Department]: {
+    parentType: AssetType.Phase,
+    childrenType: AssetType.None,
+  },
+};
 
-interface SiteAssetLocData extends AssetLocationData, WithParent, WithChildren {
-  type: AssetType.Site;
-  parentType: AssetType.Organization;
-  childrenType: AssetType.Phase;
-}
-
-interface PhaseAssetLocData
-  extends AssetLocationData,
-    WithParent,
-    WithChildren {
-  type: AssetType.Phase;
-  parentType: AssetType.Site;
-  childrenType: AssetType.Department;
-}
-
-interface DeptAssetLocData extends AssetLocationData, WithParent, WithChildren {
-  type: AssetType.Department;
-  parentType: AssetType.Phase;
-  childrenType: AssetType.None;
-}
-
-export type {
-  AssetLocationData,
-  OrganizationAssetLocData,
-  SiteAssetLocData,
-  PhaseAssetLocData,
-  DeptAssetLocData,
-  WithChildren,
-  WithParent,
+export const getAssetLayerRules = (type: AssetType) => {
+  switch (type) {
+    case AssetType.Organization:
+      return AssetLayerRules[AssetType.Organization];
+    case AssetType.Site:
+      return AssetLayerRules[AssetType.Site];
+    case AssetType.Phase:
+      return AssetLayerRules[AssetType.Phase];
+    case AssetType.Department:
+      return AssetLayerRules[AssetType.Department];
+    default:
+      return { parentType: AssetType.None, childrenType: AssetType.None };
+  }
 };

@@ -103,6 +103,12 @@ export const Level1Menu: Level1MenuContentEntryProps[] = [
     label: "數據追蹤",
     content: [
       {
+        key: "ghg",
+        label: "GHG Data 管理",
+        description: "GHG 年度大盤/歷史資歷/資料管理",
+        icon: <MdAir size={24} />,
+      },
+      {
         key: "emission",
         label: "排放",
         description: "排放基本資料/對應資產/tool/溫室氣體",
@@ -118,12 +124,6 @@ export const Level1Menu: Level1MenuContentEntryProps[] = [
         key: "waste",
         label: "廢棄物管理",
         description: "廢棄物基本資料/對應資產/tool",
-        icon: <MdAir size={24} />,
-      },
-      {
-        key: "ghg",
-        label: "GHG Data 管理",
-        description: "GHG 年度大盤/歷史資歷/資料管理",
         icon: <MdAir size={24} />,
       },
     ],

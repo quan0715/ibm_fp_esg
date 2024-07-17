@@ -8,35 +8,152 @@ import {
 import { LuExternalLink } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
-import {
-  OrganizationAssetLocData,
-  AssetLocationData,
-  WithChildren,
-  WithParent,
-} from "@/domain/entities/Asset";
+import { AssetLocationEntity } from "@/domain/entities/Asset";
 import React from "react";
-import { getAssetEntityInfo } from "@/domain/entities/AssetType";
-export function DataCard<AssetType extends AssetLocationData>({
-  data,
-  ...props
+import { AssetType } from "@/domain/entities/AssetType";
+import {
+  DashboardCard,
+  DashboardCardContent,
+  DashboardCardHeader,
+} from "@/app/dashboard/_components/DashboardCard";
+import Link from "next/link";
+import { DataNotFound } from "@/app/dashboard/location_and_asset/location/_blocks/DataNotFound";
+import { CreateDataDialog } from "@/app/dashboard/location_and_asset/location/_blocks/CreateDataDialog";
+
+type AssetTypeColor = "blue" | "green" | "yellow" | "purple" | "gray";
+
+type AssetEntityInfo = {
+  color: AssetTypeColor; //hex color code
+  label: string; //the label to be displayed
+};
+function getAssetEntityInfo(type: AssetType): AssetEntityInfo {
+  switch (type) {
+    case AssetType.Organization:
+      return { color: "green", label: "組織" };
+    case AssetType.Site:
+      return { color: "blue", label: "廠區" };
+    case AssetType.Phase:
+      return { color: "yellow", label: "Phase" };
+    case AssetType.Department:
+      return { color: "purple", label: "部門" };
+    default:
+      return { color: "gray", label: "Unknown" };
+  }
+}
+const colorVariants = {
+  blue: {
+    bgColor: "bg-blue-50",
+    leadingColor: "bg-blue-500",
+    textColor: "text-blue-500",
+  },
+  green: {
+    bgColor: "bg-green-50",
+    leadingColor: "bg-green-500",
+    textColor: "text-green-500",
+  },
+  yellow: {
+    bgColor: "bg-yellow-50",
+    leadingColor: "bg-yellow-500",
+    textColor: "text-yellow-500",
+  },
+  purple: {
+    bgColor: "bg-purple-50",
+    leadingColor: "bg-purple-500",
+    textColor: "text-purple-500",
+  },
+  gray: {
+    bgColor: "bg-gray-50",
+    leadingColor: "bg-gray-500",
+    textColor: "text-gray-500",
+  },
+};
+function DashboardColumnLabel({
+  title,
+  color,
+  length,
 }: {
-  data: AssetType;
+  title: string;
+  color: AssetTypeColor;
+  length: number;
 }) {
+  return (
+    <>
+      <div
+        className={cn(
+          "flex flex-rol justify-center items-center space-x-2 px-2 py-0.5 rounded-lg",
+          colorVariants[color].bgColor
+        )}
+      >
+        <div
+          className={cn(
+            "w-[8px] h-[8px] rounded-full",
+            colorVariants[color].leadingColor
+          )}
+        ></div>
+        <p className={"text-md font-semibold"}>{title}</p>
+      </div>
+      <p className={cn("pl-4 text-md", colorVariants[color].textColor)}>
+        {length}
+      </p>
+    </>
+  );
+}
+
+export function DashboardColumn({
+  assetType,
+  assetDataList,
+}: {
+  assetType: AssetType;
+  assetDataList: AssetLocationEntity[];
+}) {
+  const tailwindColorClass = getAssetEntityInfo(assetType).color;
+
+  return (
+    <DashboardCard>
+      <DashboardCardHeader
+        title={getAssetEntityInfo(assetType).label}
+        titleComponent={(title: string) => (
+          <DashboardColumnLabel
+            title={title}
+            color={tailwindColorClass}
+            length={assetDataList.length}
+          />
+        )}
+      ></DashboardCardHeader>
+      <DashboardCardContent>
+        {/* <CreateDataDialog /> */}
+        <div className={"w-full h-fit grid grid-cols-1 gap-4"}>
+          {assetDataList.map((data) => {
+            return <DataCard data={data} key={data.name} />;
+          })}
+        </div>
+      </DashboardCardContent>
+    </DashboardCard>
+  );
+}
+
+export function DataCard({ data, ...props }: { data: AssetLocationEntity }) {
   const ChildrenList = () => {
     // check if the data has children
-    const children = data as unknown as WithChildren;
-    if (children.children.length > 0) {
+    // const children = data.children;
+    if (
+      data.children != null &&
+      data.childrenType != null &&
+      data.childrenType != AssetType.None &&
+      data.children.length > 0
+    ) {
       return (
         <div className="flex flex-col space-y-2">
-          <p className={"text-md font-semibold"}>
-            {getAssetEntityInfo(children.childrenType).label}列表
+          <p className={"text-sm font-semibold"}>
+            {getAssetEntityInfo(data.childrenType).label}列表
           </p>
-          <div className="flex flex-wrap space-x-2">
-            {children.children.map((site) => (
-              <Button variant={"outline"} key={site}>
-                <p className={"text-md p-1"}>{site}</p>
-                <LuExternalLink />
-              </Button>
+          <div className="flex flex-wrap">
+            {data.children.map((childName) => (
+              <ListChipLink
+                label={childName}
+                assetType={data.childrenType!}
+                key={childName}
+              />
             ))}
           </div>
         </div>
@@ -48,20 +165,24 @@ export function DataCard<AssetType extends AssetLocationData>({
 
   const ParentField = () => {
     // check if the data has children
-    const parent = data as unknown as WithParent;
-    if (parent.parent) {
+    // const parent = data as unknown as WithParent;
+    if (
+      data.parent != null &&
+      data.parentType != null &&
+      data.parentType != AssetType.None &&
+      data.parent.length > 0
+    ) {
       return (
         <div className="flex flex-col space-y-2">
-          <p className={"text-md font-semibold"}>
-            {getAssetEntityInfo(parent.parentType).label} 列表
-          </p>
+          {/* <p className={"text-sm font-semibold"}>
+            上層{getAssetEntityInfo(data.parentType).label}
+          </p> */}
           <div className="flex flex-wrap space-x-2">
-            <Button variant={"outline"}>
-              <p className={"text-md p-1"}>
-                {(data as unknown as WithParent).parent}
-              </p>
-              <LuExternalLink />
-            </Button>
+            <ListChipLink
+              label={data.parent}
+              assetType={data.parentType!}
+              ListType="parent"
+            />
           </div>
         </div>
       );
@@ -99,85 +220,69 @@ export function DataCard<AssetType extends AssetLocationData>({
     return (
       <>
         <div className="flex flex-col space-y-0 justify-start items-start">
-          <h1 className={"text-lg font-semibold"}>{data.name}</h1>
-          <p className={"text-md text-gray-500"}>{data.description}</p>
+          <ParentField />
+          <h1
+            className={cn(
+              "text-lg font-semibold",
+              colorVariants[getAssetEntityInfo(data.type).color].textColor
+            )}
+          >
+            {data.name}
+          </h1>
+          <p className={"text-sm text-gray-500"}>{data.description}</p>
         </div>
-        <div>
-          <div className="label flex flex-rol justify-center items-center space-x-2 bg-blue-500 px-2 py-0.5 rounded-lg">
-            <p className={"text-md font-semibold text-white"}>組織</p>
-          </div>
-        </div>
+        <div></div>
       </>
     );
   };
 
   return (
-    <Card>
+    <Card className="shadow-sm">
       <CardHeader className="flex flex-row justify-between items-start">
         <HeaderField />
       </CardHeader>
       <CardContent className="flex flex-col space-y-2">
-        <ParentField />
-        <LocDataFields />
+        {/* <ParentField /> */}
+        {/* <LocDataFields /> */}
         <ChildrenList />
       </CardContent>
     </Card>
   );
 }
 
-export function OrgDataCard({
-  orgData,
+function ListChipLink({
+  href = "/",
+  label,
+  assetType = AssetType.None,
+  ListType = "children",
 }: {
-  orgData: OrganizationAssetLocData;
+  href?: string;
+  label: string;
+  assetType: AssetType;
+  ListType?: "children" | "parent";
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between items-start">
-        <div className="flex flex-col space-y-0 justify-start items-start">
-          <h1 className={"text-lg font-semibold"}>{orgData.name}</h1>
-          <p className={"text-md text-gray-500"}>{orgData.description}</p>
-        </div>
-        <div>
-          <div className="label flex flex-rol justify-center items-center space-x-2 bg-blue-500 px-2 py-0.5 rounded-lg">
-            <p className={"text-md font-semibold text-white"}>組織</p>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="flex flex-col space-y-2">
-        <div className="flex flex-col space-y-2">
-          <p className={"text-md font-semibold"}>Organization Location</p>
-          <div className="grid grid-cols-3 gap-2">
-            <InfoBlock label="latitude" value={orgData.lat?.toString()} />
-            <InfoBlock label="longitude" value={orgData.lon?.toString()} />
-            <InfoBlock label="city" value={orgData.city ?? undefined} />
-            <InfoBlock label="country" value={orgData.country ?? undefined} />
-            <InfoBlock label="zip" value={orgData.zip ?? undefined} />
-            <InfoBlock
-              className="col-span-3"
-              label="address line1"
-              value={orgData.addressLine1 ?? undefined}
-            />
-            <InfoBlock
-              label="address line2"
-              className="col-span-3"
-              value={orgData.addressLine2 ?? undefined}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col space-y-2">
-          <p className={"text-md font-semibold"}>廠區列表</p>
-          <div className="flex flex-wrap space-x-2">
-            {orgData.children.map((site) => (
-              <Button variant={"outline"} key={site}>
-                <p className={"text-md p-1"}>{site}</p>
-                <LuExternalLink />
-              </Button>
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <Link
+      href={"/"}
+      className={cn(
+        "flex flex-row justify-center items-center m-1 ml-0 space-x-0 w-fit"
+        // "rounded-md px-1 py-0.5"
+        // colorVariants[getAssetEntityInfo(assetType).color].bgColor
+      )}
+    >
+      <p
+        className={cn(
+          "text-sm font-semibold"
+          // colorVariants[getAssetEntityInfo(assetType).color].textColor
+        )}
+      >
+        {ListType === "children" ? "#" : "@"}
+      </p>
+      <p className={"text-sm p-1 hover:underline"}>{label}</p>
+      {/* <LuExternalLink
+      // className={colorVariants[getAssetEntityInfo(assetType).color].textColor}
+      /> */}
+    </Link>
   );
 }
 

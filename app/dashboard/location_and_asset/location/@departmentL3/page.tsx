@@ -39,9 +39,7 @@ import { MongoAssetLocRepository } from "@/data/repositories/mongo/MongoAssetLoc
 export default async function Page() {
   const repo = new MongoAssetLocRepository();
   const remoteData = await repo.retrieveAssetLocData();
-  const data = remoteData.filter(
-    (data) => data.type === AssetType.Organization
-  );
+  const data = remoteData.filter((data) => data.type === AssetType.Department);
   return (
     <div
       className={
@@ -59,7 +57,7 @@ export default async function Page() {
       </ToolBar> */}
       <div className={"w-full h-fit grid grid-cols-1 gap-4 "}>
         <DashboardColumn
-          assetType={AssetType.Organization}
+          assetType={AssetType.Department}
           assetDataList={data}
         />
       </div>

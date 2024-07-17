@@ -17,12 +17,27 @@ export function DashboardCard({
   );
 }
 
-export function DashboardCardHeader({ title }: { title: string }) {
+export function DashboardCardHeader({
+  title,
+  titleComponent,
+  children,
+}: {
+  title: string;
+  titleComponent?: (title: string) => React.ReactNode;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col space-y-1.5">
-      <h3 className="text-lg font-light leading-none tracking-tight px-3 py-2">
-        {title}
-      </h3>
+    <div className="flex flex-col space-y-1.5 justify-start items-start">
+      <div className="w-full px-3 py-2 flex flex-row items-center">
+        {titleComponent ? (
+          titleComponent(title)
+        ) : (
+          <h3 className="text-lg font-light leading-none tracking-tight">
+            {title}
+          </h3>
+        )}
+        {children}
+      </div>
       <Separator />
     </div>
   );
