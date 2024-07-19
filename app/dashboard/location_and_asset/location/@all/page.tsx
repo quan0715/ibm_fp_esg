@@ -1,15 +1,7 @@
 // "use client";
 import React from "react";
-import { DataCard, DashboardColumn } from "../_blocks/DataCard";
-import { CreateDataDialog } from "../_blocks/CreateDataDialog";
-import { DataNotFound } from "../_blocks/DataNotFound";
-import {
-  DashboardCard,
-  DashboardCardContent,
-  DashboardCardHeader,
-} from "@/app/dashboard/_components/DashboardCard";
+import { DashboardColumn } from "@/app/dashboard/location_and_asset/location/_blocks/DataColumn";
 import { MongoAssetLocRepository } from "@/data/repositories/mongo/MongoAssetLocRepository";
-import { AssetLocationEntity } from "@/domain/entities/Asset";
 import { AssetType } from "@/domain/entities/AssetType";
 export default async function Page() {
   const repo = new MongoAssetLocRepository();

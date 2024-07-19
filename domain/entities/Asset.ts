@@ -1,24 +1,24 @@
 import { AssetType } from "./AssetType";
 
 interface AssetsDataInterface {
-  id: string;
+  id: string | null;
   name: string;
-  description: string;
+  description: string | undefined;
   type: AssetType;
-  parent: string | null;
-  parentType: AssetType | null;
-  children: string[] | null;
-  childrenType: AssetType | null;
+  parent: string;
+  parentType: AssetType;
+  children: string[];
+  childrenType: AssetType;
 }
 
 interface LocationDataInterface {
-  lat: number | null;
-  lon: number | null;
-  addressLine1: string | null;
-  addressLine2: string | null;
-  city: string | null;
-  country: string | null;
-  zip: string | null;
+  lat: number | undefined;
+  lon: number | undefined;
+  addressLine1: string | undefined;
+  addressLine2: string | undefined;
+  city: string | undefined;
+  country: string | undefined;
+  zip: string | undefined;
 }
 
 export interface AssetLocationEntity
@@ -57,4 +57,28 @@ export const getAssetLayerRules = (type: AssetType) => {
     default:
       return { parentType: AssetType.None, childrenType: AssetType.None };
   }
+};
+
+export const getNewAssetData = (type: AssetType): AssetLocationEntity => {
+  const data = {
+    id: null,
+    name: "New Asset",
+    description: undefined,
+    type: type,
+    parent: "",
+    parentType: null,
+    children: [],
+    childrenType: null,
+    lat: undefined,
+    lon: undefined,
+    addressLine1: undefined,
+    addressLine2: undefined,
+    city: undefined,
+    country: undefined,
+    zip: undefined,
+  };
+  return {
+    ...data,
+    ...getAssetLayerRules(type),
+  };
 };

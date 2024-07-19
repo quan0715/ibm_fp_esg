@@ -2,12 +2,12 @@ import {
   AssetLocationEntity,
   getAssetLayerRules,
 } from "@/domain/entities/Asset";
-import { AssetType } from "@/domain/entities/AssetType";
+import { AssetType, getAssetType } from "@/domain/entities/AssetType";
 
 type AssetDataType = "org" | "site" | "phase" | "dept";
 
 interface AssetsDataModelInterface {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   type: AssetDataType;
@@ -31,32 +31,32 @@ interface MongoAssetLocationDataModel
   extends AssetsDataModelInterface,
     LocationDataModelInterface {}
 
-function assetTypeDto(type: AssetDataType | null): AssetType {
-  switch (type) {
-    case "org":
-      return AssetType.Organization;
-    case "site":
-      return AssetType.Site;
-    case "phase":
-      return AssetType.Phase;
-    case "dept":
-      return AssetType.Department;
-    default:
-      return AssetType.None;
-  }
-}
+// function assetTypeDto(type: AssetDataType | null): AssetType {
+//   switch (type) {
+//     case "org":
+//       return AssetType.Organization;
+//     case "site":
+//       return AssetType.Site;
+//     case "phase":
+//       return AssetType.Phase;
+//     case "dept":
+//       return AssetType.Department;
+//     default:
+//       return AssetType.None;
+//   }
+// }
 
 function assetLocModelToEntity(
   model: MongoAssetLocationDataModel
 ): AssetLocationEntity {
-  const assetType = assetTypeDto(model.type);
+  const assetType = getAssetType(model.type);
   const parentType = getAssetLayerRules(assetType).parentType;
   const childrenType = getAssetLayerRules(assetType).childrenType;
   return {
-    id: model.id,
+    id: model._id.toString(),
     name: model.name,
     description: model.description,
-    type: assetTypeDto(model.type),
+    type: getAssetType(model.type),
     parent: model.parent,
     parentType: parentType,
     children: model.children,

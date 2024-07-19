@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { LuRefreshCcw, LuSaveAll } from "react-icons/lu";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
-import { DashboardColumn, DataCard } from "../_blocks/DataCard";
-import { CreateDataDialog } from "../_blocks/CreateDataDialog";
+import { CreateNewAssetLocationDataDialog } from "../_blocks/DataDialog";
+import { DashboardColumn } from "../_blocks/DataColumn";
+
 import { AssetType } from "@/domain/entities/AssetType";
 import { DataNotFound } from "../_blocks/DataNotFound";
 import {

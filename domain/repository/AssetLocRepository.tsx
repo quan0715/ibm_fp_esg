@@ -8,7 +8,7 @@ import {
 
 interface AssetLocRepository {
   // asset loc data CRUD
-  createAssetLocData(data: AssetLocationEntity): Promise<AssetLocationEntity>;
+  createAssetLocData(data: AssetLocationEntity): Promise<void>;
   retrieveAssetLocData(id?: string): Promise<AssetLocationEntity[]>;
   updateAssetLocData(data: AssetLocationEntity): Promise<AssetLocationEntity>;
   deleteAssetLocData(id: string): void;
