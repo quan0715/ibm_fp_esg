@@ -54,10 +54,8 @@ export function AssetLocationDataForm({
     assetData.children ?? []
   );
 
-  const assetInfo = getAssetEntityInfo(assetData.type);
-
   const form = useForm<AssetLocationEntity>({
-    defaultValues: assetData,
+    defaultValues: data,
   });
 
   const router = useRouter();
@@ -111,6 +109,7 @@ export function AssetLocationDataForm({
                 defaultValue={field.value}
                 onValueChange={(value) => {
                   setAssetType(value as AssetType);
+                  //   field.onChange(value);
                 }}
               >
                 <SelectTrigger>
@@ -151,7 +150,17 @@ export function AssetLocationDataForm({
               <AssetTypeOptionChip assetType={assetData.parentType} />
             </FormLabel>
             <FormControl>
-              <Input title={"設定上層資產名稱"} {...field} />
+              <Input
+                {...field}
+                id="parent"
+                name="parent"
+                type="text"
+                title={"設定上層資產名稱"}
+                onChange={(e) => {
+                  console.log("parent", e.target.value);
+                  field.onChange(e);
+                }}
+              />
             </FormControl>
             <FormDescription>設定上層資產名稱</FormDescription>
             <FormMessage />
@@ -382,18 +391,18 @@ export function AssetLocationDataForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <PipeLineCard initStep={0}>
           <PipeLineStepContent title={`資產基本資料`} description={""}>
-            <AssetFormFields />
-            <AssetParentField />
-            <AssetNameField />
-            <AssetDescriptionField />
+            {AssetFormFields()}
+            {AssetParentField()}
+            {AssetNameField()}
+            {AssetDescriptionField()}
           </PipeLineStepContent>
           <PipeLineStepContent title={"組織位置資料"} description={""}>
-            <AssetLocationFields />
-            <AssetLocationCityFields />
-            <AssetLocationAddressFields />
+            {AssetLocationFields()}
+            {AssetLocationCityFields()}
+            {AssetLocationAddressFields()}
           </PipeLineStepContent>
           <PipeLineStepContent title={"添加子資產"} description={""}>
-            <AssetChildrenFields />
+            {AssetChildrenFields()}
           </PipeLineStepContent>
         </PipeLineCard>
       </form>
