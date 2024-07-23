@@ -5,10 +5,11 @@
 import { AssetLocRepository } from "@/domain/repository/AssetLocRepository";
 import { AssetLocationEntity } from "@/domain/entities/Asset";
 import clientPromise from "@/lib/mongoClient";
-import {
-  assetLocModelToEntity,
-  MongoAssetLocationDataModel,
-} from "@/data/models/MongoAssetLocModel";
+// import {
+//   assetLocModelToEntity,
+//   MongoAssetLocationDataModel,
+// } from "@/data/models/MongoAssetLocModel";
+import { AssetData } from "@/domain/entities/Asset";
 import { ObjectId, WithId } from "mongodb";
 const assetMondoDB = "AssetData";
 const assetLocCollection = "Location";
@@ -18,9 +19,12 @@ export class MongoAssetLocRepository implements AssetLocRepository {
     const client = await clientPromise;
     const db = client.db(assetMondoDB);
     const collection = db.collection(assetLocCollection);
-    console.log(logLabel, "createAssetLocData", data);
+    // console.log(logLabel, "createAssetLocData", data);
 
-    const res = await collection.insertOne(data);
+    const res = await collection.insertOne({
+      ...data,
+      ancestors: data.ancestors.map((id) => new ObjectId(id)),
+    });
     console.log(logLabel, "createAssetLocData", res);
   }
 
@@ -45,7 +49,7 @@ export class MongoAssetLocRepository implements AssetLocRepository {
       throw new Error("Asset Location Data not found");
     }
 
-    const resToEntity = result.map(assetLocModelToEntity);
+    const resToEntity = result.map(AssetData.transferModelToEntity);
     console.log(logLabel, "retrieveAssetLocData", resToEntity);
     return resToEntity;
     // return result;

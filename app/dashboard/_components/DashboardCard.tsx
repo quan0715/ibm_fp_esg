@@ -18,11 +18,11 @@ export function DashboardCard({
 }
 
 export function DashboardCardHeader({
-  title,
+  title = "",
   titleComponent,
   children,
 }: {
-  title: string;
+  title?: string;
   titleComponent?: (title: string) => React.ReactNode;
   children?: React.ReactNode;
 }) {
@@ -48,7 +48,7 @@ export function DashboardCardContent({
   children,
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("flex-1 w-full p-2 space-y-2", className)}>
+    <div className={cn("flex-1 w-full p-4 space-y-2", className)}>
       {children}
     </div>
   );

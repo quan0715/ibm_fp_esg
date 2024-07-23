@@ -4,72 +4,29 @@ import {
 } from "@/domain/entities/Asset";
 import { AssetType, getAssetType } from "@/domain/entities/AssetType";
 
-type AssetDataType = "org" | "site" | "phase" | "dept";
-
 interface AssetsDataModelInterface {
-  _id: string;
+  _id: string | undefined;
   name: string;
-  description: string;
-  type: AssetDataType;
-  parent: string | null;
-  parentType: AssetDataType | null;
-  children: string[] | null;
-  childrenType: AssetDataType | null;
+  description: string | undefined;
+  type: AssetType;
+  ancestors: string[];
+  // parent: string | undefined;
+  // children: string[] | undefined;
 }
 
 interface LocationDataModelInterface {
-  lat: number | null;
-  lon: number | null;
-  addressLine1: string | null;
-  addressLine2: string | null;
-  city: string | null;
-  country: string | null;
-  zip: string | null;
+  lat: number | undefined;
+  lon: number | undefined;
+  addressLine1: string | undefined;
+  addressLine2: string | undefined;
+  city: string | undefined;
+  country: string | undefined;
+  zip: string | undefined;
 }
 
 interface MongoAssetLocationDataModel
   extends AssetsDataModelInterface,
     LocationDataModelInterface {}
 
-// function assetTypeDto(type: AssetDataType | null): AssetType {
-//   switch (type) {
-//     case "org":
-//       return AssetType.Organization;
-//     case "site":
-//       return AssetType.Site;
-//     case "phase":
-//       return AssetType.Phase;
-//     case "dept":
-//       return AssetType.Department;
-//     default:
-//       return AssetType.None;
-//   }
-// }
-
-function assetLocModelToEntity(
-  model: MongoAssetLocationDataModel
-): AssetLocationEntity {
-  const assetType = getAssetType(model.type);
-  const parentType = getAssetLayerRules(assetType).parentType;
-  const childrenType = getAssetLayerRules(assetType).childrenType;
-  return {
-    id: model._id.toString(),
-    name: model.name,
-    description: model.description,
-    type: getAssetType(model.type),
-    parent: model.parent,
-    parentType: parentType,
-    children: model.children,
-    childrenType: childrenType,
-    lat: model.lat,
-    lon: model.lon,
-    addressLine1: model.addressLine1,
-    addressLine2: model.addressLine2,
-    city: model.city,
-    country: model.country,
-    zip: model.zip,
-  } as AssetLocationEntity;
-}
-
 export type { MongoAssetLocationDataModel };
-export { assetLocModelToEntity };
+// export { assetLocModelToEntity };

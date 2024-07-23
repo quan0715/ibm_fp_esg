@@ -1,13 +1,10 @@
 {
-    "tailwindCSS.emmetCompletions": true,
-    "tailwindCSS.experimental.configFile": null,
-    "editor.quickSuggestions": {
-        "strings": "on"
-    },
-    "cSpell.words": [
-        "nextui"
-    ],
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.experimental.configFile": null,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "cSpell.words": ["nextui", "TSMC"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
 }

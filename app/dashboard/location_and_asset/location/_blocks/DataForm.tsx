@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
-import { AssetLocationEntity, getNewAssetData } from "@/domain/entities/Asset";
+import { AssetLocationEntity, AssetData } from "@/domain/entities/Asset";
 
 import {
   Form,
@@ -45,14 +45,13 @@ export function AssetLocationDataForm({
   // otherwise, create a new data
   const isCreateMode = data == null;
 
-  const [assetData, setAssetData] = useState<AssetLocationEntity>(
-    data ?? getNewAssetData(defaultAssetType)
+  const [assetData, setAssetData] = useState<AssetData>(
+    data ? AssetData.fromEntity(data) : AssetData.createNew(defaultAssetType)
   );
 
   const [tempChildrenName, setTempChildrenName] = useState("");
-  const [childArray, setChildArray] = useState<string[]>(
-    assetData.children ?? []
-  );
+
+  const [childArray, setChildArray] = useState<string[]>([]);
 
   const form = useForm<AssetLocationEntity>({
     defaultValues: data,
@@ -61,8 +60,8 @@ export function AssetLocationDataForm({
   const router = useRouter();
 
   function setAssetType(type: AssetType) {
-    setAssetData(getNewAssetData(type));
-    form.reset(getNewAssetData(type));
+    setAssetData(AssetData.createNew(defaultAssetType));
+    form.reset(AssetData.createNew(defaultAssetType));
   }
 
   async function onSubmit(values: AssetLocationEntity) {
@@ -138,37 +137,37 @@ export function AssetLocationDataForm({
     );
   }
 
-  function AssetParentField() {
-    return assetData.parentType !== AssetType.None ? (
-      <FormField
-        control={form.control}
-        name="parent"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel className="flex flex-row justify-between">
-              設定上層資產
-              <AssetTypeOptionChip assetType={assetData.parentType} />
-            </FormLabel>
-            <FormControl>
-              <Input
-                {...field}
-                id="parent"
-                name="parent"
-                type="text"
-                title={"設定上層資產名稱"}
-                onChange={(e) => {
-                  console.log("parent", e.target.value);
-                  field.onChange(e);
-                }}
-              />
-            </FormControl>
-            <FormDescription>設定上層資產名稱</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    ) : null;
-  }
+  // function AssetParentField() {
+  //   return assetData.parentType !== AssetType.None ? (
+  //     <FormField
+  //       control={form.control}
+  //       name="parent"
+  //       render={({ field }) => (
+  //         <FormItem className="w-full">
+  //           <FormLabel className="flex flex-row justify-between">
+  //             設定上層資產
+  //             <AssetTypeOptionChip assetType={assetData.parentType} />
+  //           </FormLabel>
+  //           <FormControl>
+  //             <Input
+  //               {...field}
+  //               id="parent"
+  //               name="parent"
+  //               type="text"
+  //               title={"設定上層資產名稱"}
+  //               onChange={(e) => {
+  //                 console.log("parent", e.target.value);
+  //                 field.onChange(e);
+  //               }}
+  //             />
+  //           </FormControl>
+  //           <FormDescription>設定上層資產名稱</FormDescription>
+  //           <FormMessage />
+  //         </FormItem>
+  //       )}
+  //     />
+  //   ) : null;
+  // }
 
   function AssetNameField() {
     return (
@@ -319,72 +318,72 @@ export function AssetLocationDataForm({
     );
   }
 
-  function AssetChildrenFields() {
-    return (
-      <FormField
-        disabled={assetData.childrenType === AssetType.None}
-        control={form.control}
-        name="children"
-        render={({ field }) => (
-          <FormItem className="w-full">
-            <FormLabel className="flex flex-row justify-between">
-              設定子資產列表
-              {assetData.childrenType !== AssetType.None ? (
-                <AssetTypeOptionChip assetType={assetData.childrenType} />
-              ) : null}
-            </FormLabel>
-            {childArray!.map((childName, index) => {
-              return (
-                <div
-                  key={index}
-                  className={
-                    "w-full flex flex-row justify-between items-center border rounded-md px-2 py-1"
-                  }
-                >
-                  {childName}
-                  <Button
-                    type="button"
-                    variant={"ghost"}
-                    onClick={() =>
-                      setChildArray(childArray.filter((_, i) => i !== index))
-                    }
-                  >
-                    <LuX />
-                  </Button>
-                </div>
-              );
-            })}
-            <div className="w-full flex flex-row space-x-1">
-              <Input
-                disabled={assetData.childrenType === AssetType.None}
-                className="w-full"
-                placeholder={"新增子資產列表"}
-                value={tempChildrenName}
-                onChange={(e) => setTempChildrenName(e.target.value)}
-              />
-              <Button
-                disabled={tempChildrenName.length == 0}
-                type="button"
-                variant={"outline"}
-                onClick={() => {
-                  setChildArray([...childArray, tempChildrenName]);
-                  setTempChildrenName("");
-                }}
-              >
-                <LuPlus /> ADD
-              </Button>
-            </div>
-            <FormDescription>
-              {assetData.childrenType === AssetType.None
-                ? "此資產無法新增子資產"
-                : "請輸入子資產名稱並按下ADD按鈕以添加子資產"}
-            </FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    );
-  }
+  // function AssetChildrenFields() {
+  //   return (
+  //     <FormField
+  //       disabled={assetData.childrenType === AssetType.None}
+  //       control={form.control}
+  //       name="children"
+  //       render={({ field }) => (
+  //         <FormItem className="w-full">
+  //           <FormLabel className="flex flex-row justify-between">
+  //             設定子資產列表
+  //             {assetData.childrenType !== AssetType.None ? (
+  //               <AssetTypeOptionChip assetType={assetData.childrenType} />
+  //             ) : null}
+  //           </FormLabel>
+  //           {childArray!.map((childName, index) => {
+  //             return (
+  //               <div
+  //                 key={index}
+  //                 className={
+  //                   "w-full flex flex-row justify-between items-center border rounded-md px-2 py-1"
+  //                 }
+  //               >
+  //                 {childName}
+  //                 <Button
+  //                   type="button"
+  //                   variant={"ghost"}
+  //                   onClick={() =>
+  //                     setChildArray(childArray.filter((_, i) => i !== index))
+  //                   }
+  //                 >
+  //                   <LuX />
+  //                 </Button>
+  //               </div>
+  //             );
+  //           })}
+  //           <div className="w-full flex flex-row space-x-1">
+  //             <Input
+  //               disabled={assetData.childrenType === AssetType.None}
+  //               className="w-full"
+  //               placeholder={"新增子資產列表"}
+  //               value={tempChildrenName}
+  //               onChange={(e) => setTempChildrenName(e.target.value)}
+  //             />
+  //             <Button
+  //               disabled={tempChildrenName.length == 0}
+  //               type="button"
+  //               variant={"outline"}
+  //               onClick={() => {
+  //                 setChildArray([...childArray, tempChildrenName]);
+  //                 setTempChildrenName("");
+  //               }}
+  //             >
+  //               <LuPlus /> ADD
+  //             </Button>
+  //           </div>
+  //           <FormDescription>
+  //             {assetData.childrenType === AssetType.None
+  //               ? "此資產無法新增子資產"
+  //               : "請輸入子資產名稱並按下ADD按鈕以添加子資產"}
+  //           </FormDescription>
+  //           <FormMessage />
+  //         </FormItem>
+  //       )}
+  //     />
+  //   );
+  // }
 
   return (
     <Form {...form}>
@@ -392,7 +391,7 @@ export function AssetLocationDataForm({
         <PipeLineCard initStep={0}>
           <PipeLineStepContent title={`資產基本資料`} description={""}>
             {AssetFormFields()}
-            {AssetParentField()}
+            {/* {AssetParentField()} */}
             {AssetNameField()}
             {AssetDescriptionField()}
           </PipeLineStepContent>
@@ -402,7 +401,7 @@ export function AssetLocationDataForm({
             {AssetLocationAddressFields()}
           </PipeLineStepContent>
           <PipeLineStepContent title={"添加子資產"} description={""}>
-            {AssetChildrenFields()}
+            {/* {AssetChildrenFields()} */}
           </PipeLineStepContent>
         </PipeLineCard>
       </form>

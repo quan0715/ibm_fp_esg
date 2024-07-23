@@ -22,6 +22,10 @@ function getAssetType(type: string): AssetType {
   }
 }
 
+function getAssetDataTypes() {
+  return Object.values(AssetType);
+}
+
 // the UI data to render the asset location data
 
 export { AssetType, getAssetType };

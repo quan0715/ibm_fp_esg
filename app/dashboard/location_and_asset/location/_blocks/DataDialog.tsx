@@ -14,7 +14,7 @@ import {
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { DataCard } from "./DataCard";
+import { AssetLocDataCard } from "./DataCard";
 import { AssetType, getAssetType } from "@/domain/entities/AssetType";
 import { getAssetEntityInfo, colorVariants } from "../_utils/assetTypeUIConfig";
 import { AssetLocationDataForm } from "./DataForm";
@@ -58,8 +58,10 @@ export function CreateNewAssetLocationDataDialog({
 
 export function AssetLocationDataDialog({
   data,
+  // size,
 }: {
   data: AssetLocationEntity;
+  // variant: "small" | "medium" | "large";
 }) {
   const [open, setOpen] = useState(false);
   const [assetData, setAssetData] = useState(data);
@@ -71,7 +73,7 @@ export function AssetLocationDataDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button asChild>
-          <DataCard data={data} key={data.name} />
+          <AssetLocDataCard data={data} key={data.name} />
         </Button>
       </DialogTrigger>
       <DialogContent className={"transition-all duration-500 ease-linear"}>
