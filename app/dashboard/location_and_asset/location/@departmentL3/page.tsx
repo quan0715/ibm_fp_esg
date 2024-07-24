@@ -5,7 +5,7 @@ import { LuRefreshCcw, LuSaveAll } from "react-icons/lu";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { CreateNewAssetLocationDataDialog } from "../_blocks/DataDialog";
-import { DashboardColumn } from "../_blocks/DataColumn";
+import { AssetDataList } from "../_blocks/DataColumn";
 
 import { AssetType } from "@/domain/entities/AssetType";
 import { DataNotFound } from "../_blocks/DataNotFound";
@@ -58,10 +58,7 @@ export default async function Page() {
         </Button>
       </ToolBar> */}
       <div className={"w-full h-fit grid grid-cols-1 gap-4 "}>
-        <DashboardColumn
-          assetType={AssetType.Department}
-          assetDataList={data}
-        />
+        <AssetDataList assetType={AssetType.Department} assetDataList={data} />
       </div>
     </div>
   );

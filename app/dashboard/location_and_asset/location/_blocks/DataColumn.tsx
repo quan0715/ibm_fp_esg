@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@/lib/utils";
 
 import { AssetLocationEntity } from "@/domain/entities/Asset";
@@ -19,6 +20,9 @@ import {
   AssetTypeColor,
 } from "@/app/dashboard/location_and_asset/location/_utils/assetTypeUIConfig";
 import { AssetLocDataCard } from "@/app/dashboard/location_and_asset/location/_blocks/DataCard";
+import { Separator } from "@/components/ui/separator";
+import { LuBoxSelect, LuCheck, LuTextSelect } from "react-icons/lu";
+import { Button } from "@/components/ui/button";
 
 export function DashboardColumnLabel({
   title,
@@ -54,14 +58,16 @@ export function DashboardColumnLabel({
   );
 }
 
-export function DashboardColumn({
+export function AssetDataList({
   assetType,
   assetDataList,
-  dataCardVariant = "default",
+  selectedIndex = -1,
+  onSelectedChange,
 }: {
+  onSelectedChange?: (index: number) => void;
   assetType: AssetType;
   assetDataList: AssetLocationEntity[];
-  dataCardVariant?: "default" | "preview" | "expand";
+  selectedIndex?: number;
 }) {
   const tailwindColorClass = getAssetEntityInfo(assetType).color;
 
@@ -79,14 +85,18 @@ export function DashboardColumn({
       ></DashboardCardHeader>
       <DashboardCardContent>
         <div className={"w-full h-fit grid grid-cols-1 gap-4"}>
-          {assetDataList.map((data) => {
+          {assetDataList.map((data, index) => {
             // return <AssetLocationDataDialog data={data} key={data.name} />;
             return (
-              <AssetLocDataCard
-                data={data}
-                variant={dataCardVariant}
-                key={data.name}
-              />
+              <>
+                <AssetLocDataListView
+                  data={data}
+                  selected={index === selectedIndex}
+                  onClick={() => onSelectedChange?.(index)}
+                  key={data.name}
+                />
+                {index < assetDataList.length - 1 ? <Separator /> : null}
+              </>
             );
           })}
         </div>
@@ -96,41 +106,87 @@ export function DashboardColumn({
   );
 }
 
+export function AssetLocDataListView({
+  data,
+  selected = false,
+  onClick,
+}: {
+  data: AssetLocationEntity;
+  selected?: boolean;
+  onClick?: () => void;
+}) {
+  const colorVariant = colorVariants[getAssetEntityInfo(data.type).color];
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "w-full flex flex-row justify-between items-center p-2 rounded-md",
+        "hover:cursor-pointer hover:bg-gray-100"
+      )}
+    >
+      <div
+        className={cn(
+          "flex-grow w-full h-fit grid grid-cols-1 gap-2 py-2 rounded-md"
+        )}
+      >
+        <h1 className={cn("font-semibold text-md", colorVariant.textColor)}>
+          {data.name}
+        </h1>
+        <p className={cn("text-sm")}>{data.description}</p>
+      </div>
+      {selected ? (
+        <div
+          className={cn(
+            "flex flex-col justify-center items-center",
+            "w-5 h-5 rounded-full",
+            colorVariant.leadingColor
+          )}
+        >
+          <LuCheck className={"text-white"} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function DashboardColumnMin({
   assetType,
   assetData,
+  onClick,
 }: {
+  onClick?: () => void;
   assetType: AssetType;
   assetData: AssetLocationEntity;
 }) {
   const tailwindColorClass = getAssetEntityInfo(assetType).color;
-
   return (
-    <DashboardCard className="shadow-sm w-full px-2 py-2 flex flex-row items-center justify-between">
-      {/* <DashboardCardHeader
-        title={getAssetEntityInfo(assetType).label}
-        titleComponent={(title: string) => (
-          <DashboardColumnLabel title={title} color={tailwindColorClass} />
-        )}
-      ></DashboardCardHeader> */}
-      <DashboardColumnLabel
-        title={getAssetEntityInfo(assetType).label}
-        color={tailwindColorClass}
-      />
-      <h1
+    <div
+      onClick={() => {
+        console.log("clicked");
+        onClick?.();
+      }}
+      className="w-full"
+    >
+      <DashboardCard
         className={cn(
-          "font-semibold text-sm",
-          colorVariants[tailwindColorClass].textColor
+          "flex flex-row items-center justify-between",
+          "shadow-sm w-full rounded-md px-2 py-2",
+          "hover:cursor-pointer hover:rounded-xl hover:animate-pulse"
         )}
       >
-        {assetData.name}
-      </h1>
-
-      {/* <DashboardCardContent>
-        <div className={"w-full h-fit grid grid-cols-1 gap-4"}>
-          <AssetLocDataCard data={assetData} variant="preview" />
-        </div>
-      </DashboardCardContent> */}
-    </DashboardCard>
+        <DashboardColumnLabel
+          title={getAssetEntityInfo(assetType).label}
+          color={tailwindColorClass}
+        />
+        <h1
+          className={cn(
+            "font-semibold text-sm",
+            colorVariants[tailwindColorClass].textColor
+          )}
+        >
+          {assetData.name}
+        </h1>
+      </DashboardCard>
+    </div>
   );
 }

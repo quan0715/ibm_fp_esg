@@ -11,6 +11,7 @@ import clientPromise from "@/lib/mongoClient";
 // } from "@/data/models/MongoAssetLocModel";
 import { AssetData } from "@/domain/entities/Asset";
 import { ObjectId, WithId } from "mongodb";
+import { MongoAssetLocationDataModel } from "@/data/models/MongoAssetLocModel";
 const assetMondoDB = "AssetData";
 const assetLocCollection = "Location";
 const logLabel = "MongoAssetLocRepository";
@@ -27,33 +28,33 @@ export class MongoAssetLocRepository implements AssetLocRepository {
     });
     console.log(logLabel, "createAssetLocData", res);
   }
-
-  async retrieveAssetLocData(id?: string): Promise<AssetLocationEntity[]> {
+  // generate retrieveAssetLocData method with query parameter
+  // async retrieveAssetLocDataWithQuery(query: any): Promise<AssetLocationEntity[]> {
+  //   const client = await clientPromise;
+  //   const db = client.db(assetMondoDB);
+  //   const collection = db.collection(assetLocCollection);
+  //   const result = await collection
+  //     .find(query)
+  //     .toArray();
+  //   console.log(logLabel, "retrieveAssetLocDataWithQuery", result);
+  //   return result;
+  // }
+  async retrieveAssetLocData(
+    query: any = undefined
+  ): Promise<AssetLocationEntity[]> {
     // get data by id, if id is undefined, get all data
     const client = await clientPromise;
     const db = client.db(assetMondoDB);
     const collection = db.collection(assetLocCollection);
-    let result;
-    if (id === undefined) {
-      // get all data
-      result = await collection.find().toArray();
-      console.log(logLabel, "retrieveAssetLocData", result);
-    } else {
-      result = await collection.findOne({
-        id: id,
-      });
+    let result = await collection.find(query).toArray();
 
-      console.log(logLabel, "retrieveAssetLocDataWithId", id, result);
-    }
     if (!result) {
       throw new Error("Asset Location Data not found");
     }
 
-    const resToEntity = result.map(AssetData.transferModelToEntity);
-    console.log(logLabel, "retrieveAssetLocData", resToEntity);
-    return resToEntity;
-    // return result;
-    // throw new Error("Method not implemented.");
+    // console.log(logLabel, "retrieveAssetLocData", result);
+
+    return result.map(AssetData.transferModelToEntity as any);
   }
   async updateAssetLocData(data: AssetLocationEntity) {
     console.log(logLabel, "updateAssetLocData", data);

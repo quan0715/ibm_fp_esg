@@ -10,8 +10,6 @@ interface AssetsDataModelInterface {
   description: string | undefined;
   type: AssetType;
   ancestors: string[];
-  // parent: string | undefined;
-  // children: string[] | undefined;
 }
 
 interface LocationDataModelInterface {

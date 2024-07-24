@@ -1,92 +1,81 @@
-// "use client";
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import {
-  DashboardColumn,
+  AssetDataList,
   DashboardColumnMin,
 } from "@/app/dashboard/location_and_asset/location/_blocks/DataColumn";
-import { MongoAssetLocRepository } from "@/data/repositories/mongo/MongoAssetLocRepository";
-import { AssetType } from "@/domain/entities/AssetType";
 import { AssetLocDataCard } from "../_blocks/DataCard";
-export default async function Page() {
-  const repo = new MongoAssetLocRepository();
-  const remoteData = await repo.retrieveAssetLocData();
-  // const orgData = remoteData.filter(
-  //   (data) => data.type === AssetType.Organization
-  // );
-  // const siteData = remoteData.filter((data) => data.type === AssetType.Site);
-  // const phaseData = remoteData.filter((data) => data.type === AssetType.Phase);
-  // const deptData = remoteData.filter(
-  //   (data) => data.type === AssetType.Department
-  // );
+import { useState } from "react";
+import { getDashboardAssetData } from "@/app/dashboard/location_and_asset/location/_actions/PostDataAction";
+import { AssetLocationEntity } from "@/domain/entities/Asset";
+import { MongoAssetLocRepository } from "@/data/repositories/mongo/MongoAssetLocRepository";
+import { QueryPathService } from "@/domain/Services/QueryParamsService";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { set } from "date-fns";
+export default function Page() {
+  // const orgId = "669764b4e1b6f7cb9d170a31";
+  // url = http://localhost:3000/dashboard/location_and_asset/location?organization=669764b4e1b6f7cb9d170a31&site=66978d55e1b6f7cb9d170a34&phase=&department=
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  function compareWithSearchPath(
-    ancestors: string[],
-    searchAncestorPath: string[]
-  ) {
-    if (ancestors.length !== searchAncestorPath.length) {
-      return false;
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
+  const [children, setChildren] = useState<AssetLocationEntity[]>([]);
+  const queryPathService = new QueryPathService(searchParams);
+  useEffect(() => {
+    async function fetchData() {
+      console.log("fetching data");
+      // console.log("search path", getSearchPath());
+      const data = await getDashboardAssetData(
+        queryPathService.getSearchPath()
+      );
+      setAncestors(data.ancestors);
+      setChildren(data.children);
     }
 
-    for (let i = 0; i < ancestors.length; i++) {
-      if (ancestors[i] !== searchAncestorPath[i]) {
-        return false;
-      }
-    }
+    fetchData();
+  }, [searchParams]);
 
-    return true;
-  }
-  const orgId = "669764b4e1b6f7cb9d170a31";
-  const searchAncestorPath: string[] = [orgId];
+  const handleSelect = (index: number) => {
+    setSelectedIndex(index);
+  };
 
-  console.log("remoteData", remoteData);
-  const dataList = remoteData.filter((data) =>
-    compareWithSearchPath(data.ancestors ?? ["undefined"], searchAncestorPath)
-  );
-  const targetData = dataList[0];
+  const resetQuery = (resetId: string) => {
+    const newPath = queryPathService.popBackSearchPath(resetId);
+    const newSearchPathString = queryPathService.createQueryString(newPath);
+    router.push(pathName + "?" + newSearchPathString);
+  };
 
+  const targetData = children[selectedIndex];
   return (
-    <div
-      className={
-        "w-full h-fit flex flex-col justify-start items-start space-y-2"
-      }
-    >
-      <div className={"w-full min-h-screen grid grid-cols-4 gap-4 "}>
+    <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
+      <div className="w-full min-h-screen grid grid-cols-4 gap-4">
         <div className="w-full flex flex-col justify-start items-center space-y-2">
-          <DashboardColumnMin
-            assetType={AssetType.Organization}
-            assetData={
-              remoteData.find(
-                (data) =>
-                  data.type === AssetType.Organization && data.id === orgId
-              )!
-            }
-          />
-          {/* <DashboardColumnMin
-            assetType={AssetType.Site}
-            assetData={siteData[0]}
-          /> */}
-          {/* <DashboardColumnMin
-            assetType={AssetType.Phase}
-            assetData={phaseData[0]}
-          /> */}
-          {/* <DashboardColumn
-            assetType={AssetType.Phase}
-            assetDataList={phaseData}
-            dataCardVariant="preview"
-          /> */}
-          <DashboardColumn
-            assetType={AssetType.Site}
-            assetDataList={dataList}
-            dataCardVariant="preview"
+          {ancestors.map((ancestor) => (
+            <DashboardColumnMin
+              assetType={ancestor.type}
+              assetData={ancestor}
+              onClick={() => resetQuery(ancestor.id!)} // adjust this if ancestors should be selectable
+              key={ancestor.name}
+            />
+          ))}
+          <AssetDataList
+            assetType={targetData?.type}
+            assetDataList={children}
+            selectedIndex={selectedIndex}
+            onSelectedChange={handleSelect}
           />
         </div>
 
         <div className="col-span-3">
-          <AssetLocDataCard
-            data={targetData}
-            variant={"expand"}
-            key={targetData.name}
-          />
+          {targetData && (
+            <AssetLocDataCard
+              data={targetData}
+              variant={"expand"}
+              key={targetData.name}
+            />
+          )}
         </div>
       </div>
     </div>
