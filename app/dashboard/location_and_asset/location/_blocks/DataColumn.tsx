@@ -106,6 +106,7 @@ export function AssetDataList({
                   pathName,
                   queryPathService.createQueryString(data.id!)
                 )}
+                key={data.id}
               >
                 <AssetLocDataListView
                   data={data}

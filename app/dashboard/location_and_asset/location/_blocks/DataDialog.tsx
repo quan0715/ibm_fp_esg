@@ -73,7 +73,7 @@ export function AssetLocationDataDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button asChild>
-          <AssetLocDataCard data={data} key={data.name} />
+          <AssetLocDataCard data={data} key={data.name} assetChildren={[]} />
         </Button>
       </DialogTrigger>
       <DialogContent className={"transition-all duration-500 ease-linear"}>

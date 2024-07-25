@@ -112,7 +112,7 @@ export function AssetLocDataCard({
       >
         <div className="w-full grid grid-cols-3 gap-4">
           {assetChildren!.map((child) => (
-            <div className="p-4 col-span-1 rounded-lg border">
+            <div className="p-4 col-span-1 rounded-lg border" key={child.id}>
               <Link
                 href={queryPathService.getPath(
                   pathName,
