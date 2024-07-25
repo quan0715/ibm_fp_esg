@@ -23,7 +23,9 @@ import { AssetLocDataCard } from "@/app/dashboard/location_and_asset/location/_b
 import { Separator } from "@/components/ui/separator";
 import { LuBoxSelect, LuCheck, LuTextSelect } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
-
+import Link from "next/link";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { QueryPathService } from "@/domain/Services/QueryParamsService";
 export function DashboardColumnLabel({
   title,
   color,
@@ -61,15 +63,27 @@ export function DashboardColumnLabel({
 export function AssetDataList({
   assetType,
   assetDataList,
-  selectedIndex = -1,
+  selectedId = "",
   onSelectedChange,
 }: {
-  onSelectedChange?: (index: number) => void;
+  onSelectedChange?: (index: string) => void;
   assetType: AssetType;
   assetDataList: AssetLocationEntity[];
-  selectedIndex?: number;
+  selectedId?: string;
 }) {
   const tailwindColorClass = getAssetEntityInfo(assetType).color;
+
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const queryPathService = new QueryPathService(searchParams);
+
+  const selection =
+    selectedId.length > 0
+      ? selectedId
+      : assetDataList.length > 0
+        ? assetDataList[0].id
+        : "";
 
   return (
     <DashboardCard>
@@ -86,17 +100,20 @@ export function AssetDataList({
       <DashboardCardContent>
         <div className={"w-full h-fit grid grid-cols-1 gap-4"}>
           {assetDataList.map((data, index) => {
-            // return <AssetLocationDataDialog data={data} key={data.name} />;
             return (
-              <>
+              <Link
+                href={queryPathService.getPath(
+                  pathName,
+                  queryPathService.createQueryString(data.id!)
+                )}
+              >
                 <AssetLocDataListView
                   data={data}
-                  selected={index === selectedIndex}
-                  onClick={() => onSelectedChange?.(index)}
+                  selected={data.id === selection}
                   key={data.name}
                 />
                 {index < assetDataList.length - 1 ? <Separator /> : null}
-              </>
+              </Link>
             );
           })}
         </div>
@@ -118,7 +135,7 @@ export function AssetLocDataListView({
   const colorVariant = colorVariants[getAssetEntityInfo(data.type).color];
   return (
     <div
-      onClick={onClick}
+      // onClick={onClick}
       className={cn(
         "w-full flex flex-row justify-between items-center p-2 rounded-md",
         "hover:cursor-pointer hover:bg-gray-100"

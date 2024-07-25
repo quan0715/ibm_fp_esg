@@ -13,41 +13,44 @@ import { QueryPathService } from "@/domain/Services/QueryParamsService";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { set } from "date-fns";
 export default function Page() {
-  // const orgId = "669764b4e1b6f7cb9d170a31";
-  // url = http://localhost:3000/dashboard/location_and_asset/location?organization=669764b4e1b6f7cb9d170a31&site=66978d55e1b6f7cb9d170a34&phase=&department=
+  // url = http://localhost:3000/dashboard/location_and_asset/location?organization=669764b4e1b6f7cb9d170a31&site=66978d55e1b6f7cb9d170a34&phase=66a0cbf9af3f4bfd2d82272f&department=
   const pathName = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
-  const [children, setChildren] = useState<AssetLocationEntity[]>([]);
+  const [assetDataWithSameAncestor, setAssetDataWithSameAncestor] = useState<
+    AssetLocationEntity[]
+  >([]);
+  const [selectedAsset, setSelectedAsset] = useState<AssetLocationEntity>();
+  const [assetChildren, setAssetChildren] = useState<AssetLocationEntity[]>([]);
   const queryPathService = new QueryPathService(searchParams);
-  useEffect(() => {
-    async function fetchData() {
-      console.log("fetching data");
-      // console.log("search path", getSearchPath());
-      const data = await getDashboardAssetData(
-        queryPathService.getSearchPath()
-      );
-      setAncestors(data.ancestors);
-      setChildren(data.children);
-    }
 
+  useEffect(() => {
+    const selectedAssetId = queryPathService.getAssetId();
+
+    async function fetchData() {
+      const { ancestors, assetData, assetDataListWithSamePath, children } =
+        await getDashboardAssetData(selectedAssetId);
+
+      setAncestors(ancestors);
+      setAssetDataWithSameAncestor(assetDataListWithSamePath);
+      setSelectedAsset(assetData);
+      setAssetChildren(children);
+    }
     fetchData();
   }, [searchParams]);
 
-  const handleSelect = (index: number) => {
-    setSelectedIndex(index);
-  };
-
   const resetQuery = (resetId: string) => {
-    const newPath = queryPathService.popBackSearchPath(resetId);
-    const newSearchPathString = queryPathService.createQueryString(newPath);
-    router.push(pathName + "?" + newSearchPathString);
+    // const newSearchPathString = queryPathService.createQueryString(
+    //   newPath,
+    //   resetId
+    // );
+    const newSearchPathString = queryPathService.createQueryString(resetId);
+    const path = queryPathService.getPath(pathName, newSearchPathString);
+    router.replace(path);
   };
 
-  const targetData = children[selectedIndex];
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
       <div className="w-full min-h-screen grid grid-cols-4 gap-4">
@@ -61,19 +64,17 @@ export default function Page() {
             />
           ))}
           <AssetDataList
-            assetType={targetData?.type}
-            assetDataList={children}
-            selectedIndex={selectedIndex}
-            onSelectedChange={handleSelect}
+            assetType={selectedAsset?.type!}
+            assetDataList={assetDataWithSameAncestor}
+            selectedId={selectedAsset?.id}
           />
         </div>
-
         <div className="col-span-3">
-          {targetData && (
+          {assetDataWithSameAncestor.length > 0 && (
             <AssetLocDataCard
-              data={targetData}
-              variant={"expand"}
-              key={targetData.name}
+              data={selectedAsset!}
+              key={selectedAsset!.name}
+              assetChildren={assetChildren}
             />
           )}
         </div>

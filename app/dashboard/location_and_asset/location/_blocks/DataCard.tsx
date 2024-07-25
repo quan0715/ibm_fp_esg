@@ -1,3 +1,5 @@
+"use client";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +11,6 @@ import { LuExternalLink, LuFileEdit, LuTrash } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 import { AssetLocationEntity } from "@/domain/entities/Asset";
-import React from "react";
 import { AssetType } from "@/domain/entities/AssetType";
 import Link from "next/link";
 import {
@@ -23,15 +24,28 @@ import {
   DashboardCardHeader,
 } from "@/app/dashboard/_components/DashboardCard";
 import { Input } from "@/components/ui/input";
-
+import { QueryPathService } from "@/domain/Services/QueryParamsService";
+import { getDashboardAssetData } from "../_actions/PostDataAction";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { set } from "date-fns";
 export function AssetLocDataCard({
   data,
+  assetChildren = [],
   variant = "default",
   ...props
 }: {
   data: AssetLocationEntity;
+  assetChildren: AssetLocationEntity[];
   variant?: "default" | "preview" | "expand";
 }) {
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  // const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
+  // const [children, setChildren] = useState<AssetLocationEntity[]>([]);
+  const queryPathService = new QueryPathService(searchParams);
+  const [isLoading, setIsLoading] = useState(false);
+
   const LocationDataFields = () => {
     return (
       <div className="w-full flex flex-col space-y-2 justify-start items-start">
@@ -88,191 +102,88 @@ export function AssetLocDataCard({
   };
 
   const ChildrenList = () => {
-    // const isWithChildren =
-    //   data.children != null &&
-    //   data.childrenType != null &&
-    //   data.childrenType != AssetType.None &&
-    //   data.children.length > 0;
-
     const isVisible = variant === "expand" || variant === "default";
 
     return isVisible ? (
-      <div className="flex flex-col space-y-2 justify-start items-start">
-        {/* <p className={"text-sm font-semibold"}>
-          {getAssetEntityInfo(data.childrenType!).label}列表
-        </p>
-        <div className="flex flex-wrap">
-          {data.children!.map((childName) => (
-            <ListChipLink
-              label={childName}
-              assetType={data.childrenType!}
-              key={childName}
-            />
-            // <div className="w-full">
-            //   <InfoBlock
-            //     assetType={data.type}
-            //     label={childName}
-            //     value={childName}
-            //     className="w-full"
-            //   />
-            //   <Separator />
-            // </div>
+      <InfoBlock
+        assetType={data.type}
+        label={"子項目"}
+        className="w-full flex flex-col "
+      >
+        <div className="w-full grid grid-cols-3 gap-4">
+          {assetChildren!.map((child) => (
+            <div className="p-4 col-span-1 rounded-lg border">
+              <Link
+                href={queryPathService.getPath(
+                  pathName,
+                  queryPathService.createQueryString(child.id!)
+                )}
+                className="flex flex-row justify-between items-center space-x-2"
+                // asChild
+              >
+                <p>{child.name}</p>
+                <LuExternalLink />
+              </Link>
+            </div>
           ))}
-        </div> */}
-        {/* <InfoBlock
-          assetType={data.type!}
-          label={`${getAssetEntityInfo(data.childrenType!).label}列表`}
-          // value={data.children!.join(", ")}
-          className="w-full"
-        >
-          <div className="flex flex-col space-y-2 w-full">
-            {data.children!.map((childName) => (
-              // <ListChipLink
-              //   label={childName}
-              //   assetType={data.childrenType!}
-              //   key={childName}
-              // />
-              // <AssetLocDataCard
-              //   data={{
-              //     ...getNewAssetData(data.childrenType!),
-              //     name: childName,
-              //   }}
-              //   variant={"preview"}
-              //   key={data.name}
-              // />
-              <div className="flex flex-col justify-start items-start space-y-2">
-                <p className="font-semibold text-md py-2">{childName}</p>
-                <Separator />
-              </div>
-            ))}
-          </div>
-        </InfoBlock> */}
-      </div>
+        </div>
+      </InfoBlock>
     ) : null;
   };
-
-  // const ParentField = () => {
-  //   // check if the data has children
-  //   // const parent = data as unknown as WithParent;
-  //   const isWithParent =
-  //     data.parent != null &&
-  //     data.parentType != null &&
-  //     data.parentType != AssetType.None &&
-  //     data.parent.length > 0;
-
-  //   const isVisible = variant === "expand" || variant === "default";
-  //   return isWithParent && isVisible ? (
-  //     <div className="flex flex-col space-y-2">
-  //       <div className="flex flex-wrap space-x-2">
-  //         <ListChipLink
-  //           label={data.parent!}
-  //           assetType={data.parentType!}
-  //           ListType="parent"
-  //         />
-  //       </div>
-  //     </div>
-  //   ) : null;
-  // };
 
   const HeaderField = () => {
     return (
       <div className="w-full flex flex-row justify-between items-center">
         <div className="flex-grow flex flex-col space-y-0 justify-start items-start">
-          {/* {variant === "expand" || variant === "default" ? (
-            <ParentField />
-          ) : null} */}
           <h1
             className={cn(
               "text-lg font-semibold",
-              colorVariants[getAssetEntityInfo(data.type).color].textColor
+              colorVariants[
+                getAssetEntityInfo(data?.type ?? AssetType.None).color
+              ].textColor
             )}
           >
-            {data.name}
+            {data?.name ?? ""}
           </h1>
           <p className={"text-sm text-gray-500 text-start"}>
-            {data.description}
+            {data?.description ?? ""}
           </p>
         </div>
-        {variant === "expand" ? (
-          <div className="flex-shrink flex flex-row space-x-2">
-            <Button
-              size={"icon"}
-              variant="outline"
-              className="flex flex-row justify-center items-center space-x-2"
-            >
-              <LuFileEdit />
-            </Button>
-            <Button
-              size={"icon"}
-              variant="outline"
-              className="flex flex-row justify-center items-center space-x-2 text-destructive hover:bg-destructive hover:text-white"
-            >
-              <LuTrash />
-            </Button>
-          </div>
-        ) : null}
+        <div className="flex-shrink flex flex-row space-x-2">
+          <Button
+            size={"icon"}
+            variant="outline"
+            className="flex flex-row justify-center items-center space-x-2"
+          >
+            <LuFileEdit />
+          </Button>
+          <Button
+            size={"icon"}
+            variant="outline"
+            className="flex flex-row justify-center items-center space-x-2 text-destructive hover:bg-destructive hover:text-white"
+          >
+            <LuTrash />
+          </Button>
+        </div>
       </div>
     );
   };
+  // create loading spinner
 
-  switch (variant) {
-    case "default":
-      return (
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row justify-between items-start">
-            <HeaderField />
-          </CardHeader>
-          <CardContent className="flex flex-col space-y-2">
-            <ChildrenList />
-          </CardContent>
-        </Card>
-      );
-    case "preview":
-      return (
-        <Card className="shadow-sm">
-          <CardHeader className="flex flex-row justify-between items-start">
-            <HeaderField />
-          </CardHeader>
-        </Card>
-      );
-    case "expand":
-      return (
-        <DashboardCard className="shadow-sm w-full  min-h-screen ">
-          <DashboardCardHeader title="">
-            <HeaderField />
-          </DashboardCardHeader>
-          <DashboardCardContent className="flex flex-col space-y-2">
-            <LocationDataFields />
-            <ChildrenList />
-          </DashboardCardContent>
-        </DashboardCard>
-      );
-  }
-}
-
-function ListChipLink({
-  href = "/",
-  label,
-  assetType = AssetType.None,
-  ListType = "children",
-}: {
-  href?: string;
-  label: string;
-  assetType: AssetType;
-  ListType?: "children" | "parent";
-}) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "flex flex-row justify-center items-center m-1 ml-0 space-x-0 w-fit"
-      )}
-    >
-      <p className={cn("text-sm font-semibold")}>
-        {ListType === "children" ? "#" : "@"}
-      </p>
-      <p className={"text-sm p-1 hover:underline"}>{label}</p>
-    </Link>
+  return isLoading ? (
+    <DashboardCard className="shadow-sm w-full  min-h-screen ">
+      <div>isLoading</div>
+    </DashboardCard>
+  ) : (
+    <DashboardCard className="shadow-sm w-full  min-h-screen ">
+      <DashboardCardHeader title="">
+        <HeaderField />
+      </DashboardCardHeader>
+      <DashboardCardContent className="flex flex-col space-y-2">
+        <LocationDataFields />
+        <ChildrenList />
+      </DashboardCardContent>
+    </DashboardCard>
   );
 }
 

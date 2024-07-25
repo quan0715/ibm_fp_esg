@@ -3,15 +3,62 @@ import { ObjectId } from "mongodb";
 import { AssetLocRepository } from "@/domain/repository/AssetLocRepository";
 import { AssetLocationEntity } from "../entities/Asset";
 
+export class AssetDataUseCase {
+  constructor(private repository: AssetLocRepository) {
+    this.repository = repository;
+  }
+
+  async getAssetData(id: string): Promise<AssetLocationEntity> {
+    if (id === "") {
+      throw new Error("Asset Id is required");
+    }
+    const remoteData = await this.repository.retrieveAssetLocData({
+      _id: new ObjectId(id),
+    });
+    return remoteData[0];
+  }
+
+  async getAssetChildrenData(
+    searchPath: string[],
+    id: string
+  ): Promise<AssetLocationEntity[]> {
+    const remoteData = await this.repository.retrieveAssetLocData({
+      ancestors: [...searchPath, id],
+    });
+    return remoteData;
+  }
+
+  async getAllAssetWithSameAncestor(
+    searchPath: string[]
+  ): Promise<AssetLocationEntity[]> {
+    const remoteData = await this.repository.retrieveAssetLocData({
+      ancestors: searchPath,
+    });
+    return remoteData;
+  }
+
+  async getAssetAncestorData(
+    searchPath: string[]
+  ): Promise<AssetLocationEntity[]> {
+    const remoteData = await this.repository.retrieveAssetLocData({
+      _id: { $in: searchPath.map((id) => new ObjectId(id)) },
+    });
+    return remoteData;
+  }
+}
+
 export class AssetDataService {
   // search path for current assets service
 
   searchPath: string[];
   repository: AssetLocRepository;
+  assetId: string;
+  assetData: AssetLocationEntity | undefined;
   // constructor
-  constructor(repository: AssetLocRepository) {
+  constructor(repository: AssetLocRepository, assetId: string) {
     this.searchPath = [];
     this.repository = repository;
+    this.assetId = assetId;
   }
 
   getSearchPath(): string[] {
@@ -22,19 +69,23 @@ export class AssetDataService {
     this.searchPath = path;
   }
 
-  popBackSearchPath(id: string): string[] {
-    const index = this.searchPath.indexOf(id);
-    if (index === -1) {
-      throw new Error("Id not found in search path");
+  async fetchAssetData(): Promise<AssetLocationEntity> {
+    if (this.assetData) {
+      return this.assetData;
     }
-    if (index === 0) {
-      this.searchPath = [];
-    } else {
-      this.searchPath = this.searchPath.slice(0, index);
+    if (this.assetId === "") {
+      let res = await this.getCurrentPathAssets();
+      this.assetData = res[0];
+      this.searchPath = this.assetData.ancestors;
+      return res[0];
     }
-    return this.searchPath;
+    const remoteData = await this.repository.retrieveAssetLocData({
+      _id: new ObjectId(this.assetId),
+    });
+    this.assetData = remoteData[0];
+    this.searchPath = this.assetData.ancestors;
+    return remoteData[0];
   }
-  // call api with search path
 
   async getNextPathAssetChildren(id: string): Promise<AssetLocationEntity[]> {
     const remoteData = await this.repository.retrieveAssetLocData({
@@ -44,6 +95,7 @@ export class AssetDataService {
   }
 
   async getCurrentPathAssets(): Promise<AssetLocationEntity[]> {
+    // get all the children data from the current path
     const remoteData = await this.repository.retrieveAssetLocData({
       ancestors: this.searchPath,
     });
@@ -51,6 +103,7 @@ export class AssetDataService {
   }
 
   async getAncestorAssetData(): Promise<AssetLocationEntity[]> {
+    // get all the ancestors data
     const remoteData = await this.repository.retrieveAssetLocData({
       _id: { $in: this.searchPath.map((id) => new ObjectId(id)) },
     });

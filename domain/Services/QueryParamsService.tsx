@@ -2,6 +2,7 @@ import { ReadonlyURLSearchParams } from "next/navigation";
 
 export class QueryPathService {
   searchParams: ReadonlyURLSearchParams;
+  defaultAssetId: string = "669764b4e1b6f7cb9d170a31";
 
   layers: string[] = ["organization", "site", "phase", "department"];
 
@@ -9,30 +10,19 @@ export class QueryPathService {
     this.searchParams = searchParams;
   }
 
-  getSearchPath(): string[] {
-    return this.layers
-      .map((layer) => this.searchParams.get(layer) || "")
-      .filter((id) => id !== "");
+  getAssetId(): string {
+    return this.searchParams.get("asset") || "defaultAssetId";
   }
 
-  popBackSearchPath(id: string): string[] {
-    let newPath: string[] = [];
-    for (let i = 0; i < this.layers.length; i++) {
-      let index = this.searchParams.get(this.layers[i]) || "";
-      if (index === id) {
-        break;
-      } else {
-        newPath.push(index);
-      }
-    }
-    return newPath;
-  }
-
-  createQueryString(searchPath: string[]): string {
+  createQueryString(selected?: string): string {
     const params = new URLSearchParams();
-    for (let i = 0; i < searchPath.length; i++) {
-      params.set(this.layers[i], searchPath[i]);
+    if (selected) {
+      params.set("asset", selected);
     }
     return params.toString();
+  }
+
+  getPath(pathName: string, queryPath: string) {
+    return pathName + "?" + queryPath;
   }
 }
