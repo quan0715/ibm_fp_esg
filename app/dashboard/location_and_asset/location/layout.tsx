@@ -7,39 +7,23 @@ import { headers } from "next/headers";
 export default function Layout({
   children,
   all,
-  organizationL1,
-  factoryL2,
-  phaseL2_5,
-  departmentL3,
 }: {
   children: React.ReactNode;
   all: React.ReactNode;
-  organizationL1: React.ReactNode;
-  factoryL2: React.ReactNode;
-  phaseL2_5: React.ReactNode;
-  departmentL3: React.ReactNode;
 }) {
   const heads = headers();
 
   return (
     <div className="w-full h-fit flex flex-col flex-grow justify-start items-center bg-background">
-      <DashboardPageHeader title={"位置與資產基本資料"} />
+      <DashboardPageHeader title={"位置階層基本資料"} />
       <Separator />
       <Tabs defaultValue="assets_dashboard" className="w-full h-full">
         <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
-          <TabsTrigger value="assets_dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="assets_org">Organization 組織</TabsTrigger>
-          <TabsTrigger value="assets_fac">Site 廠區</TabsTrigger>
-          <TabsTrigger value="assets_phase">Phase</TabsTrigger>
-          <TabsTrigger value="assets_dept">Department 部門</TabsTrigger>
+          <TabsTrigger value="assets_dashboard">位置階層設定</TabsTrigger>
         </TabsList>
         <Separator />
         <div className="w-full h-full bg-secondary p-2">
           <TabsContent value="assets_dashboard">{all}</TabsContent>
-          <TabsContent value="assets_org">{organizationL1}</TabsContent>
-          <TabsContent value="assets_fac">{factoryL2}</TabsContent>
-          <TabsContent value="assets_phase">{phaseL2_5}</TabsContent>
-          <TabsContent value="assets_dept">{departmentL3}</TabsContent>
         </div>
       </Tabs>
     </div>

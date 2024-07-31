@@ -7,49 +7,41 @@ import {
 import { AssetLocDataCard } from "../_blocks/DataCard";
 import { useState } from "react";
 import { getDashboardAssetData } from "@/app/dashboard/location_and_asset/location/_actions/PostDataAction";
-import { AssetLocationEntity } from "@/domain/entities/Asset";
-import { MongoAssetLocRepository } from "@/data/repositories/mongo/MongoAssetLocRepository";
-import { QueryPathService } from "@/domain/Services/QueryParamsService";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { set } from "date-fns";
+import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
+import { useSearchParams } from "next/navigation";
+import { AssetLocationDataForm } from "../_blocks/DataForm";
+import { AssetType } from "@/domain/entities/AssetType";
+import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
+
 export default function Page() {
-  // url = http://localhost:3000/dashboard/location_and_asset/location?organization=669764b4e1b6f7cb9d170a31&site=66978d55e1b6f7cb9d170a34&phase=66a0cbf9af3f4bfd2d82272f&department=
-  const pathName = usePathname();
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
-  const [assetDataWithSameAncestor, setAssetDataWithSameAncestor] = useState<
+  const [siblings, setAssetDataWithSameAncestor] = useState<
     AssetLocationEntity[]
   >([]);
   const [selectedAsset, setSelectedAsset] = useState<AssetLocationEntity>();
   const [assetChildren, setAssetChildren] = useState<AssetLocationEntity[]>([]);
-  const queryPathService = new QueryPathService(searchParams);
+
+  const queryRoute = useAssetQueryRoute();
+  // const queryPathService = new QueryPathService(searchParams);
+  // const selectedAssetId = queryPathService.getAssetId();
+  // const selectedMode = queryPathService.getMode();
 
   useEffect(() => {
-    const selectedAssetId = queryPathService.getAssetId();
-
     async function fetchData() {
-      const { ancestors, assetData, assetDataListWithSamePath, children } =
-        await getDashboardAssetData(selectedAssetId);
-
+      const { data, ancestors, sibling, children } =
+        await getDashboardAssetData(queryRoute.assetId);
+      if (queryRoute.assetId.length === 0) {
+        queryRoute.setAssetId(data.id!);
+      }
       setAncestors(ancestors);
-      setAssetDataWithSameAncestor(assetDataListWithSamePath);
-      setSelectedAsset(assetData);
+      setAssetDataWithSameAncestor(sibling);
+      setSelectedAsset(data);
       setAssetChildren(children);
     }
     fetchData();
   }, [searchParams]);
-
-  const resetQuery = (resetId: string) => {
-    // const newSearchPathString = queryPathService.createQueryString(
-    //   newPath,
-    //   resetId
-    // );
-    const newSearchPathString = queryPathService.createQueryString(resetId);
-    const path = queryPathService.getPath(pathName, newSearchPathString);
-    router.replace(path);
-  };
 
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
@@ -59,22 +51,37 @@ export default function Page() {
             <DashboardColumnMin
               assetType={ancestor.type}
               assetData={ancestor}
-              onClick={() => resetQuery(ancestor.id!)} // adjust this if ancestors should be selectable
+              onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable
               key={ancestor.name}
             />
           ))}
           <AssetDataList
             assetType={selectedAsset?.type!}
-            assetDataList={assetDataWithSameAncestor}
-            selectedId={selectedAsset?.id}
+            assetDataList={siblings}
+            selectedId={
+              queryRoute.mode === "display" ? selectedAsset?.id : undefined
+            }
           />
         </div>
         <div className="col-span-3">
-          {assetDataWithSameAncestor.length > 0 && (
+          {siblings.length > 0 && queryRoute.mode === "display" ? (
             <AssetLocDataCard
               data={selectedAsset!}
               key={selectedAsset!.name}
               assetChildren={assetChildren}
+            />
+          ) : queryRoute.mode === "edit" ? (
+            <AssetLocationDataForm
+              defaultAssetType={selectedAsset?.type ?? AssetType.None}
+              data={selectedAsset!}
+            />
+          ) : (
+            <AssetLocationDataForm
+              defaultAssetType={selectedAsset?.type ?? AssetType.None}
+              data={AssetData.createNew(
+                selectedAsset?.type ?? AssetType.Organization,
+                selectedAsset?.ancestors ?? []
+              ).toEntity()}
             />
           )}
         </div>

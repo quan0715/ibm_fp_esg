@@ -24,21 +24,12 @@ export class MongoAssetLocRepository implements AssetLocRepository {
 
     const res = await collection.insertOne({
       ...data,
-      ancestors: data.ancestors.map((id) => new ObjectId(id)),
+      ancestors: data.ancestors.map((id) => id),
     });
     console.log(logLabel, "createAssetLocData", res);
+
+    return res.insertedId.toString();
   }
-  // generate retrieveAssetLocData method with query parameter
-  // async retrieveAssetLocDataWithQuery(query: any): Promise<AssetLocationEntity[]> {
-  //   const client = await clientPromise;
-  //   const db = client.db(assetMondoDB);
-  //   const collection = db.collection(assetLocCollection);
-  //   const result = await collection
-  //     .find(query)
-  //     .toArray();
-  //   console.log(logLabel, "retrieveAssetLocDataWithQuery", result);
-  //   return result;
-  // }
   async retrieveAssetLocData(
     query: any = undefined
   ): Promise<AssetLocationEntity[]> {

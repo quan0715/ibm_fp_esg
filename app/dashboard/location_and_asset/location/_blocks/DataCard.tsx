@@ -1,12 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import { LuExternalLink, LuFileEdit, LuTrash } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
@@ -24,10 +18,75 @@ import {
   DashboardCardHeader,
 } from "@/app/dashboard/_components/DashboardCard";
 import { Input } from "@/components/ui/input";
-import { QueryPathService } from "@/domain/Services/QueryParamsService";
-import { getDashboardAssetData } from "../_actions/PostDataAction";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { set } from "date-fns";
+import { deleteData, getDashboardAssetData } from "../_actions/PostDataAction";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
+
+function DeleteDialog({ deleteAssetIndex }: { deleteAssetIndex: string }) {
+  const queryRoute = useAssetQueryRoute();
+
+  async function onDelete(deleteAssetIndex: string) {
+    console.log(
+      "presentation: UI button clicked - delete data index",
+      deleteAssetIndex
+    );
+    try {
+      const returnIndex = await deleteData(deleteAssetIndex);
+      // return to previous page
+      console.log("presentation: deleteData res", returnIndex);
+      queryRoute.setAssetId(returnIndex);
+    } catch (e) {
+      console.error("presentation: deleteData error", e);
+    }
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          size={"icon"}
+          variant="outline"
+          className="flex flex-row justify-center items-center space-x-2 text-destructive hover:bg-destructive hover:text-white"
+        >
+          <LuTrash />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className={"transition-all duration-500 ease-linear"}>
+        <DialogHeader>
+          <DialogTitle>刪除資產</DialogTitle>
+          <DialogDescription>
+            確定要刪除資產編號 {`${deleteAssetIndex} 嗎`}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="ghost" className="text-gray-500">
+              取消
+            </Button>
+          </DialogClose>
+          <Button
+            variant="destructive"
+            onClick={async () => {
+              await onDelete(deleteAssetIndex);
+            }}
+          >
+            確定
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function AssetLocDataCard({
   data,
   assetChildren = [],
@@ -38,13 +97,8 @@ export function AssetLocDataCard({
   assetChildren: AssetLocationEntity[];
   variant?: "default" | "preview" | "expand";
 }) {
-  const pathName = usePathname();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  // const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
-  // const [children, setChildren] = useState<AssetLocationEntity[]>([]);
-  const queryPathService = new QueryPathService(searchParams);
   const [isLoading, setIsLoading] = useState(false);
+  const queryRoute = useAssetQueryRoute();
 
   const LocationDataFields = () => {
     return (
@@ -114,18 +168,23 @@ export function AssetLocDataCard({
           {assetChildren!.map((child) => (
             <div className="p-4 col-span-1 rounded-lg border" key={child.id}>
               <Link
-                href={queryPathService.getPath(
-                  pathName,
-                  queryPathService.createQueryString(child.id!)
-                )}
+                href={queryRoute.getNewDisplayURL(child.id ?? "")}
                 className="flex flex-row justify-between items-center space-x-2"
-                // asChild
               >
                 <p>{child.name}</p>
                 <LuExternalLink />
               </Link>
             </div>
           ))}
+          <div className="p-4 col-span-1 rounded-lg border">
+            <Link
+              href={queryRoute.createURL}
+              className="flex flex-row justify-between items-center space-x-2"
+            >
+              <p>新增子資產</p>
+              <LuExternalLink />
+            </Link>
+          </div>
         </div>
       </InfoBlock>
     ) : null;
@@ -154,16 +213,14 @@ export function AssetLocDataCard({
             size={"icon"}
             variant="outline"
             className="flex flex-row justify-center items-center space-x-2"
+            asChild
           >
-            <LuFileEdit />
+            <Link href={queryRoute.editURL}>
+              <LuFileEdit />
+            </Link>
           </Button>
-          <Button
-            size={"icon"}
-            variant="outline"
-            className="flex flex-row justify-center items-center space-x-2 text-destructive hover:bg-destructive hover:text-white"
-          >
-            <LuTrash />
-          </Button>
+
+          <DeleteDialog deleteAssetIndex={data.id ?? ""} />
         </div>
       </div>
     );
@@ -187,7 +244,7 @@ export function AssetLocDataCard({
   );
 }
 
-function InfoBlock({
+export function InfoBlock({
   label,
   value,
   assetType = AssetType.None,
@@ -205,7 +262,7 @@ function InfoBlock({
     <div
       className={cn("flex flex-col justify-start items-start py-1", className)}
     >
-      <p className={cn(colorVariant.textColor, "text-md font-light")}>
+      <p className={cn(colorVariant.textColor, "text-md font-normal")}>
         {label}
       </p>
       {children ?? <p className="text-md font-semibold">{value ?? "None"}</p>}

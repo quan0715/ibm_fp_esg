@@ -9,12 +9,15 @@ import {
 
 export async function postData(data: AssetLocationEntity) {
   const repo = new MongoAssetLocRepository();
-  await repo.createAssetLocData(data);
+  return await repo.createAssetLocData(data);
 }
 
 export async function deleteData(id: string) {
   const repo = new MongoAssetLocRepository();
-  await repo.deleteAssetLocData(id);
+  const assetDataUseCase = new AssetDataUseCase(repo);
+
+  const deleteRes = await assetDataUseCase.deleteAssetData(id);
+  return deleteRes;
 }
 
 export async function updateData(data: AssetLocationEntity) {
@@ -26,19 +29,18 @@ export async function getDashboardAssetData(assetId: string) {
   const repo = new MongoAssetLocRepository();
   const assetDataUseCase = new AssetDataUseCase(repo);
 
-  const assetData = await assetDataUseCase.getAssetData(assetId);
+  const data = await assetDataUseCase.getAssetData(assetId);
 
   // all the data from the ancestors path array
-  const ancestors = await assetDataUseCase.getAssetAncestorData(
-    assetData.ancestors
-  );
+  const ancestors = await assetDataUseCase.getAssetAncestors(data.ancestors);
+
   // all the children data from the current path
-  const assetDataListWithSamePath =
-    await assetDataUseCase.getAllAssetWithSameAncestor(assetData.ancestors);
+  const sibling = await assetDataUseCase.getAssetSibling(data.ancestors);
   // const data = await assetDataService.getCurrentPathAssets();
-  const children = await assetDataUseCase.getAssetChildrenData(
-    assetData.ancestors,
+  const children = await assetDataUseCase.getAssetChildren(
+    data.ancestors ?? [],
     assetId
   );
-  return { ancestors, assetData, assetDataListWithSamePath, children };
+
+  return { data, ancestors, sibling, children };
 }

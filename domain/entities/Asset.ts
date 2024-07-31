@@ -160,14 +160,13 @@ export class AssetData implements AssetLocationEntity {
   }
 
   // create a new asset data from type
-  static createNew(type: AssetType): AssetData {
-    const { parentType, childrenType } = getAssetLayerRules(type);
+  static createNew(type: AssetType, ancestors: string[] = []): AssetData {
     return new AssetData({
       id: undefined,
-      name: "New Asset",
+      name: "",
       description: undefined,
       type,
-      ancestors: [],
+      ancestors: ancestors,
       lat: undefined,
       lon: undefined,
       addressLine1: undefined,

@@ -21,11 +21,12 @@ import {
 } from "@/app/dashboard/location_and_asset/location/_utils/assetTypeUIConfig";
 import { AssetLocDataCard } from "@/app/dashboard/location_and_asset/location/_blocks/DataCard";
 import { Separator } from "@/components/ui/separator";
-import { LuBoxSelect, LuCheck, LuTextSelect } from "react-icons/lu";
+import { LuBoxSelect, LuCheck, LuPlus, LuTextSelect } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { QueryPathService } from "@/domain/Services/QueryParamsService";
+import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
+import { date } from "zod";
 export function DashboardColumnLabel({
   title,
   color,
@@ -64,26 +65,16 @@ export function AssetDataList({
   assetType,
   assetDataList,
   selectedId = "",
-  onSelectedChange,
 }: {
-  onSelectedChange?: (index: string) => void;
   assetType: AssetType;
   assetDataList: AssetLocationEntity[];
   selectedId?: string;
 }) {
-  const tailwindColorClass = getAssetEntityInfo(assetType).color;
+  const assetInfo = getAssetEntityInfo(assetType);
+  const tailwindColorClass = assetInfo.color;
 
-  const pathName = usePathname();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const queryPathService = new QueryPathService(searchParams);
-
-  const selection =
-    selectedId.length > 0
-      ? selectedId
-      : assetDataList.length > 0
-        ? assetDataList[0].id
-        : "";
+  const colorVariant = colorVariants[tailwindColorClass];
+  const queryPathService = useAssetQueryRoute();
 
   return (
     <DashboardCard>
@@ -102,15 +93,12 @@ export function AssetDataList({
           {assetDataList.map((data, index) => {
             return (
               <Link
-                href={queryPathService.getPath(
-                  pathName,
-                  queryPathService.createQueryString(data.id!)
-                )}
+                href={queryPathService.getNewDisplayURL(data.id ?? "")}
                 key={data.id}
               >
                 <AssetLocDataListView
                   data={data}
-                  selected={data.id === selection}
+                  selected={data.id === selectedId}
                   key={data.name}
                 />
                 {index < assetDataList.length - 1 ? <Separator /> : null}
@@ -118,7 +106,23 @@ export function AssetDataList({
             );
           })}
         </div>
-        <CreateNewAssetLocationDataDialog defaultAssetType={assetType} />
+        <Button
+          variant={"ghost"}
+          className={cn(colorVariant.textColor)}
+          asChild
+        >
+          <Link
+            className="flex flex-row space-x-2 justify-center items-center"
+            // href={queryPathService.getCreateURL(
+            //   assetDataList[0]?.ancestors ?? []
+            // )}
+            href={queryPathService.createURL}
+          >
+            <LuPlus />
+            新增 {assetInfo.label}
+          </Link>
+        </Button>
+        {/* <CreateNewAssetLocationDataDialog defaultAssetType={assetType} /> */}
       </DashboardCardContent>
     </DashboardCard>
   );
