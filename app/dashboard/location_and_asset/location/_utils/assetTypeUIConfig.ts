@@ -12,12 +12,16 @@ function getAssetEntityInfo(type: AssetType): AssetEntityInfo {
       return { color: "red", label: "組織" };
     case AssetType.Site:
       return { color: "blue", label: "廠區" };
-    case AssetType.Phase:
-      return { color: "yellow", label: "Phase" };
     case AssetType.Department:
       return { color: "purple", label: "部門" };
     case AssetType.System:
       return { color: "green", label: "系統" };
+    case AssetType.Subsystem:
+      return { color: "green", label: "子系統" };
+    case AssetType.Route:
+      return { color: "yellow", label: "Route" };
+    case AssetType.Operation:
+      return { color: "yellow", label: "Operation" };
     default:
       return { color: "gray", label: "Unknown" };
   }

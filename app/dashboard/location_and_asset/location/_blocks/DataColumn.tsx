@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 
 import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
-import React from "react";
+import React, { useState } from "react";
 import { AssetType } from "@/domain/entities/AssetType";
 import {
   DashboardCard,
@@ -17,13 +17,21 @@ import {
 } from "@/app/dashboard/location_and_asset/location/_utils/assetTypeUIConfig";
 import { AssetLocDataCard } from "@/app/dashboard/location_and_asset/location/_blocks/DataCard";
 import { Separator } from "@/components/ui/separator";
-import { LuBoxSelect, LuCheck, LuPlus, LuTextSelect } from "react-icons/lu";
+import {
+  LuBoxSelect,
+  LuCheck,
+  LuLoader2,
+  LuPlus,
+  LuSpline,
+  LuTextSelect,
+} from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { date } from "zod";
 import { createNewData } from "../_actions/PostDataAction";
+import { Skeleton, Spinner } from "@nextui-org/react";
 
 export function DashboardColumnLabel({
   title,
@@ -61,9 +69,11 @@ export function DashboardColumnLabel({
 
 export function AssetDataList({
   assetType,
+  assetSearchPath,
   assetDataList,
 }: {
   assetType: AssetType;
+  assetSearchPath: string[];
   assetDataList: AssetLocationEntity[];
 }) {
   const assetInfo = getAssetEntityInfo(assetType);
@@ -73,6 +83,8 @@ export function AssetDataList({
   const queryPathService = useAssetQueryRoute();
   const assetId = queryPathService.assetId;
   const data = assetDataList.find((data) => data.id === assetId);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <DashboardCard>
@@ -104,17 +116,28 @@ export function AssetDataList({
             );
           })}
         </div>
+        {isLoading ? (
+          // create loading spinner
+          <div className="w-full flex items-center justify-center">
+            <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
+          </div>
+        ) : null}
         <Button
           variant={"ghost"}
           className={cn(colorVariant.textColor)}
           onClick={async () => {
             console.log("presentation: UI button clicked - create new data");
+            setIsLoading(true);
+            // set 3 seconds delay to simulate server response
+            // await new Promise((resolve) => setTimeout(resolve, 3000));
+
             const newAssetIndex = await createNewData(
               AssetData.createNew(
-                data!.type,
-                [...data!.ancestors] // add current asset id to ancestors
+                assetType,
+                assetSearchPath // add current asset id to ancestors
               ).toEntity()
             );
+            setIsLoading(false);
             queryPathService.setAssetId(newAssetIndex);
           }}
         >

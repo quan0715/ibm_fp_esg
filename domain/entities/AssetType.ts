@@ -1,9 +1,11 @@
 enum AssetType {
   Organization = "organization",
   Site = "site",
-  Phase = "phase",
   Department = "department",
   System = "system",
+  Subsystem = "subsystem",
+  Route = "route",
+  Operation = "operation",
   None = "none",
 }
 
@@ -14,12 +16,16 @@ function getAssetType(type: string): AssetType {
       return AssetType.Organization;
     case "site":
       return AssetType.Site;
-    case "phase":
-      return AssetType.Phase;
     case "department":
       return AssetType.Department;
     case "system":
       return AssetType.System;
+    case "subsystem":
+      return AssetType.Subsystem;
+    case "route":
+      return AssetType.Route;
+    case "operation":
+      return AssetType.Operation;
     default:
       return AssetType.None;
   }
@@ -31,35 +37,42 @@ function getAssetType(type: string): AssetType {
 const AssetLayerRules = {
   [AssetType.Organization]: {
     parentType: AssetType.None,
-    childrenType: AssetType.Site,
   },
   [AssetType.Site]: {
     parentType: AssetType.Organization,
-    childrenType: AssetType.Phase,
-  },
-  [AssetType.Phase]: {
-    parentType: AssetType.Site,
-    childrenType: AssetType.Department,
   },
   [AssetType.Department]: {
-    parentType: AssetType.Phase,
-    childrenType: AssetType.System,
+    parentType: AssetType.Site,
   },
   [AssetType.System]: {
     parentType: AssetType.Department,
-    childrenType: AssetType.None,
+  },
+  [AssetType.Subsystem]: {
+    parentType: AssetType.System,
+  },
+  [AssetType.Route]: {
+    parentType: AssetType.Department,
+  },
+  [AssetType.Operation]: {
+    parentType: AssetType.Route,
   },
   [AssetType.None]: {
     parentType: AssetType.None,
-    childrenType: AssetType.None,
   },
 };
 
 // 獲取資產層級規則
-export const getAssetLayerRules = (type: AssetType) =>
-  AssetLayerRules[type] || {
-    parentType: AssetType.None,
-    childrenType: AssetType.None,
-  };
+export const getAssetLayerRules = (type: AssetType) => AssetLayerRules[type];
+
+export const getAssetChildrenTypeOptions = (type: AssetType) => {
+  let options = Object.keys(AssetLayerRules)
+    .filter(
+      (key) =>
+        AssetLayerRules[key as AssetType].parentType === type &&
+        key !== AssetType.None
+    )
+    .map((key) => key as AssetType);
+  return options;
+};
 
 export { AssetType, getAssetType };

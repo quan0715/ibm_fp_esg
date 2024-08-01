@@ -8,13 +8,17 @@ import { AssetLocDataCard } from "../_blocks/DataCard";
 import { useState } from "react";
 import {
   getDashboardAssetData,
-  getDashboardAssetDataInCreateMode,
+  // getDashboardAssetDataInCreateMode,
 } from "@/app/dashboard/location_and_asset/location/_actions/PostDataAction";
 import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
 import { useSearchParams } from "next/navigation";
 import { AssetLocationDataForm } from "../_blocks/DataForm";
-import { AssetType } from "@/domain/entities/AssetType";
+import {
+  AssetType,
+  getAssetChildrenTypeOptions,
+} from "@/domain/entities/AssetType";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
+import { date } from "zod";
 type AssetDataDisplay = {
   data: AssetLocationEntity;
   ancestors: AssetLocationEntity[];
@@ -36,18 +40,6 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchData() {
-      // if (queryRoute.mode === "create") {
-      //   console.log("create mode");
-      //   let res = await getDashboardAssetDataInCreateMode(queryRoute.parentId);
-      //   setDashboardAssetData({
-      //     data: res.newData,
-      //     ancestors: res.ancestors,
-      //     sibling: res.sibling,
-      //     children: res.children,
-      //   });
-      // } else
-      //  {
-      // console.log("display mode");
       const res = await getDashboardAssetData(queryRoute.assetId);
 
       if (queryRoute.assetId.length === 0) {
@@ -65,6 +57,13 @@ export default function Page() {
     fetchData();
   }, [searchParams]);
 
+  const parent =
+    dashboardAssetData.ancestors.length > 0
+      ? dashboardAssetData.ancestors[dashboardAssetData.ancestors.length - 1]
+      : undefined;
+
+  const ancestorType = parent !== undefined ? parent.type : AssetType.None;
+
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
       <div className="w-full min-h-screen grid grid-cols-4 gap-4">
@@ -77,10 +76,16 @@ export default function Page() {
               key={ancestor.name}
             />
           ))}
-          <AssetDataList
-            assetType={dashboardAssetData.data?.type!}
-            assetDataList={dashboardAssetData.sibling}
-          />
+          {getAssetChildrenTypeOptions(ancestorType).map((type) => (
+            <AssetDataList
+              key={type}
+              assetType={type}
+              assetSearchPath={dashboardAssetData.data.ancestors}
+              assetDataList={dashboardAssetData.sibling.filter(
+                (data) => data.type === type
+              )}
+            />
+          ))}
         </div>
         <div className="col-span-3">
           {dashboardAssetData.sibling.length > 0 &&

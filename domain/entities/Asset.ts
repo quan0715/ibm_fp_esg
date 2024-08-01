@@ -71,7 +71,7 @@ export class AssetData implements AssetLocationEntity {
   // 從 MongoDB 模型轉換
   static fromMongoModel(model: MongoAssetLocationDataModel): AssetData {
     const assetType = getAssetType(model.type);
-    const { parentType, childrenType } = getAssetLayerRules(assetType);
+    const { parentType } = getAssetLayerRules(assetType);
     return new AssetData({
       id: model._id?.toString(),
       name: model.name,

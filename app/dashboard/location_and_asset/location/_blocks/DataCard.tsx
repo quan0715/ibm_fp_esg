@@ -5,7 +5,11 @@ import { LuExternalLink, LuFileEdit, LuPlus, LuTrash } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 import { AssetLocationEntity } from "@/domain/entities/Asset";
-import { AssetType, getAssetLayerRules } from "@/domain/entities/AssetType";
+import {
+  AssetType,
+  getAssetChildrenTypeOptions,
+  getAssetLayerRules,
+} from "@/domain/entities/AssetType";
 import Link from "next/link";
 import {
   getAssetEntityInfo,
@@ -180,29 +184,35 @@ export function AssetLocDataCard({
               </Link>
             </div>
           ))}
-          <Button
-            variant={"outline"}
-            // size={"lg"}
-            className="p-4 col-span-1 rounded-lg border h-full"
-            onClick={async () => {
-              console.log("presentation: UI button clicked - create new data");
-              const newAssetIndex = await createNewData(
-                AssetData.createNew(
-                  getAssetLayerRules(data.type).childrenType,
-                  [...data.ancestors, data.id!] // add current asset id to ancestors
-                ).toEntity()
-              );
-              queryRoute.setAssetId(newAssetIndex);
-            }}
-          >
-            <div
-              // href={queryRoute.getCreateURL(data.id ?? "")}
-              className="flex flex-row justify-between items-center space-x-2"
+          {getAssetChildrenTypeOptions(data.type).map((type) => (
+            <Button
+              key={type}
+              variant={"outline"}
+              className="p-4 col-span-1 rounded-lg border h-full"
+              onClick={async () => {
+                console.log(
+                  "presentation: UI button clicked - create new data"
+                );
+                const newAssetIndex = await createNewData(
+                  AssetData.createNew(
+                    type,
+                    [...data.ancestors, data.id!] // add current asset id to ancestors
+                  ).toEntity()
+                );
+                queryRoute.setAssetId(newAssetIndex);
+              }}
             >
-              <p>新增子資產</p>
-              <LuPlus />
-            </div>
-          </Button>
+              <div
+                className={cn(
+                  colorVariants[getAssetEntityInfo(type).color].textColor,
+                  "flex flex-row justify-between items-center space-x-2"
+                )}
+              >
+                <p>新增 {getAssetEntityInfo(type).label}</p>
+                <LuPlus />
+              </div>
+            </Button>
+          ))}
         </div>
       </InfoBlock>
     ) : null;
