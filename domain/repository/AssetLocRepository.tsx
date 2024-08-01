@@ -11,7 +11,7 @@ interface AssetLocRepository {
   createAssetLocData(data: AssetLocationEntity): Promise<string>;
   retrieveAssetLocData(query?: any): Promise<AssetLocationEntity[]>;
   updateAssetLocData(data: AssetLocationEntity): Promise<AssetLocationEntity>;
-  deleteAssetLocData(id: string): void;
+  deleteAssetLocData(id: string): Promise<void>;
 }
 
 export type { AssetLocRepository };

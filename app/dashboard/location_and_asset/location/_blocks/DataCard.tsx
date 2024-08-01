@@ -178,7 +178,7 @@ export function AssetLocDataCard({
           ))}
           <div className="p-4 col-span-1 rounded-lg border">
             <Link
-              href={queryRoute.createURL}
+              href={queryRoute.getCreateURL(data.id ?? "")}
               className="flex flex-row justify-between items-center space-x-2"
             >
               <p>新增子資產</p>

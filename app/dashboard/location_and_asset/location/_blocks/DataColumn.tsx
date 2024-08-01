@@ -27,6 +27,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { date } from "zod";
+
 export function DashboardColumnLabel({
   title,
   color,
@@ -113,9 +114,6 @@ export function AssetDataList({
         >
           <Link
             className="flex flex-row space-x-2 justify-center items-center"
-            // href={queryPathService.getCreateURL(
-            //   assetDataList[0]?.ancestors ?? []
-            // )}
             href={queryPathService.createURL}
           >
             <LuPlus />

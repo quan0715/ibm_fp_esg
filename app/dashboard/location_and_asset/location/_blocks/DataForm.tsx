@@ -31,33 +31,29 @@ import { InfoBlock } from "./DataCard";
 import { Separator } from "@/components/ui/separator";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 export function AssetLocationDataForm({
-  defaultAssetType = AssetType.Organization,
   data,
-  setDialogOpen,
 }: {
-  defaultAssetType: AssetType;
-  setDialogOpen?: Dispatch<SetStateAction<boolean>>;
   data?: AssetLocationEntity;
 }) {
   // if data is provided, use it as default data
   // display existing data in the form
   // otherwise, create a new data
+  const assetData = data!;
 
-  const [assetData, setAssetData] = useState<AssetData>(
-    data ? AssetData.fromEntity(data) : AssetData.createNew(defaultAssetType)
-  );
+  console.log("UI assetData", assetData);
 
   const queryRoute = useAssetQueryRoute();
 
   const form = useForm<AssetLocationEntity>({
-    defaultValues: data,
+    defaultValues: assetData,
   });
 
   async function onSubmit(values: AssetLocationEntity) {
     const res = {
       ...values,
+      type: assetData.type,
+      ancestors: assetData.ancestors,
     } as AssetLocationEntity;
-    console.log("UI postData", values);
     if (queryRoute.mode === "create") {
       const newAssetDataId = await postData(res);
       queryRoute.setAssetId(newAssetDataId);
@@ -65,6 +61,7 @@ export function AssetLocationDataForm({
       await updateData(res);
       queryRoute.setAssetId(res.id!);
     }
+    form.reset();
   }
 
   function onCancel() {
@@ -83,7 +80,7 @@ export function AssetLocationDataForm({
             <FormItem className={cn("w-full")}>
               {/* <FormLabel>資產名稱</FormLabel> */}
               <DashboardColumnLabel
-                title={getAssetEntityInfo(data?.type!).label}
+                title={getAssetEntityInfo(assetData.type).label}
                 color={getAssetEntityInfo(assetData.type).color}
               />
               <FormControl>
@@ -135,7 +132,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={defaultAssetType}
+                assetType={assetData.type}
                 label={"經緯度-緯度"}
                 className="w-full"
               >
@@ -161,7 +158,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={defaultAssetType}
+                assetType={assetData.type}
                 label={"經緯度-經度"}
                 className="w-full"
               >
@@ -193,7 +190,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={defaultAssetType}
+                assetType={assetData.type}
                 label={"所在國家"}
                 className="w-full"
               >
@@ -220,7 +217,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={defaultAssetType}
+                assetType={assetData.type}
                 label={"所在城市"}
                 className="w-full"
               >
@@ -247,7 +244,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={defaultAssetType}
+                assetType={assetData.type}
                 label={"郵遞區域號"}
                 className="w-full"
               >
@@ -278,7 +275,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={defaultAssetType}
+                assetType={assetData.type}
                 label={"位置1"}
                 className="w-full"
               >
@@ -303,7 +300,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={defaultAssetType}
+                assetType={assetData.type}
                 label={"位置2"}
                 className="w-full"
               >
@@ -369,59 +366,3 @@ export function AssetLocationDataForm({
     </Form>
   );
 }
-
-// <PipeLineCard initStep={0}>
-//   <PipeLineStepContent
-//     title={`資產基本資料`}
-//     description={""}
-//   ></PipeLineStepContent>
-//   <PipeLineStepContent
-//     title={"組織位置資料"}
-//     description={""}
-//   ></PipeLineStepContent>
-//   <PipeLineStepContent title={"添加子資產"} description={""}>
-//     {/* {AssetChildrenFields()} */}
-//   </PipeLineStepContent>
-// </PipeLineCard>;
-
-// function AssetFormFields() {
-//   return (
-//     <FormField
-//       control={form.control}
-//       name="type"
-//       render={({ field }) => (
-//         <FormItem className="w-full">
-//           <FormLabel>資產類型</FormLabel>
-//           <FormControl>
-//             <Select
-//               defaultValue={field.value}
-//               onValueChange={(value) => {
-//                 setAssetType(value as AssetType);
-//                 //   field.onChange(value);
-//               }}
-//             >
-//               <SelectTrigger>
-//                 <SelectValue />
-//               </SelectTrigger>
-//               <SelectContent>
-//                 {Object.values(AssetType)
-//                   .filter((type) => {
-//                     return type != AssetType.None;
-//                   })
-//                   .map((type, index) => {
-//                     return (
-//                       <SelectItem value={type} key={type + index}>
-//                         <AssetTypeOptionChip assetType={type} />
-//                       </SelectItem>
-//                     );
-//                   })}
-//               </SelectContent>
-//             </Select>
-//           </FormControl>
-//           <FormDescription>請選擇資產類型</FormDescription>
-//           <FormMessage />
-//         </FormItem>
-//       )}
-//     />
-//   );
-// }

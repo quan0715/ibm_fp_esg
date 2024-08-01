@@ -57,10 +57,8 @@ export class AssetDataUseCase {
     if (id === "") {
       throw new Error("Asset Id is required");
     }
-    console.log("delete asset data is not empty");
 
     const data = await this.getAssetData(id);
-    const siblings = await this.getAssetSibling(data.ancestors);
     const children = await this.getAssetChildren(data.ancestors, data.id!);
 
     if (children.length > 0) {
@@ -68,6 +66,9 @@ export class AssetDataUseCase {
     }
 
     await this.repository.deleteAssetLocData(id);
+
+    const siblings = await this.getAssetSibling(data.ancestors);
+
     if (siblings.length > 0) {
       return siblings[0].id!;
     } else if (data.ancestors.length > 0) {
