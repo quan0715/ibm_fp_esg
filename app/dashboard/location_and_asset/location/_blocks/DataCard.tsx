@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LuExternalLink, LuFileEdit, LuTrash } from "react-icons/lu";
+import { LuExternalLink, LuFileEdit, LuPlus, LuTrash } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 import { AssetLocationEntity } from "@/domain/entities/Asset";
-import { AssetType } from "@/domain/entities/AssetType";
+import { AssetType, getAssetLayerRules } from "@/domain/entities/AssetType";
 import Link from "next/link";
 import {
   getAssetEntityInfo,
@@ -18,7 +18,11 @@ import {
   DashboardCardHeader,
 } from "@/app/dashboard/_components/DashboardCard";
 import { Input } from "@/components/ui/input";
-import { deleteData, getDashboardAssetData } from "../_actions/PostDataAction";
+import {
+  createNewData,
+  deleteData,
+  getDashboardAssetData,
+} from "../_actions/PostDataAction";
 import {
   Dialog,
   DialogClose,
@@ -30,7 +34,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
-
+import { AssetData } from "@/domain/entities/Asset";
 function DeleteDialog({ deleteAssetIndex }: { deleteAssetIndex: string }) {
   const queryRoute = useAssetQueryRoute();
 
@@ -176,15 +180,29 @@ export function AssetLocDataCard({
               </Link>
             </div>
           ))}
-          <div className="p-4 col-span-1 rounded-lg border">
-            <Link
-              href={queryRoute.getCreateURL(data.id ?? "")}
+          <Button
+            variant={"outline"}
+            // size={"lg"}
+            className="p-4 col-span-1 rounded-lg border h-full"
+            onClick={async () => {
+              console.log("presentation: UI button clicked - create new data");
+              const newAssetIndex = await createNewData(
+                AssetData.createNew(
+                  getAssetLayerRules(data.type).childrenType,
+                  [...data.ancestors, data.id!] // add current asset id to ancestors
+                ).toEntity()
+              );
+              queryRoute.setAssetId(newAssetIndex);
+            }}
+          >
+            <div
+              // href={queryRoute.getCreateURL(data.id ?? "")}
               className="flex flex-row justify-between items-center space-x-2"
             >
               <p>新增子資產</p>
-              <LuExternalLink />
-            </Link>
-          </div>
+              <LuPlus />
+            </div>
+          </Button>
         </div>
       </InfoBlock>
     ) : null;
@@ -220,7 +238,9 @@ export function AssetLocDataCard({
             </Link>
           </Button>
 
-          <DeleteDialog deleteAssetIndex={data.id ?? ""} />
+          {assetChildren.length === 0 ? (
+            <DeleteDialog deleteAssetIndex={data.id ?? ""} />
+          ) : null}
         </div>
       </div>
     );

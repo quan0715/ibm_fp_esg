@@ -1,6 +1,6 @@
 import { AssetType } from "@/domain/entities/AssetType";
 
-type AssetTypeColor = "blue" | "red" | "yellow" | "purple" | "gray";
+type AssetTypeColor = "blue" | "red" | "yellow" | "purple" | "green" | "gray";
 
 type AssetEntityInfo = {
   color: AssetTypeColor; //hex color code
@@ -16,6 +16,8 @@ function getAssetEntityInfo(type: AssetType): AssetEntityInfo {
       return { color: "yellow", label: "Phase" };
     case AssetType.Department:
       return { color: "purple", label: "部門" };
+    case AssetType.System:
+      return { color: "green", label: "系統" };
     default:
       return { color: "gray", label: "Unknown" };
   }
@@ -40,6 +42,11 @@ const colorVariants = {
     bgColor: "bg-purple-50 dark:bg-purple-900",
     leadingColor: "bg-purple-500 dark:bg-purple-500",
     textColor: "text-purple-500 dark:text-purple-500",
+  },
+  green: {
+    bgColor: "bg-green-50 dark:bg-green-900",
+    leadingColor: "bg-green-500 dark:bg-green-500",
+    textColor: "text-green-500 dark:text-green-500",
   },
   gray: {
     bgColor: "bg-gray-50 dark:bg-gray-900",

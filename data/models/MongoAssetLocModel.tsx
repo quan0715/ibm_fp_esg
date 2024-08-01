@@ -1,8 +1,9 @@
+import { AssetLocationEntity } from "@/domain/entities/Asset";
 import {
-  AssetLocationEntity,
+  AssetType,
+  getAssetType,
   getAssetLayerRules,
-} from "@/domain/entities/Asset";
-import { AssetType, getAssetType } from "@/domain/entities/AssetType";
+} from "@/domain/entities/AssetType";
 
 interface AssetsDataModelInterface {
   _id: string | undefined;

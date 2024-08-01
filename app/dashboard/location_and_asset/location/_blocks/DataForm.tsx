@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { postData, updateData } from "../_actions/PostDataAction";
+import { createNewData, updateData } from "../_actions/PostDataAction";
 
 import { DashboardColumnLabel } from "./DataColumn";
 import {
@@ -55,7 +55,7 @@ export function AssetLocationDataForm({
       ancestors: assetData.ancestors,
     } as AssetLocationEntity;
     if (queryRoute.mode === "create") {
-      const newAssetDataId = await postData(res);
+      const newAssetDataId = await createNewData(res);
       queryRoute.setAssetId(newAssetDataId);
     } else if (queryRoute.mode === "edit") {
       await updateData(res);

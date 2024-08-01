@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 
-import { AssetLocationEntity } from "@/domain/entities/Asset";
+import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
 import React from "react";
 import { AssetType } from "@/domain/entities/AssetType";
 import {
@@ -10,10 +10,6 @@ import {
   DashboardCardHeader,
 } from "@/app/dashboard/_components/DashboardCard";
 
-import {
-  AssetLocationDataDialog,
-  CreateNewAssetLocationDataDialog,
-} from "@/app/dashboard/location_and_asset/location/_blocks/DataDialog";
 import {
   getAssetEntityInfo,
   colorVariants,
@@ -27,6 +23,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { date } from "zod";
+import { createNewData } from "../_actions/PostDataAction";
 
 export function DashboardColumnLabel({
   title,
@@ -65,17 +62,17 @@ export function DashboardColumnLabel({
 export function AssetDataList({
   assetType,
   assetDataList,
-  selectedId = "",
 }: {
   assetType: AssetType;
   assetDataList: AssetLocationEntity[];
-  selectedId?: string;
 }) {
   const assetInfo = getAssetEntityInfo(assetType);
   const tailwindColorClass = assetInfo.color;
 
   const colorVariant = colorVariants[tailwindColorClass];
   const queryPathService = useAssetQueryRoute();
+  const assetId = queryPathService.assetId;
+  const data = assetDataList.find((data) => data.id === assetId);
 
   return (
     <DashboardCard>
@@ -99,7 +96,7 @@ export function AssetDataList({
               >
                 <AssetLocDataListView
                   data={data}
-                  selected={data.id === selectedId}
+                  selected={data.id === assetId}
                   key={data.name}
                 />
                 {index < assetDataList.length - 1 ? <Separator /> : null}
@@ -110,17 +107,20 @@ export function AssetDataList({
         <Button
           variant={"ghost"}
           className={cn(colorVariant.textColor)}
-          asChild
+          onClick={async () => {
+            console.log("presentation: UI button clicked - create new data");
+            const newAssetIndex = await createNewData(
+              AssetData.createNew(
+                data!.type,
+                [...data!.ancestors] // add current asset id to ancestors
+              ).toEntity()
+            );
+            queryPathService.setAssetId(newAssetIndex);
+          }}
         >
-          <Link
-            className="flex flex-row space-x-2 justify-center items-center"
-            href={queryPathService.createURL}
-          >
-            <LuPlus />
-            新增 {assetInfo.label}
-          </Link>
+          <LuPlus />
+          新增 {assetInfo.label}
         </Button>
-        {/* <CreateNewAssetLocationDataDialog defaultAssetType={assetType} /> */}
       </DashboardCardContent>
     </DashboardCard>
   );

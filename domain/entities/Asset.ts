@@ -1,5 +1,5 @@
 import { MongoAssetLocationDataModel } from "@/data/models/MongoAssetLocModel";
-import { AssetType, getAssetType } from "./AssetType";
+import { AssetType, getAssetLayerRules, getAssetType } from "./AssetType";
 
 // 定義資產和位置的介面
 interface AssetsDataInterface {
@@ -24,37 +24,6 @@ interface LocationDataInterface {
 export interface AssetLocationEntity
   extends LocationDataInterface,
     AssetsDataInterface {}
-
-// 資產層級規則
-const AssetLayerRules = {
-  [AssetType.Organization]: {
-    parentType: AssetType.None,
-    childrenType: AssetType.Site,
-  },
-  [AssetType.Site]: {
-    parentType: AssetType.Organization,
-    childrenType: AssetType.Phase,
-  },
-  [AssetType.Phase]: {
-    parentType: AssetType.Site,
-    childrenType: AssetType.Department,
-  },
-  [AssetType.Department]: {
-    parentType: AssetType.Phase,
-    childrenType: AssetType.None,
-  },
-  [AssetType.None]: {
-    parentType: AssetType.None,
-    childrenType: AssetType.None,
-  },
-};
-
-// 獲取資產層級規則
-export const getAssetLayerRules = (type: AssetType) =>
-  AssetLayerRules[type] || {
-    parentType: AssetType.None,
-    childrenType: AssetType.None,
-  };
 
 // 資產數據類別
 export class AssetData implements AssetLocationEntity {
@@ -98,12 +67,6 @@ export class AssetData implements AssetLocationEntity {
     this.country = country;
     this.zip = zip;
   }
-
-  static getAssetLayerRules = (type: AssetType) =>
-    AssetLayerRules[type] || {
-      parentType: AssetType.None,
-      childrenType: AssetType.None,
-    };
 
   // 從 MongoDB 模型轉換
   static fromMongoModel(model: MongoAssetLocationDataModel): AssetData {
@@ -163,8 +126,8 @@ export class AssetData implements AssetLocationEntity {
   static createNew(type: AssetType, ancestors: string[] = []): AssetData {
     return new AssetData({
       id: undefined,
-      name: "",
-      description: undefined,
+      name: `New ${type}`,
+      description: "",
       type,
       ancestors: ancestors,
       lat: undefined,

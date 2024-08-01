@@ -38,7 +38,7 @@ export function useAssetQueryRoute() {
   }
 
   function revalidatePath() {
-    router.replace(pathName + "?" + searchParams.toString());
+    router.push(pathName + "?" + searchParams.toString());
   }
 
   function getNewDisplayURL(assetId: string) {
@@ -53,8 +53,8 @@ export function useAssetQueryRoute() {
   const editURL = getPath(createQueryString(assetId, "edit"));
   const createURL = getPath(createQueryString(assetId, "create"));
 
-  function setAssetId(selected: string) {
-    const newRoute = createQueryString(selected);
+  function setAssetId(selected: string, isEdit: boolean = false) {
+    const newRoute = createQueryString(selected, isEdit ? "edit" : "display");
     router.push(getPath(newRoute));
   }
 

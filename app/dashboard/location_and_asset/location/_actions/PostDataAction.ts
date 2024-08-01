@@ -7,9 +7,9 @@ import {
   AssetDataUseCase,
 } from "@/domain/Services/AssetDataService";
 
-import { getAssetLayerRules } from "@/domain/entities/Asset";
+import { getAssetLayerRules } from "@/domain/entities/AssetType";
 
-export async function postData(data: AssetLocationEntity) {
+export async function createNewData(data: AssetLocationEntity) {
   const repo = new MongoAssetLocRepository();
   return await repo.createAssetLocData(data);
 }

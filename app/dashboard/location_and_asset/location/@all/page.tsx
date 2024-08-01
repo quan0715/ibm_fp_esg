@@ -25,8 +25,6 @@ type AssetDataDisplay = {
 export default function Page() {
   const searchParams = useSearchParams();
   const queryRoute = useAssetQueryRoute();
-  const [selectedData, setSelectedData] =
-    useState<AssetLocationEntity | null>();
 
   const [dashboardAssetData, setDashboardAssetData] =
     useState<AssetDataDisplay>({
@@ -38,31 +36,30 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchData() {
-      if (queryRoute.mode === "create") {
-        console.log("create mode");
-        queryRoute.revalidatePath();
-        let res = await getDashboardAssetDataInCreateMode(queryRoute.parentId);
-        setDashboardAssetData({
-          data: res.newData,
-          ancestors: res.ancestors,
-          sibling: res.sibling,
-          children: res.children,
-        });
-      } else {
-        console.log("display mode");
-        const res = await getDashboardAssetData(queryRoute.assetId);
+      // if (queryRoute.mode === "create") {
+      //   console.log("create mode");
+      //   let res = await getDashboardAssetDataInCreateMode(queryRoute.parentId);
+      //   setDashboardAssetData({
+      //     data: res.newData,
+      //     ancestors: res.ancestors,
+      //     sibling: res.sibling,
+      //     children: res.children,
+      //   });
+      // } else
+      //  {
+      // console.log("display mode");
+      const res = await getDashboardAssetData(queryRoute.assetId);
 
-        if (queryRoute.assetId.length === 0) {
-          queryRoute.setAssetId(res.data.id!);
-        }
-
-        setDashboardAssetData({
-          data: res.data,
-          ancestors: res.ancestors,
-          sibling: res.sibling,
-          children: res.children,
-        });
+      if (queryRoute.assetId.length === 0) {
+        queryRoute.setAssetId(res.data.id!);
       }
+
+      setDashboardAssetData({
+        data: res.data,
+        ancestors: res.ancestors,
+        sibling: res.sibling,
+        children: res.children,
+      });
     }
 
     fetchData();
@@ -83,11 +80,6 @@ export default function Page() {
           <AssetDataList
             assetType={dashboardAssetData.data?.type!}
             assetDataList={dashboardAssetData.sibling}
-            selectedId={
-              queryRoute.mode === "display"
-                ? dashboardAssetData.data?.id
-                : undefined
-            }
           />
         </div>
         <div className="col-span-3">
