@@ -47,10 +47,7 @@ export function CreateNewAssetLocationDataDialog({
           </DialogTitle>
           <DialogDescription>請依順序完成添加新的資產資料</DialogDescription>
         </DialogHeader>
-        <AssetLocationDataForm
-          defaultAssetType={defaultAssetType}
-          setDialogOpen={setOpen}
-        />
+        <AssetLocationDataForm />
       </DialogContent>
     </Dialog>
   );
@@ -83,11 +80,7 @@ export function AssetLocationDataDialog({
           </DialogTitle>
           <DialogDescription>{data.description}</DialogDescription>
         </DialogHeader>
-        <AssetLocationDataForm
-          defaultAssetType={assetData.type}
-          data={assetData}
-          setDialogOpen={setOpen}
-        />
+        <AssetLocationDataForm data={assetData} />
         <DialogFooter>
           <Button
             variant={"destructive"}
