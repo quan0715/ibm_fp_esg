@@ -8,6 +8,7 @@ import { AssetLocDataCard } from "../_blocks/DataCard";
 import { useState } from "react";
 import {
   getDashboardAssetData,
+  getDashboardAssetDataInCreateMode,
   // getDashboardAssetDataInCreateMode,
 } from "@/app/dashboard/location_and_asset/location/_actions/PostDataAction";
 import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
@@ -16,9 +17,9 @@ import { AssetLocationDataForm } from "../_blocks/DataForm";
 import {
   AssetType,
   getAssetChildrenTypeOptions,
+  getAssetType,
 } from "@/domain/entities/AssetType";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
-import { date } from "zod";
 type AssetDataDisplay = {
   data: AssetLocationEntity;
   ancestors: AssetLocationEntity[];
@@ -40,18 +41,35 @@ export default function Page() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await getDashboardAssetData(queryRoute.assetId);
+      if (queryRoute.mode === "create") {
+        console.log("create mode");
+        const res = await getDashboardAssetDataInCreateMode(
+          queryRoute.ancestors || [],
+          queryRoute.assetType
+        );
+        setDashboardAssetData({
+          data: res.newData,
+          ancestors: res.ancestors,
+          sibling: res.sibling,
+          children: res.children,
+        });
+        console.log("create data", res.newData);
+        console.log("create ancestors", res.ancestors);
+        console.log("create sibling", res.sibling);
+      } else {
+        const res = await getDashboardAssetData(queryRoute.assetId);
 
-      if (queryRoute.assetId.length === 0) {
-        queryRoute.setAssetId(res.data.id!);
+        if (queryRoute.assetId.length === 0) {
+          queryRoute.setAssetId(res.data.id!);
+        }
+
+        setDashboardAssetData({
+          data: res.data,
+          ancestors: res.ancestors,
+          sibling: res.sibling,
+          children: res.children,
+        });
       }
-
-      setDashboardAssetData({
-        data: res.data,
-        ancestors: res.ancestors,
-        sibling: res.sibling,
-        children: res.children,
-      });
     }
 
     fetchData();
@@ -76,16 +94,18 @@ export default function Page() {
               key={ancestor.name}
             />
           ))}
-          {getAssetChildrenTypeOptions(ancestorType).map((type) => (
-            <AssetDataList
-              key={type}
-              assetType={type}
-              assetSearchPath={dashboardAssetData.data.ancestors}
-              assetDataList={dashboardAssetData.sibling.filter(
-                (data) => data.type === type
-              )}
-            />
-          ))}
+          <div className="pl-4 w-full flex flex-col items-center justify-center space-y-2">
+            {getAssetChildrenTypeOptions(ancestorType).map((type) => (
+              <AssetDataList
+                key={type}
+                assetType={type}
+                assetSearchPath={dashboardAssetData.data.ancestors}
+                assetDataList={dashboardAssetData.sibling.filter(
+                  (data) => data.type === type
+                )}
+              />
+            ))}
+          </div>
         </div>
         <div className="col-span-3">
           {dashboardAssetData.sibling.length > 0 &&
@@ -96,7 +116,16 @@ export default function Page() {
               assetChildren={dashboardAssetData.children}
             />
           ) : (
-            <AssetLocationDataForm data={dashboardAssetData.data!} />
+            <AssetLocationDataForm
+              data={
+                queryRoute.mode === "create"
+                  ? AssetData.createNew(
+                      getAssetType(queryRoute.assetType),
+                      queryRoute.ancestors || []
+                    ).toEntity()
+                  : dashboardAssetData.data
+              }
+            />
           )}
         </div>
       </div>

@@ -7,7 +7,7 @@ import {
   AssetDataUseCase,
 } from "@/domain/Services/AssetDataService";
 
-import { getAssetLayerRules } from "@/domain/entities/AssetType";
+import { getAssetLayerRules, getAssetType } from "@/domain/entities/AssetType";
 
 export async function createNewData(data: AssetLocationEntity) {
   const repo = new MongoAssetLocRepository();
@@ -48,23 +48,23 @@ export async function getDashboardAssetData(assetId: string) {
   return { data, ancestors, sibling, children };
 }
 
-// export async function getDashboardAssetDataInCreateMode(parentId: string) {
-//   console.log("getDashboardAssetDataInCreateMode", parentId);
-//   const repo = new MongoAssetLocRepository();
-//   const assetDataUseCase = new AssetDataUseCase(repo);
+export async function getDashboardAssetDataInCreateMode(
+  ancestor: string[],
+  assetType: string
+) {
+  const repo = new MongoAssetLocRepository();
+  const assetDataUseCase = new AssetDataUseCase(repo);
 
-//   const parentData = await assetDataUseCase.getAssetData(parentId);
-//   const searchPath = [...parentData.ancestors, parentData.id!];
+  const sibling = await assetDataUseCase.getAssetSibling(ancestor);
+  // all the data from the ancestors path array
+  const ancestors = await assetDataUseCase.getAssetAncestors(ancestor);
 
-//   const sibling = await assetDataUseCase.getAssetSibling(searchPath);
-//   // all the data from the ancestors path array
-//   const ancestors = await assetDataUseCase.getAssetAncestors(searchPath);
+  const newData = AssetData.createNew(
+    getAssetType(assetType),
+    ancestor
+  ).toEntity();
 
-//   const newAssetDataType = getAssetLayerRules(parentData.type).childrenType;
+  const children: AssetLocationEntity[] = [];
 
-//   const newData = AssetData.createNew(newAssetDataType, searchPath).toEntity();
-
-//   const children: AssetLocationEntity[] = [];
-
-//   return { newData, ancestors, sibling, children };
-// }
+  return { newData, ancestors, sibling, children };
+}

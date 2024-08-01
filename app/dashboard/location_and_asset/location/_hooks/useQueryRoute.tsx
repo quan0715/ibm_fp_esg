@@ -9,11 +9,13 @@ export function useAssetQueryRoute() {
   const mode = searchParams.get("mode") || "display";
   const assetId = searchParams.get("asset") || "";
   const parentId: string = searchParams.get("parent") || "";
+  const ancestors = searchParams.get("ancestors")?.split(",");
+  const assetType = searchParams.get("type") || "";
 
   function createQueryString(
     selected?: string,
-    mode?: string,
-    parent?: string
+    mode?: string
+    // ancestorPath?: string
   ): string {
     const params = new URLSearchParams();
     if (selected) {
@@ -22,10 +24,6 @@ export function useAssetQueryRoute() {
     if (mode) {
       params.set("mode", mode);
     }
-    if (mode && mode === "create" && parent) {
-      params.set("parent", parent);
-    }
-
     return params.toString();
   }
 
@@ -45,14 +43,16 @@ export function useAssetQueryRoute() {
     return getPath(createQueryString(assetId, "display"));
   }
 
-  function getCreateURL(parent: string) {
-    console.log("parent", parent);
-    return getPath(createQueryString(undefined, "create", parent));
-  }
-
   const editURL = getPath(createQueryString(assetId, "edit"));
   const createURL = getPath(createQueryString(assetId, "create"));
 
+  function createNewAsset(assetType: string, ancestors: string[]) {
+    const params = new URLSearchParams();
+    params.set("mode", "create");
+    params.set("ancestors", ancestors.join(","));
+    params.set("type", assetType);
+    router.push(getPath(params.toString()));
+  }
   function setAssetId(selected: string, isEdit: boolean = false) {
     const newRoute = createQueryString(selected, isEdit ? "edit" : "display");
     router.push(getPath(newRoute));
@@ -65,11 +65,13 @@ export function useAssetQueryRoute() {
     mode,
     assetId,
     parentId,
+    ancestors,
+    assetType,
     setAssetId,
     editURL,
     createURL,
+    createNewAsset,
     getNewDisplayURL,
-    getCreateURL,
     moveBack,
     revalidatePath,
   };

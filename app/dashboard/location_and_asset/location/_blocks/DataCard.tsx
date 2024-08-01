@@ -190,16 +190,17 @@ export function AssetLocDataCard({
               variant={"outline"}
               className="p-4 col-span-1 rounded-lg border h-full"
               onClick={async () => {
-                console.log(
-                  "presentation: UI button clicked - create new data"
-                );
-                const newAssetIndex = await createNewData(
-                  AssetData.createNew(
-                    type,
-                    [...data.ancestors, data.id!] // add current asset id to ancestors
-                  ).toEntity()
-                );
-                queryRoute.setAssetId(newAssetIndex);
+                // console.log(
+                //   "presentation: UI button clicked - create new data"
+                // );
+                // const newAssetIndex = await createNewData(
+                //   AssetData.createNew(
+                //     type,
+                //     [...data.ancestors, data.id!] // add current asset id to ancestors
+                //   ).toEntity()
+                // );
+                // queryRoute.setAssetId(newAssetIndex);
+                queryRoute.createNewAsset(type, [...data.ancestors, data.id!]);
               }}
             >
               <div

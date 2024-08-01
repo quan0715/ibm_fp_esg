@@ -68,10 +68,12 @@ export function DashboardColumnLabel({
 }
 
 export function AssetDataList({
+  className,
   assetType,
   assetSearchPath,
   assetDataList,
 }: {
+  className?: string;
   assetType: AssetType;
   assetSearchPath: string[];
   assetDataList: AssetLocationEntity[];
@@ -87,7 +89,7 @@ export function AssetDataList({
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <DashboardCard>
+    <DashboardCard className={cn(className)}>
       <DashboardCardHeader
         title={getAssetEntityInfo(assetType).label}
         titleComponent={(title: string) => (
@@ -127,18 +129,18 @@ export function AssetDataList({
           className={cn(colorVariant.textColor)}
           onClick={async () => {
             console.log("presentation: UI button clicked - create new data");
-            setIsLoading(true);
-            // set 3 seconds delay to simulate server response
-            // await new Promise((resolve) => setTimeout(resolve, 3000));
-
-            const newAssetIndex = await createNewData(
-              AssetData.createNew(
-                assetType,
-                assetSearchPath // add current asset id to ancestors
-              ).toEntity()
-            );
-            setIsLoading(false);
-            queryPathService.setAssetId(newAssetIndex);
+            // setIsLoading(true);
+            // // set 3 seconds delay to simulate server response
+            // // await new Promise((resolve) => setTimeout(resolve, 3000));
+            // const newAssetIndex = await createNewData(
+            //   AssetData.createNew(
+            //     assetType,
+            //     assetSearchPath // add current asset id to ancestors
+            //   ).toEntity()
+            // );
+            // setIsLoading(false);
+            // queryPathService.setAssetId(newAssetIndex);
+            queryPathService.createNewAsset(assetType, assetSearchPath);
           }}
         >
           <LuPlus />
