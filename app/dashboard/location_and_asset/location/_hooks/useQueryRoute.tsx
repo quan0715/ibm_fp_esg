@@ -36,7 +36,7 @@ export function useAssetQueryRoute() {
   }
 
   function revalidatePath() {
-    router.push(pathName + "?" + searchParams.toString());
+    router.replace(pathName + "?" + searchParams.toString());
   }
 
   function getNewDisplayURL(assetId: string) {

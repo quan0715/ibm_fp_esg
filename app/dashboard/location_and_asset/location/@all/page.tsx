@@ -20,6 +20,8 @@ import {
   getAssetType,
 } from "@/domain/entities/AssetType";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
+import { useAssetLocationData } from "../_hooks/useAssetLocationData";
+
 type AssetDataDisplay = {
   data: AssetLocationEntity;
   ancestors: AssetLocationEntity[];
@@ -31,104 +33,75 @@ export default function Page() {
   const searchParams = useSearchParams();
   const queryRoute = useAssetQueryRoute();
 
-  const [dashboardAssetData, setDashboardAssetData] =
-    useState<AssetDataDisplay>({
-      data: AssetData.createNew(AssetType.Organization, []).toEntity(),
-      ancestors: [],
-      sibling: [],
-      children: [],
-    });
+  const assetDataSearch = useAssetLocationData();
 
   useEffect(() => {
-    async function fetchData() {
-      if (queryRoute.mode === "create") {
-        console.log("create mode");
-        const res = await getDashboardAssetDataInCreateMode(
-          queryRoute.ancestors || [],
-          queryRoute.assetType
-        );
-        setDashboardAssetData({
-          data: res.newData,
-          ancestors: res.ancestors,
-          sibling: res.sibling,
-          children: res.children,
-        });
-        console.log("create data", res.newData);
-        console.log("create ancestors", res.ancestors);
-        console.log("create sibling", res.sibling);
-      } else {
-        const res = await getDashboardAssetData(queryRoute.assetId);
-
-        if (queryRoute.assetId.length === 0) {
-          queryRoute.setAssetId(res.data.id!);
-        }
-
-        setDashboardAssetData({
-          data: res.data,
-          ancestors: res.ancestors,
-          sibling: res.sibling,
-          children: res.children,
-        });
-      }
-    }
-
-    fetchData();
+    assetDataSearch.setAssetId(queryRoute.assetId);
   }, [searchParams]);
 
-  const parent =
-    dashboardAssetData.ancestors.length > 0
-      ? dashboardAssetData.ancestors[dashboardAssetData.ancestors.length - 1]
-      : undefined;
+  function getAssetTypeFromParent() {
+    const parent =
+      assetDataSearch.ancestors.length > 0
+        ? assetDataSearch.ancestors[assetDataSearch.ancestors.length - 1]
+        : undefined;
 
-  const ancestorType = parent !== undefined ? parent.type : AssetType.None;
+    return parent !== undefined ? parent.type : AssetType.None;
+  }
 
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
-      <div className="w-full min-h-screen grid grid-cols-4 gap-4">
-        <div className="w-full flex flex-col justify-start items-center space-y-2">
-          {dashboardAssetData.ancestors.map((ancestor) => (
-            <DashboardColumnMin
-              assetType={ancestor.type}
-              assetData={ancestor}
-              onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable
-              key={ancestor.name}
-            />
-          ))}
-          <div className="pl-4 w-full flex flex-col items-center justify-center space-y-2">
-            {getAssetChildrenTypeOptions(ancestorType).map((type) => (
-              <AssetDataList
-                key={type}
-                assetType={type}
-                assetSearchPath={dashboardAssetData.data.ancestors}
-                assetDataList={dashboardAssetData.sibling.filter(
-                  (data) => data.type === type
-                )}
+      {assetDataSearch.isFetchingData ||
+      assetDataSearch.assetData === undefined ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="w-full min-h-screen grid grid-cols-4 gap-4">
+          <div className="w-full flex flex-col justify-start items-center space-y-2">
+            {assetDataSearch.ancestors.map((ancestor) => (
+              <DashboardColumnMin
+                assetType={ancestor.type}
+                assetData={ancestor}
+                onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable
+                key={ancestor.name}
               />
             ))}
+            <div className="pl-4 w-full flex flex-col items-center justify-center space-y-2">
+              {getAssetChildrenTypeOptions(getAssetTypeFromParent()).map(
+                (type) => (
+                  <AssetDataList
+                    key={type}
+                    assetType={type}
+                    assetSearchPath={assetDataSearch.assetData?.ancestors ?? []}
+                    assetDataList={assetDataSearch.sibling.filter(
+                      (data) => data.type === type
+                    )}
+                  />
+                )
+              )}
+            </div>
+          </div>
+          <div className="col-span-3">
+            {assetDataSearch.sibling.length > 0 &&
+            queryRoute.mode === "display" ? (
+              <AssetLocDataCard
+                data={assetDataSearch.assetData!}
+                key={assetDataSearch.assetData!.name}
+                assetChildren={assetDataSearch.children}
+              />
+            ) : (
+              <AssetLocationDataForm
+                data={
+                  queryRoute.mode === "create"
+                    ? AssetData.createNew(
+                        getAssetType(queryRoute.assetType),
+                        queryRoute.ancestors || []
+                      ).toEntity()
+                    : assetDataSearch.assetData!
+                }
+              />
+            )}
           </div>
         </div>
-        <div className="col-span-3">
-          {dashboardAssetData.sibling.length > 0 &&
-          queryRoute.mode === "display" ? (
-            <AssetLocDataCard
-              data={dashboardAssetData.data!}
-              key={dashboardAssetData.data!.name}
-              assetChildren={dashboardAssetData.children}
-            />
-          ) : (
-            <AssetLocationDataForm
-              data={
-                queryRoute.mode === "create"
-                  ? AssetData.createNew(
-                      getAssetType(queryRoute.assetType),
-                      queryRoute.ancestors || []
-                    ).toEntity()
-                  : dashboardAssetData.data
-              }
-            />
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

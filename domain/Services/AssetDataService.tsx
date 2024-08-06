@@ -53,6 +53,15 @@ export class AssetDataUseCase {
     return remoteData;
   }
 
+  async getSearchPathAssetList(
+    searchPath: string[]
+  ): Promise<AssetLocationEntity[]> {
+    const remoteData = await this.repository.retrieveAssetLocData({
+      _id: { $in: searchPath.map((id) => new ObjectId(id)) },
+    });
+    return remoteData;
+  }
+
   async deleteAssetData(id: string): Promise<string> {
     if (id === "") {
       throw new Error("Asset Id is required");

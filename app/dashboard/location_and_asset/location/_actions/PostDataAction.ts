@@ -48,6 +48,36 @@ export async function getDashboardAssetData(assetId: string) {
   return { data, ancestors, sibling, children };
 }
 
+export async function getAssetDataWithId(id: string) {
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  console.log("getAssetDataWithId", id);
+  const repo = new MongoAssetLocRepository();
+  const assetDataUseCase = new AssetDataUseCase(repo);
+  const data = await assetDataUseCase.getAssetData(id);
+  return data;
+}
+
+export async function getAssetChildren(searchPath: string[], id: string) {
+  const repo = new MongoAssetLocRepository();
+  const assetDataUseCase = new AssetDataUseCase(repo);
+  const data = await assetDataUseCase.getAssetChildren(searchPath, id);
+  return data;
+}
+
+export async function getAssetSibling(searchPath: string[]) {
+  const repo = new MongoAssetLocRepository();
+  const assetDataUseCase = new AssetDataUseCase(repo);
+  const data = await assetDataUseCase.getAssetSibling(searchPath);
+  return data;
+}
+
+export async function getAssetAncestors(searchPath: string[]) {
+  const repo = new MongoAssetLocRepository();
+  const assetDataUseCase = new AssetDataUseCase(repo);
+  const data = await assetDataUseCase.getAssetAncestors(searchPath);
+  return data;
+}
+
 export async function getDashboardAssetDataInCreateMode(
   ancestor: string[],
   assetType: string
@@ -67,4 +97,17 @@ export async function getDashboardAssetDataInCreateMode(
   const children: AssetLocationEntity[] = [];
 
   return { newData, ancestors, sibling, children };
+}
+
+export async function serverActionWrapper(
+  action: () => Promise<any>,
+  successMessage: string = "Server Action Success",
+  errorMessage: string = "Server Action Error"
+) {
+  try {
+    console.log(successMessage);
+    return await action();
+  } catch (error) {
+    console.error(errorMessage, error);
+  }
 }
