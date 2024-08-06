@@ -49,7 +49,6 @@ export async function getDashboardAssetData(assetId: string) {
 }
 
 export async function getAssetDataWithId(id: string) {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
   console.log("getAssetDataWithId", id);
   const repo = new MongoAssetLocRepository();
   const assetDataUseCase = new AssetDataUseCase(repo);

@@ -11,32 +11,8 @@ import { AssetDataUseCase } from "@/domain/Services/AssetDataService";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useTransition } from "react";
-import { get } from "http";
+import { start } from "repl";
 import { set } from "date-fns";
-class DataCache {
-  cache: Map<string, AssetLocationEntity>;
-  constructor() {
-    this.cache = new Map();
-  }
-
-  get(key: string) {
-    console.log("get", key);
-    return this.cache.get(key);
-  }
-
-  set(key: string, value: AssetLocationEntity) {
-    this.cache.set(key, value);
-    console.log("set", key, value);
-  }
-
-  has(key: string) {
-    return this.cache.has(key);
-  }
-
-  clear() {
-    this.cache.clear();
-  }
-}
 
 class SearchPathCache {
   cache: Map<string, Map<string, AssetLocationEntity>>;
@@ -75,22 +51,37 @@ class SearchPathCache {
 
   setPath(path: string, value: Map<string, AssetLocationEntity>) {
     this.cache.set(path, value);
-    console.log("set", path, value);
+    // console.log("set", path, value);
   }
 
   setAsset(path: string, assetId: string, value: AssetLocationEntity) {
     let map = this.cache.get(path) || new Map();
     map.set(assetId, value);
     this.cache.set(path, map);
-    console.log("set: ", "path:", path, "id: ", assetId, "data: ", value);
+    // console.log("set: ", "path:", path, "id: ", assetId, "data: ", value);
+  }
+
+  deleteAsset(assetId: string) {
+    for (let path of Array.from(this.cache.keys())) {
+      let value = this.cache.get(path) ?? new Map();
+      if (value.has(assetId)) {
+        value.delete(assetId);
+        this.cache.set(path, value);
+      }
+    }
+  }
+
+  clear() {
+    this.cache.clear();
   }
 }
 
-const dataCache = new DataCache();
-const searchPathCache = new SearchPathCache();
+export const searchPathCache = new SearchPathCache();
 
 export function useAssetLocationData() {
   const [assetId, setAssetId] = useState("");
+  const [mode, setMode] = useState("display");
+
   const [assetData, setAssetData] = useState<AssetLocationEntity>();
   const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
   const [sibling, setSibling] = useState<AssetLocationEntity[]>([]);
@@ -102,24 +93,38 @@ export function useAssetLocationData() {
   const [isDataCreating, startCreateData] = useTransition();
 
   useEffect(() => {
-    if (assetId && assetId !== "") {
-      console.log("useEffect: fetch data ", assetId);
-      fetchData();
-      //   return;
+    if (assetId !== undefined) {
+      //   console.log("useEffect: fetch data ", assetId);
+      console.log("fetching data", assetId);
+      if (assetId && assetId !== "") {
+        fetchData();
+      }
+      //   if (assetId == "none" && mode == "display") {
+      //     emptyIndex();
+      //   }
     }
-  }, [assetId]);
+  }, [assetId, mode]);
 
   useEffect(() => {
     if (assetId && assetId !== "") {
-      console.log("useEffect: fetchChildren", assetId);
       fetchChildren();
-      //   return;
     }
   }, [assetData]);
 
+  async function emptyIndex() {
+    startGetData(async () => {
+      console.log("empty index");
+      const data = await getAssetDataWithId(assetId);
+      searchPathCache.setAsset("", data.id!, data);
+      setAssetId(data.id!);
+    });
+
+    // const queryRoute = useAssetQueryRoute();
+  }
+
   async function fetchData() {
     startGetData(async () => {
-      console.log("fetching data");
+      //   console.log("fetching data");
       let isCached = searchPathCache.hasAsset(assetId);
       let data: AssetLocationEntity;
       let ancestorData: AssetLocationEntity[] = [];
@@ -151,10 +156,14 @@ export function useAssetLocationData() {
             ancestor
           )
         );
+        console.log("ancestorData", ancestorData);
         siblingData.map((sibling) =>
           searchPathCache.setAsset(path, sibling.id!, sibling)
         );
       }
+      //   if (data.id !== assetId) {
+      //     setAssetId(data.id!);
+      //   }
       setAssetData(data);
       setSibling(siblingData);
       setAncestors(ancestorData);
@@ -170,6 +179,7 @@ export function useAssetLocationData() {
 
       if (isCached) {
         // console.log("data is cached");
+        console.log("data is cached", searchPathCache);
         childrenData = Array.from(searchPathCache.getPath(path)!).map(
           ([key, value]) => value
         );
@@ -184,7 +194,7 @@ export function useAssetLocationData() {
         );
       }
 
-      console.log("childrenData", childrenData);
+      //   console.log("childrenData", childrenData);
       setChildren(childrenData);
     });
   }
@@ -193,7 +203,10 @@ export function useAssetLocationData() {
     assetData,
     ancestors,
     sibling,
+    assetId,
+    mode,
     setAssetId,
+    setMode,
     children,
     isFetchingData,
     isFetchingChildren,

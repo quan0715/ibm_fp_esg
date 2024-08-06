@@ -1,18 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import {
   AssetDataList,
   DashboardColumnMin,
 } from "@/app/dashboard/location_and_asset/location/_blocks/DataColumn";
 import { AssetLocDataCard } from "../_blocks/DataCard";
-import { useState } from "react";
-import {
-  getDashboardAssetData,
-  getDashboardAssetDataInCreateMode,
-  // getDashboardAssetDataInCreateMode,
-} from "@/app/dashboard/location_and_asset/location/_actions/PostDataAction";
 import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
-import { useSearchParams } from "next/navigation";
 import { AssetLocationDataForm } from "../_blocks/DataForm";
 import {
   AssetType,
@@ -21,23 +14,43 @@ import {
 } from "@/domain/entities/AssetType";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { useAssetLocationData } from "../_hooks/useAssetLocationData";
+import { Skeleton } from "@/components/ui/skeleton";
 
-type AssetDataDisplay = {
-  data: AssetLocationEntity;
-  ancestors: AssetLocationEntity[];
-  sibling: AssetLocationEntity[];
-  children: AssetLocationEntity[];
-};
+function LoadingWidget() {
+  return (
+    <div className="flex w-fit p-4 flex-row justify-center items-center space-x-2">
+      <div className="w-3 h-3 rounded-full bg-red-500 delay-0 animate-bounce"></div>
+      <div className="w-3 h-3 rounded-full bg-blue-500 delay-75 animate-bounce"></div>
+      <div className="w-3 h-3 rounded-full bg-purple-500 delay-150 animate-bounce"></div>
+      <div className="w-3 h-3 rounded-full bg-green-500 delay-225 animate-bounce"></div>
+      <div className="w-3 h-3 rounded-full bg-yellow-500 delay-300 animate-bounce"></div>
+    </div>
+  );
+}
 
 export default function Page() {
-  const searchParams = useSearchParams();
   const queryRoute = useAssetQueryRoute();
 
   const assetDataSearch = useAssetLocationData();
+  const mode = queryRoute.mode;
+  const assetId = queryRoute.assetId;
 
+  if (assetId === "" && mode === "display") {
+    queryRoute.setAssetId("669764b4e1b6f7cb9d170a31");
+  }
   useEffect(() => {
-    assetDataSearch.setAssetId(queryRoute.assetId);
-  }, [searchParams]);
+    console.log("assetId", assetId, "mode", mode);
+    assetDataSearch.setAssetId(assetId);
+    assetDataSearch.setMode(mode);
+  }, [assetId, mode]);
+
+  // useEffect(() => {
+  //   if (!assetDataSearch.isFetchingData) {
+  //     if (assetId !== assetDataSearch.assetId) {
+  //       queryRoute.setAssetId(assetDataSearch.assetId);
+  //     }
+  //   }
+  // }, [assetDataSearch.isFetchingData]);
 
   function getAssetTypeFromParent() {
     const parent =
@@ -47,14 +60,16 @@ export default function Page() {
 
     return parent !== undefined ? parent.type : AssetType.None;
   }
-
+  const isLoading =
+    assetDataSearch.isFetchingData || assetDataSearch.assetData === undefined;
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
-      {assetDataSearch.isFetchingData ||
-      assetDataSearch.assetData === undefined ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="w-full min-h-screen grid grid-cols-4 gap-4">
+      <div className="w-full min-h-screen grid grid-cols-4 gap-4">
+        {isLoading ? (
+          <Skeleton className="bg-white w-full flex flex-col justify-center items-center space-y-2">
+            <LoadingWidget />
+          </Skeleton>
+        ) : (
           <div className="w-full flex flex-col justify-start items-center space-y-2">
             {assetDataSearch.ancestors.map((ancestor) => (
               <DashboardColumnMin
@@ -70,7 +85,7 @@ export default function Page() {
                   <AssetDataList
                     key={type}
                     assetType={type}
-                    assetSearchPath={assetDataSearch.assetData?.ancestors ?? []}
+                    assetSearchPath={assetDataSearch.assetData!.ancestors}
                     assetDataList={assetDataSearch.sibling.filter(
                       (data) => data.type === type
                     )}
@@ -79,29 +94,33 @@ export default function Page() {
               )}
             </div>
           </div>
-          <div className="col-span-3">
-            {assetDataSearch.sibling.length > 0 &&
+        )}
+        <div className="col-span-3">
+          {isLoading || assetDataSearch.isFetchingChildren ? (
+            <Skeleton className="bg-white w-full h-full flex flex-col justify-center items-center space-y-2">
+              <LoadingWidget />
+            </Skeleton>
+          ) : assetDataSearch.sibling.length > 0 &&
             queryRoute.mode === "display" ? (
-              <AssetLocDataCard
-                data={assetDataSearch.assetData!}
-                key={assetDataSearch.assetData!.name}
-                assetChildren={assetDataSearch.children}
-              />
-            ) : (
-              <AssetLocationDataForm
-                data={
-                  queryRoute.mode === "create"
-                    ? AssetData.createNew(
-                        getAssetType(queryRoute.assetType),
-                        queryRoute.ancestors || []
-                      ).toEntity()
-                    : assetDataSearch.assetData!
-                }
-              />
-            )}
-          </div>
+            <AssetLocDataCard
+              data={assetDataSearch.assetData!}
+              key={assetDataSearch.assetData!.name}
+              assetChildren={assetDataSearch.children}
+            />
+          ) : (
+            <AssetLocationDataForm
+              data={
+                queryRoute.mode === "create"
+                  ? AssetData.createNew(
+                      getAssetType(queryRoute.assetType),
+                      queryRoute.ancestors || []
+                    ).toEntity()
+                  : assetDataSearch.assetData!
+              }
+            />
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
