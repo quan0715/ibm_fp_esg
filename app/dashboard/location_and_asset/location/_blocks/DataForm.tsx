@@ -64,6 +64,7 @@ export function AssetLocationDataForm({
     if (queryRoute.mode === "create") {
       const newAssetDataId = await createNewData(res);
       queryRoute.setAssetId(newAssetDataId);
+      // console.log("create data", res);
     } else if (queryRoute.mode === "edit") {
       await updateData(res);
 

@@ -47,6 +47,10 @@ export class AssetDataUseCase {
   async getAssetAncestors(
     searchPath: string[]
   ): Promise<AssetLocationEntity[]> {
+    // console.log("getAssetAncestors", searchPath);
+    if (searchPath.length === 0) {
+      return [];
+    }
     const remoteData = await this.repository.retrieveAssetLocData({
       _id: { $in: searchPath.map((id) => new ObjectId(id)) },
     });

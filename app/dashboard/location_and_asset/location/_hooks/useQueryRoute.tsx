@@ -9,7 +9,9 @@ export function useAssetQueryRoute() {
   const mode = searchParams.get("mode") || "display";
   const assetId = searchParams.get("asset") || "";
   const parentId: string = searchParams.get("parent") || "";
-  const ancestors = searchParams.get("ancestors")?.split(",");
+  const ancestors = !searchParams.get("ancestors")
+    ? []
+    : searchParams.get("ancestors")?.split(",");
   const assetType = searchParams.get("type") || "";
 
   function createQueryString(

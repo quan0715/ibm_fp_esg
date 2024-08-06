@@ -44,14 +44,6 @@ export default function Page() {
     assetDataSearch.setMode(mode);
   }, [assetId, mode]);
 
-  // useEffect(() => {
-  //   if (!assetDataSearch.isFetchingData) {
-  //     if (assetId !== assetDataSearch.assetId) {
-  //       queryRoute.setAssetId(assetDataSearch.assetId);
-  //     }
-  //   }
-  // }, [assetDataSearch.isFetchingData]);
-
   function getAssetTypeFromParent() {
     const parent =
       assetDataSearch.ancestors.length > 0
