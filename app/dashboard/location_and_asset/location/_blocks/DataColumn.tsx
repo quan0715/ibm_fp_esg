@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 
 import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { AssetType } from "@/domain/entities/AssetType";
 import {
   DashboardCard,
@@ -151,7 +151,7 @@ export function AssetDataList({
   );
 }
 
-export function AssetLocDataListView({
+export const AssetLocDataListView = memo(function AssetLocDataListView({
   data,
   selected = false,
   onClick,
@@ -192,9 +192,9 @@ export function AssetLocDataListView({
       ) : null}
     </div>
   );
-}
+});
 
-export function DashboardColumnMin({
+export const DashboardColumnMin = memo(function DashboardColumnMin({
   assetType,
   assetData,
   onClick,
@@ -234,4 +234,4 @@ export function DashboardColumnMin({
       </DashboardCard>
     </div>
   );
-}
+});

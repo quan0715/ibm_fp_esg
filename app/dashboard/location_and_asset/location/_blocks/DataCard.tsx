@@ -50,6 +50,7 @@ import {
   useAssetDataDelete,
   useAssetLocationData,
 } from "../_hooks/useAssetLocationData";
+import { motion } from "framer-motion";
 function DeleteDialog({ deleteAssetIndex }: { deleteAssetIndex: string }) {
   const queryRoute = useAssetQueryRoute();
   const deleteAssetHook = useAssetDataDelete();
@@ -269,15 +270,21 @@ export function AssetLocDataCard({
       <div>isLoading</div>
     </DashboardCard>
   ) : (
-    <DashboardCard className="shadow-sm w-full  min-h-screen ">
-      <DashboardCardHeader title="">
-        <HeaderField />
-      </DashboardCardHeader>
-      <DashboardCardContent className="flex flex-col space-y-2">
-        <LocationDataFields />
-        <ChildrenList />
-      </DashboardCardContent>
-    </DashboardCard>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, ease: "easeInOut" }}
+    >
+      <DashboardCard className="shadow-sm w-full  min-h-screen ">
+        <DashboardCardHeader title="">
+          <HeaderField />
+        </DashboardCardHeader>
+        <DashboardCardContent className="flex flex-col space-y-2">
+          <LocationDataFields />
+          <ChildrenList />
+        </DashboardCardContent>
+      </DashboardCard>
+    </motion.div>
   );
 }
 
