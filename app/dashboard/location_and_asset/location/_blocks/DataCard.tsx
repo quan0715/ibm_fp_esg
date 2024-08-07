@@ -152,6 +152,7 @@ export function AssetLocDataCard({
                   <MultiChildrenLayout>
                     {assetChildren!.map((child) => (
                       <ChildAttributeButton
+                        key={child.id}
                         className="w-full md:max-w-[250px] h-fit"
                         onClick={() => queryRoute.setAssetId(child.id ?? "")}
                         label={child.name}
