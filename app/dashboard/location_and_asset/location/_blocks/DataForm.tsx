@@ -25,7 +25,7 @@ import { DashboardColumnLabel } from "./DataColumn";
 import {
   DashboardCard,
   DashboardCardContent,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 import { InfoBlock } from "./DataCard";
 import { Separator } from "@/components/ui/separator";
@@ -334,7 +334,7 @@ export function AssetLocationDataForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <DashboardCard className="shadow-sm w-full  min-h-screen ">
-          <DashboardCardHeader title=""></DashboardCardHeader>
+          <DashboardCardHeaderTest title=""></DashboardCardHeaderTest>
           <DashboardCardContent className="flex flex-col space-y-2">
             {AssetHeaderField()}
             <Separator />

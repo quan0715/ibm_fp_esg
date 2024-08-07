@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   DashboardCard,
   DashboardCardContent,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 
 import * as React from "react";
@@ -211,7 +211,7 @@ export default function Data() {
     <div className={"w-full h-svh grid grid-cols-4 grid-rows-1 gap-4"}>
       <div className="col-span-1">
         <DashboardCard className="w-full h-full">
-          <DashboardCardHeader title={"篩選列表"} />
+          <DashboardCardHeaderTest title={"篩選列表"} />
           <DashboardCardContent>
             <FilterEntry name={"版次"}>
               <Select>
@@ -290,7 +290,7 @@ export default function Data() {
       </div>
       <div className="col-span-3">
         <DashboardCard className="w-full h-full">
-          <DashboardCardHeader title={"GHG各廠區 原始數據"} />
+          <DashboardCardHeaderTest title={"GHG各廠區 原始數據"} />
           <DashboardCardContent>
             <DataTable columns={columns} data={tempRawData} />
           </DashboardCardContent>

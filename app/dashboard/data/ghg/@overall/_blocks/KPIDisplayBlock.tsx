@@ -1,7 +1,7 @@
 import {
   DashboardCard,
   DashboardCardContent,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 import { Separator } from "@/components/ui/separator";
 
@@ -49,7 +49,7 @@ function KPICard({ title, kpiList }: { title: string; kpiList: KPIData[] }) {
 
   return (
     <DashboardCard>
-      <DashboardCardHeader title={title} />
+      <DashboardCardHeaderTest title={title} />
       <DashboardCardContent>
         <div className="w-full h-16 lg:h-20 flex flex-row justify-center items-center space-x-2 px-2 py-1">
           {getKPIListWithSeparator(kpiList)}

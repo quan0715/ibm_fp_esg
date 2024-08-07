@@ -7,7 +7,7 @@ import { AssetType } from "@/domain/entities/AssetType";
 import {
   DashboardCard,
   DashboardCardContent,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 
 import {
@@ -89,7 +89,7 @@ export function AssetDataList({
 
   return (
     <DashboardCard className={cn(className)}>
-      <DashboardCardHeader
+      <DashboardCardHeaderTest
         title={getAssetEntityInfo(assetType).label}
         titleComponent={(title: string) => (
           <DashboardColumnLabel
@@ -98,7 +98,7 @@ export function AssetDataList({
             length={assetDataList.length}
           />
         )}
-      ></DashboardCardHeader>
+      ></DashboardCardHeaderTest>
       <DashboardCardContent>
         <div className={"w-full h-fit grid grid-cols-1 gap-4"}>
           {assetDataList.map((data, index) => {

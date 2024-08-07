@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, use, useEffect, useState } from "react";
+import React, { ReactNode, Suspense, use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LuFileEdit, LuLink } from "react-icons/lu";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,11 @@ import { Separator } from "@/components/ui/separator";
 import {
   DashboardCard,
   DashboardCardContent,
+  DashboardCardActionList,
+  DashboardCardHeaderDescription,
+  DashboardCardHeaderTitle,
   DashboardCardHeader,
+  DashboardCardHeaderContent,
 } from "@/app/dashboard/_components/DashboardCard";
 
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
@@ -40,48 +44,9 @@ export function AssetLocDataCard({
   assetChildren: AssetLocationEntity[];
 }) {
   const queryRoute = useAssetQueryRoute();
-  const HeaderField = () => {
-    return (
-      <div className="w-full flex flex-row justify-between items-center">
-        <div className="flex-grow flex flex-col space-y-0 justify-start items-start">
-          <h1
-            className={cn(
-              "text-lg font-semibold",
-              colorVariants[
-                getAssetEntityInfo(data?.type ?? AssetType.None).color
-              ].textColor
-            )}
-          >
-            {data?.name ?? ""}
-          </h1>
-          <p className={"text-sm text-gray-500 text-start"}>
-            {data?.description ?? ""}
-          </p>
-        </div>
-        <div className="flex-shrink flex flex-row space-x-2">
-          <Button
-            size={"icon"}
-            variant="outline"
-            className="flex flex-row justify-center items-center space-x-2"
-            asChild
-          >
-            <Link href={queryRoute.editURL}>
-              <LuFileEdit />
-            </Link>
-          </Button>
-
-          {assetChildren.length === 0 ? (
-            <DeleteDialog deleteAssetIndex={data.id ?? ""} />
-          ) : null}
-          <div className="block md:hidden">
-            <Suspense>
-              <DisplayMenuDialog />
-            </Suspense>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const textColor =
+    colorVariants[getAssetEntityInfo(data?.type ?? AssetType.None).color]
+      .textColor;
 
   const layoutConfig = {
     sections: [
@@ -175,9 +140,188 @@ export function AssetLocDataCard({
       animate={{ opacity: 1 }}
       transition={{ duration: 1, ease: "easeInOut" }}
     >
-      <DashboardCard className="shadow-sm w-full  min-h-screen ">
-        <DashboardCardHeader title="">
-          <HeaderField />
+      <DashboardCard className="shadow-sm w-full min-h-screen ">
+        <DashboardCardHeader>
+          <DashboardCardHeaderContent>
+            <DashboardCardHeaderTitle title={data.name} className={textColor} />
+            <DashboardCardHeaderDescription description={data.description} />
+          </DashboardCardHeaderContent>
+          <DashboardCardActionList>
+            <Button
+              size={"icon"}
+              variant="outline"
+              className="flex flex-row justify-center items-center space-x-2"
+              onClick={() => {
+                queryRoute.setAssetId(data.id!, true);
+              }}
+            >
+              <LuFileEdit />
+            </Button>
+
+            {assetChildren.length === 0 ? (
+              <DeleteDialog deleteAssetIndex={data.id ?? ""} />
+            ) : null}
+
+            <div className="block md:hidden">
+              <DisplayMenuDialog />
+            </div>
+          </DashboardCardActionList>
+        </DashboardCardHeader>
+        <DashboardCardContent className="flex flex-col space-y-2">
+          {layoutConfig.sections.map((section, index) => {
+            return (
+              <DataSection key={index}>
+                {section.rows.map((row, index) => {
+                  return <DataCardRow key={index} blocks={row.blocks} />;
+                })}
+              </DataSection>
+            );
+          })}
+        </DashboardCardContent>
+      </DashboardCard>
+    </motion.div>
+  );
+}
+
+export function AssetDataCard({
+  // data,
+  // assetChildren = [],
+  ...props
+}: {
+  // data: AssetLocationEntity;
+  // assetChildren: AssetLocationEntity[];
+}) {
+  // const queryRoute = useAssetQueryRoute();
+  const textColor =
+    colorVariants[getAssetEntityInfo(AssetType.None).color].textColor;
+
+  const layoutConfig = {
+    sections: [
+      {
+        rows: [
+          {
+            blocks: [
+              {
+                assetType: AssetType.None,
+                label: "狀態",
+                value: "啟用中",
+              },
+            ],
+          },
+          {
+            blocks: [
+              {
+                assetType: AssetType.None,
+                label: "Product",
+                value: "Product A",
+              },
+            ],
+          },
+          {
+            blocks: [
+              {
+                assetType: AssetType.None,
+                label: "有效開始日期",
+                value: new Date().toLocaleDateString(),
+              },
+              {
+                assetType: AssetType.None,
+                label: "有效結束日期",
+                value: new Date().toLocaleDateString(),
+              },
+              {
+                assetType: AssetType.None,
+                label: "啟用日期",
+                value: new Date().toLocaleDateString(),
+              },
+              {
+                assetType: AssetType.None,
+                label: "停運日期",
+                value: new Date().toLocaleDateString(),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        rows: [
+          {
+            blocks: [
+              {
+                assetType: AssetType.None,
+                label: "位置資料",
+                children: (
+                  <MultiChildrenLayout>
+                    <ChildAttributeButton
+                      className="w-full md:max-w-[250px] h-fit"
+                      label={"System 1"}
+                    />
+                  </MultiChildrenLayout>
+                ),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        rows: [
+          {
+            blocks: [
+              {
+                assetType: AssetType.None,
+                label: "子資產",
+                children: (
+                  <MultiChildrenLayout>
+                    <ChildAttributeButton
+                      className="w-full md:max-w-[250px] h-fit"
+                      label={"Component1"}
+                    />
+                    <ChildAttributeButton
+                      className="w-full md:max-w-[250px] h-fit"
+                      label={"Component2"}
+                    />
+                    <ChildAttributeButton
+                      className="w-full md:max-w-[250px] h-fit"
+                      label={"Component3"}
+                    />
+                    <ChildAttributeButton
+                      className="w-full md:max-w-[250px] h-fit"
+                      label={"Component4"}
+                    />
+                  </MultiChildrenLayout>
+                ),
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, ease: "easeInOut" }}
+    >
+      <DashboardCard className="shadow-sm w-full min-h-screen ">
+        <DashboardCardHeader>
+          <DashboardCardHeaderContent>
+            <DashboardCardHeaderTitle title={"tool A"} className={textColor} />
+            <DashboardCardHeaderDescription description={"this is tool A"} />
+          </DashboardCardHeaderContent>
+          <DashboardCardActionList>
+            <Button
+              size={"icon"}
+              variant="outline"
+              className="flex flex-row justify-center items-center space-x-2"
+              onClick={() => {
+                // queryRoute.setAssetId(data.id!, true);
+              }}
+            >
+              <LuFileEdit />
+            </Button>
+          </DashboardCardActionList>
         </DashboardCardHeader>
         <DashboardCardContent className="flex flex-col space-y-2">
           {layoutConfig.sections.map((section, index) => {

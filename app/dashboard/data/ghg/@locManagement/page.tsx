@@ -2,7 +2,7 @@
 import { Skeleton } from "@nextui-org/react";
 import {
   DashboardCard,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 
 export default function LocManagement() {
@@ -10,7 +10,7 @@ export default function LocManagement() {
     <div className={"w-full h-[512px] grid grid-cols-2 gap-4"}>
       <div className="col-span-2 bg-background ">
         <DashboardCard>
-          <DashboardCardHeader title={"篩選列表"} />
+          <DashboardCardHeaderTest title={"篩選列表"} />
         </DashboardCard>
       </div>
       <Skeleton className="col-span-1 bg-background"></Skeleton>

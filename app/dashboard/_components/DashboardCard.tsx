@@ -18,6 +18,78 @@ export function DashboardCard({
 }
 
 export function DashboardCardHeader({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn("px-3 py-2 flex flex-row items-center w-full", className)}
+    >
+      {children}
+    </div>
+  );
+}
+export function DashboardCardHeaderContent({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex-grow flex flex-col space-y-0 justify-start items-start",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function DashboardCardHeaderTitle({
+  title = "",
+  className,
+}: {
+  title?: string;
+  className?: string;
+}) {
+  return <h1 className={cn("text-lg font-semibold", className)}>{title}</h1>;
+}
+
+export function DashboardCardHeaderDescription({
+  description = "",
+  className,
+}: {
+  description?: string;
+  className?: string;
+}) {
+  return (
+    <p className={cn("text-sm text-gray-500 text-start", className)}>
+      {description}
+    </p>
+  );
+}
+
+export function DashboardCardActionList({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex-shrink flex flex-row space-x-2", className)}>
+      {children}
+    </div>
+  );
+}
+
+export function DashboardCardHeaderTest({
   title = "",
   titleComponent,
   children,

@@ -14,7 +14,7 @@ import React from "react";
 import {
   DashboardCard,
   DashboardCardContent,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 import {
   type ChartConfig,
@@ -137,7 +137,7 @@ export function ByLocKPIBarChart() {
 
   return (
     <DashboardCard className="h-full">
-      <DashboardCardHeader title="近5年排放量指標" />
+      <DashboardCardHeaderTest title="近5年排放量指標" />
       <DashboardCardContent className="">
         <ChartContainer config={chartConfig} className="max-h-[360px] w-full">
           <BarChart accessibilityLayer data={data}>

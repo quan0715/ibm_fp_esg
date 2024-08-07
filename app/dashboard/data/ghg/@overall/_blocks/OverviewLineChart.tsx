@@ -12,7 +12,7 @@ import {
 import {
   DashboardCard,
   DashboardCardContent,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 import {
   type ChartConfig,
@@ -147,7 +147,9 @@ const chartConfig = {
 export function OverviewLineChart() {
   return (
     <DashboardCard className={"h-full"}>
-      <DashboardCardHeader title={"2030碳排放減量計劃7年7%（scope1+scope2)"} />
+      <DashboardCardHeaderTest
+        title={"2030碳排放減量計劃7年7%（scope1+scope2)"}
+      />
       <DashboardCardContent>
         <ChartContainer config={chartConfig} className="max-h-[300px] w-full">
           <LineChart

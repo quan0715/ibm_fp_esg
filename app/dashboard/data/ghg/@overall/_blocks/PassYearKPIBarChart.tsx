@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   DashboardCard,
   DashboardCardContent,
-  DashboardCardHeader,
+  DashboardCardHeaderTest,
 } from "@/app/dashboard/_components/DashboardCard";
 import React from "react";
 import {
@@ -57,7 +57,7 @@ export function PassYearKPIBarChart() {
 
   return (
     <DashboardCard className="h-full">
-      <DashboardCardHeader title="近5年排放量指標" />
+      <DashboardCardHeaderTest title="近5年排放量指標" />
       <DashboardCardContent className="">
         <ChartContainer
           config={chartConfig}

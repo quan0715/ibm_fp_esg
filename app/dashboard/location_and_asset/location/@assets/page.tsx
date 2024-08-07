@@ -2,6 +2,7 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
+import { AssetDataCard } from "../_blocks/DataCard";
 
 export default function Page() {
   return (
@@ -13,9 +14,10 @@ export default function Page() {
           </Skeleton>
         </div>
         <div className="col-span-4 md:col-span-3">
-          <Skeleton className="bg-white h-full w-full flex flex-col justify-center items-center space-y-2">
+          {/* <Skeleton className="bg-white h-full w-full flex flex-col justify-center items-center space-y-2">
             <LoadingWidget />
-          </Skeleton>
+          </Skeleton> */}
+          <AssetDataCard />
         </div>
       </div>
     </div>
