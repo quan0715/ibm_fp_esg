@@ -57,7 +57,7 @@ export function AssetLocationDataForm({
         ...data,
       });
     }
-  }, [form.formState, data, form.reset]);
+  }, [form.formState, data, form]);
 
   async function onSubmit(values: AssetLocationEntity) {
     const res = {

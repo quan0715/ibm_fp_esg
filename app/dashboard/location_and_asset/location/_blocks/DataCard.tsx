@@ -1,28 +1,13 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { Suspense, use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  LuActivity,
-  LuArrowBigLeft,
-  LuArrowRight,
-  LuCheckCheck,
-  LuExternalLink,
-  LuFileEdit,
-  LuForward,
-  LuLink,
-  LuLoader2,
-  LuMove,
-  LuPlus,
-  LuSearch,
-  LuTrash,
-} from "react-icons/lu";
+import { LuFileEdit, LuLink } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 import { AssetLocationEntity } from "@/domain/entities/Asset";
 import {
   AssetType,
   getAssetChildrenTypeOptions,
-  getAssetLayerRules,
 } from "@/domain/entities/AssetType";
 import Link from "next/link";
 import {
@@ -39,13 +24,12 @@ import {
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 
 import { motion } from "framer-motion";
+
 import {
   CreateNewDataButton,
   DeleteDialog,
   DisplayMenuDialog,
 } from "./DataCRUDTrigger";
-import { NavigateMenu } from "../@all/page";
-import { useAssetLocationData } from "../_hooks/useAssetLocationData";
 
 export function AssetLocDataCard({
   data,
@@ -90,7 +74,9 @@ export function AssetLocDataCard({
             <DeleteDialog deleteAssetIndex={data.id ?? ""} />
           ) : null}
           <div className="block md:hidden">
-            <DisplayMenuDialog />
+            <Suspense>
+              <DisplayMenuDialog />
+            </Suspense>
           </div>
         </div>
       </div>

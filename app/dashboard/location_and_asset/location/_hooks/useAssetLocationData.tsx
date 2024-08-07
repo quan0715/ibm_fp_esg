@@ -85,12 +85,9 @@ export function useAssetLocationData() {
   const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
   const [sibling, setSibling] = useState<AssetLocationEntity[]>([]);
   const [children, setChildren] = useState<AssetLocationEntity[]>([]);
-  const [previousAssetId, setPreviousAssetId] = useState("");
 
   const [isFetchingData, startGetData] = useTransition();
   const [isFetchingChildren, startFetchChildren] = useTransition();
-  const [isDataUpdating, startUpdateData] = useTransition();
-  const [isDataCreating, startCreateData] = useTransition();
 
   useEffect(() => {
     if (assetId !== undefined) {
@@ -225,8 +222,6 @@ export function useAssetLocationData() {
     deleteData,
     isFetchingData,
     isFetchingChildren,
-    isDataUpdating,
-    isDataCreating,
   };
 }
 

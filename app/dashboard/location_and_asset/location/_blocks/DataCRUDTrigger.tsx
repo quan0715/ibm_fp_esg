@@ -27,7 +27,6 @@ import {
   useAssetDataDelete,
   useAssetLocationData,
 } from "../_hooks/useAssetLocationData";
-import { NavigateMenu } from "../@all/page";
 
 import {
   Drawer,
@@ -39,6 +38,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { NavigateMenu } from "./NavigateMenu";
 
 export function CreateNewAssetLocationDataDialog({
   defaultAssetType = AssetType.Organization,
@@ -133,7 +133,7 @@ export function DisplayMenuDialog({ className }: { className?: string }) {
     // console.log("assetId", assetId, "mode", mode);
     assetDataSearch.setAssetId(assetId);
     assetDataSearch.setMode(mode);
-  }, [assetId, mode]);
+  }, [assetId, mode, assetDataSearch]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>

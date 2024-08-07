@@ -1,6 +1,7 @@
 "use client";
 
 import { TabsContent } from "@/components/ui/tabs";
+import { Suspense } from "react";
 
 function TempPage({ title }: { title: string }) {
   return (
@@ -11,5 +12,9 @@ function TempPage({ title }: { title: string }) {
 }
 
 export default function Page() {
-  return <h1>TEST</h1>;
+  return (
+    <Suspense>
+      <h1>TEST</h1>;
+    </Suspense>
+  );
 }

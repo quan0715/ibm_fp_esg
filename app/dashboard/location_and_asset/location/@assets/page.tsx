@@ -1,22 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
-import {
-  AssetDataList,
-  DashboardColumnMin,
-} from "@/app/dashboard/location_and_asset/location/_blocks/DataColumn";
-import { AssetLocDataCard } from "../_blocks/DataCard";
-import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
-import { AssetLocationDataForm } from "../_blocks/DataForm";
-import {
-  AssetType,
-  getAssetChildrenTypeOptions,
-  getAssetType,
-} from "@/domain/entities/AssetType";
-import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
-import { useAssetLocationData } from "../_hooks/useAssetLocationData";
+import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LuCornerDownRight } from "react-icons/lu";
-import { colorVariants, getAssetEntityInfo } from "../_utils/assetTypeUIConfig";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 
 export default function Page() {
