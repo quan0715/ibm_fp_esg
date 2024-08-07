@@ -6,6 +6,8 @@ import {
   getAssetSibling,
   getAssetChildren,
   deleteData,
+  updateData,
+  createNewData,
 } from "../_actions/PostDataAction";
 import { useCallback, useState } from "react";
 import { useEffect } from "react";
@@ -248,5 +250,62 @@ export function useAssetDataDelete() {
   return {
     isDeleting,
     onDelete,
+  };
+}
+
+export function useDataUpdate() {
+  const [isUpdating, setUpdating] = useState(false);
+
+  async function onUpdate(data: AssetLocationEntity) {
+    setUpdating(true);
+    let returnIndex = "";
+    try {
+      await updateData(data);
+
+      searchPathCache.setAsset(
+        (data.ancestors ?? []).join(","),
+        data.id!,
+        data
+      );
+      // delay 1 second to simulate server response
+      console.log("return result", returnIndex);
+    } catch (e) {
+      console.error("presentation: updateData error", e);
+    }
+    setUpdating(false);
+    // return returnIndex;
+  }
+
+  return {
+    isUpdating,
+    onUpdate,
+  };
+}
+
+export function useDataCreate() {
+  const [isCreating, setCreating] = useState(false);
+
+  async function onCreate(data: AssetLocationEntity) {
+    setCreating(true);
+    let newDataIndex = "";
+    try {
+      newDataIndex = await createNewData(data);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      searchPathCache.setAsset((data.ancestors ?? []).join(","), newDataIndex, {
+        ...data,
+        id: newDataIndex,
+      });
+    } catch (e) {
+      console.error("presentation: createData error", e);
+    }
+    setCreating(false);
+
+    return newDataIndex;
+  }
+
+  return {
+    isCreating,
+    onCreate,
   };
 }

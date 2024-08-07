@@ -160,7 +160,7 @@ export function AppNavBar() {
         </Button>
         <p className="text-lg px-4">IBM ESG PLATFORM</p>
       </div>
-      <NavigationMenu>
+      <NavigationMenu className="hidden md:block">
         <NavigationMenuList>
           {Level1Menu.map((menu, index) => {
             const RootPath = "/dashboard";

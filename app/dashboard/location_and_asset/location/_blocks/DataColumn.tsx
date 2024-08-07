@@ -32,6 +32,8 @@ import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { date } from "zod";
 import { createNewData } from "../_actions/PostDataAction";
 import { Skeleton, Spinner } from "@nextui-org/react";
+import { CreateNewDataButton } from "./DataCRUDTrigger";
+import { useDataCreate } from "../_hooks/useAssetLocationData";
 
 export function DashboardColumnLabel({
   title,
@@ -84,9 +86,6 @@ export function AssetDataList({
   const colorVariant = colorVariants[tailwindColorClass];
   const queryPathService = useAssetQueryRoute();
   const assetId = queryPathService.assetId;
-  const data = assetDataList.find((data) => data.id === assetId);
-
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <DashboardCard className={cn(className)}>
@@ -118,34 +117,13 @@ export function AssetDataList({
             );
           })}
         </div>
-        {isLoading ? (
-          // create loading spinner
-          <div className="w-full flex items-center justify-center">
-            <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
-          </div>
-        ) : null}
-        <Button
-          variant={"ghost"}
+        <CreateNewDataButton
           className={cn(colorVariant.textColor)}
           onClick={async () => {
-            console.log("presentation: UI button clicked - create new data");
-            // setIsLoading(true);
-            // // set 3 seconds delay to simulate server response
-            // // await new Promise((resolve) => setTimeout(resolve, 3000));
-            // const newAssetIndex = await createNewData(
-            //   AssetData.createNew(
-            //     assetType,
-            //     assetSearchPath // add current asset id to ancestors
-            //   ).toEntity()
-            // );
-            // setIsLoading(false);
-            // queryPathService.setAssetId(newAssetIndex);
             queryPathService.createNewAsset(assetType, assetSearchPath);
           }}
-        >
-          <LuPlus />
-          新增 {assetInfo.label}
-        </Button>
+          label={`新增 ${assetInfo.label}`}
+        />
       </DashboardCardContent>
     </DashboardCard>
   );

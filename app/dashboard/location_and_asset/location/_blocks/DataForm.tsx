@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { LuPlus, LuX } from "react-icons/lu";
+import { LuLoader2, LuPlus, LuX } from "react-icons/lu";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,11 @@ import {
 import { InfoBlock } from "./DataCard";
 import { Separator } from "@/components/ui/separator";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
-import { searchPathCache } from "../_hooks/useAssetLocationData";
+import {
+  searchPathCache,
+  useDataCreate,
+  useDataUpdate,
+} from "../_hooks/useAssetLocationData";
 export function AssetLocationDataForm({
   data,
 }: {
@@ -40,7 +44,9 @@ export function AssetLocationDataForm({
   // display existing data in the form
   // otherwise, create a new data
   const assetData = data!;
-
+  const queryRoute = useAssetQueryRoute();
+  const { isUpdating, onUpdate } = useDataUpdate();
+  const { isCreating, onCreate } = useDataCreate();
   const form = useForm<AssetLocationEntity>({
     defaultValues: assetData,
   });
@@ -53,8 +59,6 @@ export function AssetLocationDataForm({
     }
   }, [form.formState, data, form.reset]);
 
-  const queryRoute = useAssetQueryRoute();
-
   async function onSubmit(values: AssetLocationEntity) {
     const res = {
       ...values,
@@ -62,19 +66,10 @@ export function AssetLocationDataForm({
       ancestors: assetData.ancestors,
     } as AssetLocationEntity;
     if (queryRoute.mode === "create") {
-      const newAssetDataId = await createNewData(res);
-      queryRoute.setAssetId(newAssetDataId);
-      // console.log("create data", res);
+      const newIndex = await onCreate(res);
+      queryRoute.setAssetId(newIndex);
     } else if (queryRoute.mode === "edit") {
-      await updateData(res);
-
-      searchPathCache.setAsset(
-        (assetData.ancestors ?? []).join(","),
-        assetData.id!,
-        res
-      );
-      console.log("update data", searchPathCache);
-
+      await onUpdate(res);
       queryRoute.setAssetId(res.id!);
     }
   }
@@ -110,7 +105,6 @@ export function AssetLocationDataForm({
                   {...field}
                 />
               </FormControl>
-              {/* <FormDescription>請輸入資產名稱</FormDescription> */}
               <FormMessage />
             </FormItem>
           )}
@@ -120,7 +114,6 @@ export function AssetLocationDataForm({
           name="description"
           render={({ field }) => (
             <FormItem className="w-full">
-              {/* <FormLabel>資產簡介</FormLabel> */}
               <FormControl>
                 <Input
                   className={cn("text-md font-semibold", "border-0", "p-0")}
@@ -129,7 +122,6 @@ export function AssetLocationDataForm({
                   {...field}
                 />
               </FormControl>
-              {/* <FormDescription>簡單介紹資產相關訊息</FormDescription> */}
               <FormMessage />
             </FormItem>
           )}
@@ -365,14 +357,15 @@ export function AssetLocationDataForm({
               <Button
                 type="submit"
                 variant={"outline"}
-                className={cn(
-                  colorVariant.bgColor,
-                  colorVariant.textColor
-                  // "hover:bg-background/50"
-                )}
+                className={cn(colorVariant.bgColor, colorVariant.textColor)}
                 size="lg"
               >
-                {queryRoute.mode === "edit" ? "更新" : "新增"}
+                <>
+                  {queryRoute.mode === "edit" ? "更新" : "新增"}
+                  {isCreating || isUpdating ? (
+                    <LuLoader2 className="animate-spin" />
+                  ) : null}
+                </>
               </Button>
             </div>
           </DashboardCardContent>

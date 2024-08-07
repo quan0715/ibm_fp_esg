@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-import { memo } from "react";
 import {
   AssetDataList,
   DashboardColumnMin,
@@ -16,34 +15,74 @@ import {
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { useAssetLocationData } from "../_hooks/useAssetLocationData";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LuCornerDownRight } from "react-icons/lu";
+import { colorVariants, getAssetEntityInfo } from "../_utils/assetTypeUIConfig";
+import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 
-function LoadingWidget() {
-  return (
-    <div className="flex w-fit p-4 flex-row justify-center items-center space-x-2">
-      <div className="w-3 h-3 rounded-full bg-red-500 delay-0 animate-bounce"></div>
-      <div className="w-3 h-3 rounded-full bg-blue-500 delay-75 animate-bounce"></div>
-      <div className="w-3 h-3 rounded-full bg-purple-500 delay-150 animate-bounce"></div>
-      <div className="w-3 h-3 rounded-full bg-green-500 delay-225 animate-bounce"></div>
-      <div className="w-3 h-3 rounded-full bg-yellow-500 delay-300 animate-bounce"></div>
+export function NavigateMenu({
+  isBlocking = false,
+  ancestors = [],
+  siblings = [],
+  path = [],
+}: {
+  isBlocking?: boolean;
+  ancestors?: AssetLocationEntity[];
+  siblings?: AssetLocationEntity[];
+  path?: string[];
+}) {
+  const queryRoute = useAssetQueryRoute();
+
+  useEffect(() => {
+    console.log("ancestors", ancestors);
+    console.log("siblings", siblings);
+    console.log("path", path);
+  }, [isBlocking]);
+  function getAssetTypeFromParent() {
+    const parent =
+      ancestors.length > 0 ? ancestors[ancestors.length - 1] : undefined;
+
+    return parent !== undefined ? parent.type : AssetType.None;
+  }
+  return isBlocking ? (
+    <Skeleton className="flex bg-white w-full flex-col justify-center items-center space-y-2">
+      <LoadingWidget />
+    </Skeleton>
+  ) : (
+    <div className="md:flex w-full flex-col justify-start items-center space-y-2">
+      {ancestors.map((ancestor) => (
+        <DashboardColumnMin
+          assetType={ancestor.type}
+          assetData={ancestor}
+          onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable
+          key={ancestor.name}
+        />
+      ))}
+      <div className="w-full flex flex-row items-start justify-start space-x-1">
+        {ancestors.length > 0 ? (
+          <LuCornerDownRight
+            size={18}
+            className={
+              colorVariants[getAssetEntityInfo(getAssetTypeFromParent()).color]
+                .textColor
+            }
+          />
+        ) : null}
+        <div className="flex-1 flex flex-col items-center justify-center space-y-2">
+          {getAssetChildrenTypeOptions(getAssetTypeFromParent()).map((type) => (
+            <AssetDataList
+              key={type}
+              assetType={type}
+              assetSearchPath={path}
+              assetDataList={siblings.filter((data) => data.type === type)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
-
-// const minColumn = memo(function minColumn({ancestors}: {ancestors: AssetLocationEntity[]}) {
-//   return (
-//     {ancestors.map((ancestor) => (
-//       <DashboardColumnMin
-//         assetType={ancestor.type}
-//         assetData={ancestor}
-//         onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable
-//         key={ancestor.name}
-//       />))
-//     }
-//   )
-// });
 export default function Page() {
   const queryRoute = useAssetQueryRoute();
-
   const assetDataSearch = useAssetLocationData();
   const mode = queryRoute.mode;
   const assetId = queryRoute.assetId;
@@ -51,57 +90,29 @@ export default function Page() {
   if (assetId === "" && mode === "display") {
     queryRoute.setAssetId("669764b4e1b6f7cb9d170a31");
   }
+
   useEffect(() => {
-    console.log("assetId", assetId, "mode", mode);
+    // console.log("assetId", assetId, "mode", mode);
     assetDataSearch.setAssetId(assetId);
     assetDataSearch.setMode(mode);
   }, [assetId, mode]);
 
-  function getAssetTypeFromParent() {
-    const parent =
-      assetDataSearch.ancestors.length > 0
-        ? assetDataSearch.ancestors[assetDataSearch.ancestors.length - 1]
-        : undefined;
-
-    return parent !== undefined ? parent.type : AssetType.None;
-  }
-  const isLoading =
+  const isBlocking =
     assetDataSearch.isFetchingData || assetDataSearch.assetData === undefined;
+
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
       <div className="w-full min-h-screen grid grid-cols-4 gap-4">
-        {isLoading ? (
-          <Skeleton className="bg-white w-full flex flex-col justify-center items-center space-y-2">
-            <LoadingWidget />
-          </Skeleton>
-        ) : (
-          <div className="w-full flex flex-col justify-start items-center space-y-2">
-            {assetDataSearch.ancestors.map((ancestor) => (
-              <DashboardColumnMin
-                assetType={ancestor.type}
-                assetData={ancestor}
-                onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable
-                key={ancestor.name}
-              />
-            ))}
-            <div className="pl-4 w-full flex flex-col items-center justify-center space-y-2">
-              {getAssetChildrenTypeOptions(getAssetTypeFromParent()).map(
-                (type) => (
-                  <AssetDataList
-                    key={type}
-                    assetType={type}
-                    assetSearchPath={assetDataSearch.assetData!.ancestors}
-                    assetDataList={assetDataSearch.sibling.filter(
-                      (data) => data.type === type
-                    )}
-                  />
-                )
-              )}
-            </div>
-          </div>
-        )}
-        <div className="col-span-3">
-          {isLoading || assetDataSearch.isFetchingChildren ? (
+        <div className="hidden md:block">
+          <NavigateMenu
+            isBlocking={isBlocking}
+            ancestors={assetDataSearch.ancestors}
+            siblings={assetDataSearch.sibling}
+            path={assetDataSearch.assetData?.ancestors || []}
+          />
+        </div>
+        <div className="col-span-4 md:col-span-3">
+          {isBlocking || assetDataSearch.isFetchingChildren ? (
             <Skeleton className="bg-white w-full h-full flex flex-col justify-center items-center space-y-2">
               <LoadingWidget />
             </Skeleton>

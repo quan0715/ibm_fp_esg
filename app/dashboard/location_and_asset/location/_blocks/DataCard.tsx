@@ -1,11 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
+  LuActivity,
+  LuArrowBigLeft,
+  LuArrowRight,
+  LuCheckCheck,
   LuExternalLink,
   LuFileEdit,
+  LuForward,
+  LuLink,
   LuLoader2,
+  LuMove,
   LuPlus,
+  LuSearch,
   LuTrash,
 } from "react-icons/lu";
 import { cn } from "@/lib/utils";
@@ -27,205 +35,27 @@ import {
   DashboardCardContent,
   DashboardCardHeader,
 } from "@/app/dashboard/_components/DashboardCard";
-import { Input } from "@/components/ui/input";
-import {
-  createNewData,
-  deleteData,
-  getDashboardAssetData,
-} from "../_actions/PostDataAction";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
-import { AssetData } from "@/domain/entities/Asset";
-import {
-  searchPathCache,
-  useAssetDataDelete,
-  useAssetLocationData,
-} from "../_hooks/useAssetLocationData";
-import { motion } from "framer-motion";
-function DeleteDialog({ deleteAssetIndex }: { deleteAssetIndex: string }) {
-  const queryRoute = useAssetQueryRoute();
-  const deleteAssetHook = useAssetDataDelete();
-  async function onDelete(deleteAssetIndex: string) {
-    console.log(
-      "presentation: UI button clicked - delete data index",
-      deleteAssetIndex
-    );
-    try {
-      const returnIndex = await deleteAssetHook.onDelete(deleteAssetIndex);
-      queryRoute.setAssetId(returnIndex);
-    } catch (e) {
-      console.error("presentation: deleteData error", e);
-    }
-  }
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          size={"icon"}
-          variant="outline"
-          className="flex flex-row justify-center items-center space-x-2 text-destructive hover:bg-destructive hover:text-white"
-        >
-          <LuTrash />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className={"transition-all duration-500 ease-linear"}>
-        <DialogHeader>
-          <DialogTitle>刪除資產</DialogTitle>
-          <DialogDescription>
-            確定要刪除資產編號 {`${deleteAssetIndex} 嗎`}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="ghost" className="text-gray-500">
-              取消
-            </Button>
-          </DialogClose>
-          <Button
-            variant="destructive"
-            onClick={async () => {
-              await onDelete(deleteAssetIndex);
-            }}
-          >
-            {deleteAssetHook.isDeleting ? (
-              <>
-                刪除中
-                <LuLoader2 className="animate-spin" />
-              </>
-            ) : (
-              "刪除"
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
+
+import { motion } from "framer-motion";
+import {
+  CreateNewDataButton,
+  DeleteDialog,
+  DisplayMenuDialog,
+} from "./DataCRUDTrigger";
+import { NavigateMenu } from "../@all/page";
+import { useAssetLocationData } from "../_hooks/useAssetLocationData";
 
 export function AssetLocDataCard({
   data,
   assetChildren = [],
-  variant = "default",
   ...props
 }: {
   data: AssetLocationEntity;
   assetChildren: AssetLocationEntity[];
-  variant?: "default" | "preview" | "expand";
 }) {
-  const [isLoading, setIsLoading] = useState(false);
   const queryRoute = useAssetQueryRoute();
-
-  const LocationDataFields = () => {
-    return (
-      <div className="w-full flex flex-col space-y-2 justify-start items-start">
-        <div className="w-full flex flex-row justify-between h-16 space-x-4">
-          <InfoBlock
-            assetType={data.type}
-            label={"經緯度"}
-            value={`(${data.lat ?? 0}, ${data.lon ?? 0})`}
-            className="w-full"
-          />
-          <Separator orientation="vertical" />
-
-          <InfoBlock
-            assetType={data.type}
-            label="城市"
-            value={data.city}
-            className="w-full"
-          >
-            {/* <Input/> */}
-          </InfoBlock>
-          <Separator orientation="vertical" />
-          <InfoBlock
-            assetType={data.type}
-            label="國家"
-            value={data.country}
-            className="w-full"
-          />
-          <Separator orientation="vertical" />
-          <InfoBlock
-            assetType={data.type}
-            label="郵遞區號"
-            value={data.zip}
-            className="w-full"
-          />
-        </div>
-        <Separator />
-        <InfoBlock
-          assetType={data.type}
-          label="地址"
-          value={data.addressLine1}
-          className="w-full"
-        />
-        <Separator />
-
-        <InfoBlock
-          assetType={data.type}
-          label="地址2"
-          value={data.addressLine2}
-          className="w-full"
-        />
-        <Separator />
-      </div>
-    );
-  };
-
-  const ChildrenList = () => {
-    const isVisible = variant === "expand" || variant === "default";
-
-    return isVisible ? (
-      <InfoBlock
-        assetType={data.type}
-        label={"子項目"}
-        className="w-full flex flex-col "
-      >
-        <div className="w-full grid grid-cols-3 gap-4">
-          {assetChildren!.map((child) => (
-            <div className="p-4 col-span-1 rounded-lg border" key={child.id}>
-              <Link
-                href={queryRoute.getNewDisplayURL(child.id ?? "")}
-                className="flex flex-row justify-between items-center space-x-2"
-              >
-                <p>{child.name}</p>
-                <LuExternalLink />
-              </Link>
-            </div>
-          ))}
-          {getAssetChildrenTypeOptions(data.type).map((type) => (
-            <Button
-              key={type}
-              variant={"outline"}
-              className="p-4 col-span-1 rounded-lg border h-full"
-              onClick={async () => {
-                queryRoute.createNewAsset(type, [...data.ancestors, data.id!]);
-              }}
-            >
-              <div
-                className={cn(
-                  colorVariants[getAssetEntityInfo(type).color].textColor,
-                  "flex flex-row justify-between items-center space-x-2"
-                )}
-              >
-                <p>新增 {getAssetEntityInfo(type).label}</p>
-                <LuPlus />
-              </div>
-            </Button>
-          ))}
-        </div>
-      </InfoBlock>
-    ) : null;
-  };
-
   const HeaderField = () => {
     return (
       <div className="w-full flex flex-row justify-between items-center">
@@ -259,17 +89,100 @@ export function AssetLocDataCard({
           {assetChildren.length === 0 ? (
             <DeleteDialog deleteAssetIndex={data.id ?? ""} />
           ) : null}
+          <div className="block md:hidden">
+            <DisplayMenuDialog />
+          </div>
         </div>
       </div>
     );
   };
-  // create loading spinner
 
-  return isLoading ? (
-    <DashboardCard className="shadow-sm w-full  min-h-screen ">
-      <div>isLoading</div>
-    </DashboardCard>
-  ) : (
+  const layoutConfig = {
+    sections: [
+      {
+        rows: [
+          {
+            blocks: [
+              {
+                assetType: data.type,
+                label: "經緯度",
+                value: `(${data.lat ?? "0"}, ${data.lon ?? "0"})`,
+              },
+              {
+                assetType: data.type,
+                label: "城市",
+                value: data.city ?? "None",
+              },
+              {
+                assetType: data.type,
+                label: "國家",
+                value: data.country ?? "None",
+              },
+              {
+                assetType: data.type,
+                label: "郵遞區號",
+                value: data.zip ?? "None",
+              },
+            ],
+          },
+          {
+            blocks: [
+              {
+                assetType: data.type,
+                label: "地址1",
+                value: data.addressLine1 ?? "None",
+              },
+              {
+                assetType: data.type,
+                label: "地址2",
+                value: data.addressLine2 ?? "None",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        rows: [
+          {
+            blocks: [
+              {
+                assetType: data.type,
+                label: "子項目",
+                children: (
+                  <MultiChildrenLayout>
+                    {assetChildren!.map((child) => (
+                      <ChildAttributeButton
+                        className="w-full md:max-w-[250px] h-fit"
+                        onClick={() => queryRoute.setAssetId(child.id ?? "")}
+                        label={child.name}
+                      />
+                    ))}
+                    {getAssetChildrenTypeOptions(data.type).map((type) => (
+                      <CreateNewDataButton
+                        key={type}
+                        className={cn(
+                          "rounded-md border h-full",
+                          colorVariants[getAssetEntityInfo(type).color]
+                            .textColor
+                        )}
+                        onClick={async () => {
+                          let newAncestors = [...data.ancestors, data.id!];
+                          queryRoute.createNewAsset(type, newAncestors);
+                        }}
+                        label={getAssetEntityInfo(type).label}
+                      />
+                    ))}
+                  </MultiChildrenLayout>
+                ),
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -280,13 +193,76 @@ export function AssetLocDataCard({
           <HeaderField />
         </DashboardCardHeader>
         <DashboardCardContent className="flex flex-col space-y-2">
-          <LocationDataFields />
-          <ChildrenList />
+          {layoutConfig.sections.map((section, index) => {
+            return (
+              <DataSection key={index}>
+                {section.rows.map((row, index) => {
+                  return <DataCardRow key={index} blocks={row.blocks} />;
+                })}
+              </DataSection>
+            );
+          })}
         </DashboardCardContent>
       </DashboardCard>
     </motion.div>
   );
 }
+export function MultiChildrenLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="w-full grid gap-2 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
+      {children}
+    </div>
+  );
+}
+export function DataSection({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="w-full flex flex-col justify-start items-start space-y-2">
+      {children}
+    </div>
+  );
+}
+
+export function DataCardRow({ blocks }: { blocks: InfoBlockProps[] }) {
+  return (
+    <>
+      <div className="w-full flex flex-col md:flex-row justify-between h-fit md:space-x-4">
+        {blocks.map((block, index) => {
+          return (
+            <>
+              <InfoBlock
+                assetType={block.assetType}
+                label={block.label}
+                value={block.value}
+                className="w-full"
+              >
+                {block.children}
+              </InfoBlock>
+              {index < blocks.length - 1 ? (
+                <Separator
+                  orientation="vertical"
+                  className="h-16 hidden md:block"
+                />
+              ) : null}
+            </>
+          );
+        })}
+      </div>
+      <Separator />
+    </>
+  );
+}
+
+type InfoBlockProps = {
+  label: string;
+  value?: string;
+  assetType: AssetType;
+  children?: React.ReactNode;
+  className?: string;
+};
 
 export function InfoBlock({
   label,
@@ -311,5 +287,30 @@ export function InfoBlock({
       </p>
       {children ?? <p className="text-md font-semibold">{value ?? "None"}</p>}
     </div>
+  );
+}
+
+export function ChildAttributeButton({
+  className = "",
+  onClick,
+  label,
+}: {
+  className?: string;
+  // href: string;
+  onClick?: () => void;
+  label: string;
+}) {
+  return (
+    <Button
+      variant="outline"
+      onClick={onClick}
+      className={cn(
+        "w-full h-full flex flex-row justify-between items-center",
+        className
+      )}
+    >
+      <p>{label}</p>
+      <LuLink />
+    </Button>
   );
 }
