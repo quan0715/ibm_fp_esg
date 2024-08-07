@@ -5,14 +5,11 @@ import {
   getAssetAncestors,
   getAssetSibling,
   getAssetChildren,
+  deleteData,
 } from "../_actions/PostDataAction";
-import { MongoAssetLocRepository } from "@/data/repositories/mongo/MongoAssetLocRepository";
-import { AssetDataUseCase } from "@/domain/Services/AssetDataService";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useEffect } from "react";
 import { useTransition } from "react";
-import { start } from "repl";
-import { set } from "date-fns";
 
 class SearchPathCache {
   cache: Map<string, Map<string, AssetLocationEntity>>;
@@ -86,6 +83,7 @@ export function useAssetLocationData() {
   const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
   const [sibling, setSibling] = useState<AssetLocationEntity[]>([]);
   const [children, setChildren] = useState<AssetLocationEntity[]>([]);
+  const [previousAssetId, setPreviousAssetId] = useState("");
 
   const [isFetchingData, startGetData] = useTransition();
   const [isFetchingChildren, startFetchChildren] = useTransition();
@@ -122,7 +120,40 @@ export function useAssetLocationData() {
     // const queryRoute = useAssetQueryRoute();
   }
 
-  async function fetchData() {
+  async function fetchAndCache(assetId: string) {
+    let data = await getAssetDataWithId(assetId);
+    let siblingData = await getAssetSibling(data.ancestors);
+    let ancestorData = await getAssetAncestors(data.ancestors);
+    let path = (data.ancestors ?? []).join(",");
+
+    siblingData.map((sibling) =>
+      searchPathCache.setAsset(path, sibling.id!, sibling)
+    );
+
+    // console.log("siblingData", siblingData);
+    // console.log("ancestorData", ancestorData);
+
+    for (let ancestor of ancestorData) {
+      if (searchPathCache.hasAsset(ancestor.id!)) {
+        continue;
+      } else {
+        let ancestorSiblingData = await getAssetSibling(ancestor.ancestors);
+        // console.log("ancestorSiblingData", ancestorSiblingData);
+        if (ancestorSiblingData.length > 0) {
+          ancestorSiblingData.map((sibling) =>
+            searchPathCache.setAsset(
+              ancestor.ancestors.join(","),
+              sibling.id!,
+              sibling
+            )
+          );
+        }
+        fetchAndCache(ancestor.id!);
+      }
+    }
+  }
+
+  const fetchData = useCallback(async () => {
     startGetData(async () => {
       //   console.log("fetching data");
       let isCached = searchPathCache.hasAsset(assetId);
@@ -130,47 +161,29 @@ export function useAssetLocationData() {
       let ancestorData: AssetLocationEntity[] = [];
       let siblingData: AssetLocationEntity[] = [];
 
-      if (isCached) {
-        console.log("data is cached");
-        data = searchPathCache.getAsset(assetId)!;
-        ancestorData = data.ancestors.map(
-          (ancestor) => searchPathCache.getAsset(ancestor)!
-        );
+      if (!isCached) {
+        console.log("data is not cached");
+        await fetchAndCache(assetId);
 
-        let path = (data.ancestors ?? []).join(",");
-        siblingData = Array.from(searchPathCache.getPath(path)!).map(
-          ([key, value]) => value
-        );
-      } else {
-        data = await getAssetDataWithId(assetId);
-        ancestorData = await getAssetAncestors(data.ancestors);
-        siblingData = await getAssetSibling(data.ancestors);
-
-        let path = (data.ancestors ?? []).join(",");
-
-        searchPathCache.setAsset(path, assetId, data);
-        ancestorData.map((ancestor) =>
-          searchPathCache.setAsset(
-            ancestor.ancestors.join(","),
-            ancestor.id!,
-            ancestor
-          )
-        );
-        console.log("ancestorData", ancestorData);
-        siblingData.map((sibling) =>
-          searchPathCache.setAsset(path, sibling.id!, sibling)
-        );
+        // console.log("siblingData", siblingData);
       }
-      //   if (data.id !== assetId) {
-      //     setAssetId(data.id!);
-      //   }
+      console.log("data is cached");
+      data = searchPathCache.getAsset(assetId)!;
+      ancestorData = data.ancestors.map(
+        (ancestor) => searchPathCache.getAsset(ancestor)!
+      );
+
+      let path = (data.ancestors ?? []).join(",");
+      siblingData = Array.from(searchPathCache.getPath(path) ?? []).map(
+        ([key, value]) => value
+      );
       setAssetData(data);
       setSibling(siblingData);
       setAncestors(ancestorData);
     });
-  }
+  }, [assetId]);
 
-  async function fetchChildren() {
+  const fetchChildren = useCallback(async () => {
     startFetchChildren(async () => {
       console.log("fetching children");
       let childrenData: AssetLocationEntity[] = [];
@@ -194,10 +207,9 @@ export function useAssetLocationData() {
         );
       }
 
-      //   console.log("childrenData", childrenData);
       setChildren(childrenData);
     });
-  }
+  }, [assetData]);
 
   return {
     assetData,
@@ -208,9 +220,33 @@ export function useAssetLocationData() {
     setAssetId,
     setMode,
     children,
+    deleteData,
     isFetchingData,
     isFetchingChildren,
     isDataUpdating,
     isDataCreating,
+  };
+}
+
+export function useAssetDataDelete() {
+  const [isDeleting, setDeleting] = useState(false);
+
+  async function onDelete(deleteAssetIndex: string) {
+    setDeleting(true);
+    let returnIndex = "";
+    try {
+      returnIndex = await deleteData(deleteAssetIndex);
+      searchPathCache.deleteAsset(deleteAssetIndex);
+      console.log("return result", returnIndex);
+    } catch (e) {
+      console.error("presentation: deleteData error", e);
+    }
+    setDeleting(false);
+    return returnIndex;
+  }
+
+  return {
+    isDeleting,
+    onDelete,
   };
 }

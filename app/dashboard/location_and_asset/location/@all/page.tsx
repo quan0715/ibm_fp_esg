@@ -1,5 +1,6 @@
 "use client";
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
+import { memo } from "react";
 import {
   AssetDataList,
   DashboardColumnMin,
@@ -28,6 +29,18 @@ function LoadingWidget() {
   );
 }
 
+// const minColumn = memo(function minColumn({ancestors}: {ancestors: AssetLocationEntity[]}) {
+//   return (
+//     {ancestors.map((ancestor) => (
+//       <DashboardColumnMin
+//         assetType={ancestor.type}
+//         assetData={ancestor}
+//         onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable
+//         key={ancestor.name}
+//       />))
+//     }
+//   )
+// });
 export default function Page() {
   const queryRoute = useAssetQueryRoute();
 

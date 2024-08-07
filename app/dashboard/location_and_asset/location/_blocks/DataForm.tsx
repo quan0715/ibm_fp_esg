@@ -75,7 +75,6 @@ export function AssetLocationDataForm({
       );
       console.log("update data", searchPathCache);
 
-      searchPathCache.clear();
       queryRoute.setAssetId(res.id!);
     }
   }

@@ -1,7 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LuExternalLink, LuFileEdit, LuPlus, LuTrash } from "react-icons/lu";
+import {
+  LuExternalLink,
+  LuFileEdit,
+  LuLoader2,
+  LuPlus,
+  LuTrash,
+} from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 import { AssetLocationEntity } from "@/domain/entities/Asset";
@@ -39,19 +45,21 @@ import {
 } from "@/components/ui/dialog";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { AssetData } from "@/domain/entities/Asset";
-import { searchPathCache } from "../_hooks/useAssetLocationData";
+import {
+  searchPathCache,
+  useAssetDataDelete,
+  useAssetLocationData,
+} from "../_hooks/useAssetLocationData";
 function DeleteDialog({ deleteAssetIndex }: { deleteAssetIndex: string }) {
   const queryRoute = useAssetQueryRoute();
-
+  const deleteAssetHook = useAssetDataDelete();
   async function onDelete(deleteAssetIndex: string) {
     console.log(
       "presentation: UI button clicked - delete data index",
       deleteAssetIndex
     );
     try {
-      const returnIndex = await deleteData(deleteAssetIndex);
-      // return to previous page
-      console.log("presentation: deleteData res", returnIndex);
+      const returnIndex = await deleteAssetHook.onDelete(deleteAssetIndex);
       queryRoute.setAssetId(returnIndex);
     } catch (e) {
       console.error("presentation: deleteData error", e);
@@ -86,10 +94,16 @@ function DeleteDialog({ deleteAssetIndex }: { deleteAssetIndex: string }) {
             variant="destructive"
             onClick={async () => {
               await onDelete(deleteAssetIndex);
-              searchPathCache.deleteAsset(deleteAssetIndex);
             }}
           >
-            確定
+            {deleteAssetHook.isDeleting ? (
+              <>
+                刪除中
+                <LuLoader2 className="animate-spin" />
+              </>
+            ) : (
+              "刪除"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
