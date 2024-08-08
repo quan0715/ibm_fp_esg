@@ -42,6 +42,7 @@ export type layoutsConfigType = {
 };
 
 type DatCardType = {
+  isSuspense?: boolean;
   colorTheme: ColorThemeType; // css color value
   title: string;
   description: string;
@@ -68,6 +69,7 @@ export function DataCard({
     textColor: "text-black",
     borderColor: "border-gray-200",
   },
+  isSuspense = false,
   title = "Title",
   description = "Description",
   layoutConfig,
@@ -84,7 +86,10 @@ export function DataCard({
       animate={{ opacity: 1 }}
       transition={{ duration: 1, ease: "easeInOut" }}
     >
-      <DashboardCard className="shadow-sm w-full min-h-screen ">
+      <DashboardCard
+        isSuspense={isSuspense}
+        className="shadow-sm w-full min-h-screen "
+      >
         <DashboardCardHeader>
           <DashboardCardHeaderContent>
             <DashboardCardHeaderTitle
@@ -138,13 +143,15 @@ function DataCardContentDisplay({
 }) {
   return (
     <>
-      {layoutConfig.sections.map((section, index) => {
+      {layoutConfig.sections.map((section, sectionIndex) => {
         return (
-          <DataSection key={index}>
-            {section.rows.map((row, index) => {
+          <DataSection key={"section" + sectionIndex}>
+            {section.rows.map((row, rowIndex) => {
               return (
                 <DataCardRow
-                  key={index}
+                  key={
+                    "raw" + rowIndex + "section" + sectionIndex + Math.random()
+                  }
                   blocks={row.blocks}
                   colorTheme={colorTheme}
                 />
@@ -177,7 +184,7 @@ export function DataCardRow({
       <div className="w-full flex flex-col md:flex-row justify-between h-fit md:space-x-4">
         {blocks.map((block, index) => {
           return (
-            <>
+            <div className="flex flex-row flex-1" key={block.label + index}>
               <InfoBlock
                 labelColor={colorTheme?.textColor}
                 label={block.label}
@@ -192,7 +199,7 @@ export function DataCardRow({
                   className="h-16 hidden md:block"
                 />
               ) : null}
-            </>
+            </div>
           );
         })}
       </div>

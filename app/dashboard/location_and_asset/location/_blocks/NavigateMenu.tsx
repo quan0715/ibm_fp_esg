@@ -43,7 +43,7 @@ export function NavigateMenu({
     return parent !== undefined ? parent.type : LocationType.none;
   }
   return isBlocking ? (
-    <Skeleton className="flex bg-white w-full flex-col justify-center items-center space-y-2">
+    <Skeleton className="flex bg-background w-full h-full flex-col justify-center items-center space-y-2">
       <LoadingWidget />
     </Skeleton>
   ) : (

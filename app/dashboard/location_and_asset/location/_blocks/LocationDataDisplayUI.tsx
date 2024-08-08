@@ -206,8 +206,10 @@ export const LocationDataAncestorView = memo(function DashboardColumnMin({
 
 export const LocationDataPageView = memo(function LocationDataPageView({
   data,
+  isSuspense = false,
   assetChildren = [],
 }: {
+  isSuspense?: boolean;
   data: AssetLocationEntity;
   assetChildren: AssetLocationEntity[];
 }) {
@@ -260,14 +262,6 @@ export const LocationDataPageView = memo(function LocationDataPageView({
                 label: "子項目",
                 children: (
                   <MultiChildrenLayout>
-                    {assetChildren!.map((child) => (
-                      <ChildAttributeButton
-                        key={child.id}
-                        className="w-full md:max-w-[250px] h-fit"
-                        onClick={() => queryRoute.setAssetId(child.id ?? "")}
-                        label={child.name}
-                      />
-                    ))}
                     {getLocationChildrenTypeOptions(data.type).map((type) => (
                       <CreateNewDataButton
                         key={type}
@@ -281,6 +275,14 @@ export const LocationDataPageView = memo(function LocationDataPageView({
                           queryRoute.createNewAsset(type, newAncestors);
                         }}
                         label={getAssetEntityInfo(type).label}
+                      />
+                    ))}
+                    {assetChildren!.map((child) => (
+                      <ChildAttributeButton
+                        key={child.id}
+                        className="w-full md:max-w-[250px] h-fit"
+                        onClick={() => queryRoute.setAssetId(child.id ?? "")}
+                        label={child.name}
                       />
                     ))}
                   </MultiChildrenLayout>
@@ -315,6 +317,7 @@ export const LocationDataPageView = memo(function LocationDataPageView({
         textColor: colorVariant.textColor,
         borderColor: "border-gray-200",
       }}
+      isSuspense={isSuspense}
       title={data.name}
       description={data.description ?? ""}
       layoutConfig={layoutConfig}

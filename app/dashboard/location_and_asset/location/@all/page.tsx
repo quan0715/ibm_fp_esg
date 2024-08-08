@@ -37,7 +37,7 @@ function AssetLocationDashboard() {
     assetDataSearch.isFetchingData || assetDataSearch.assetData === undefined;
 
   const suspenseWidget = (
-    <Skeleton className="bg-white w-full h-full flex flex-col justify-center items-center space-y-2">
+    <Skeleton className="bg-background w-full h-full flex flex-col justify-center items-center space-y-2">
       <LoadingWidget />
     </Skeleton>
   );

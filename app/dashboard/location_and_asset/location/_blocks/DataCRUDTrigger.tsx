@@ -152,7 +152,7 @@ export function DisplayMenuDialog({ className }: { className?: string }) {
 
       <DrawerContent
         className={cn(
-          "p-4 w-full border-0 transition-all duration-500 ease-linear",
+          "p-4 w-full border-0 transition-all duration-500 ease-linear max-h-[100vh] overflow-y-auto",
           className
         )}
       >

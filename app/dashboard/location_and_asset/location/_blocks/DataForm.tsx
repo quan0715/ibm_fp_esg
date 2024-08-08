@@ -360,7 +360,7 @@ export function AssetLocationDataForm({
               <Button
                 type="submit"
                 variant={"outline"}
-                className={cn(colorVariant.bgColor, colorVariant.textColor)}
+                className={cn(colorVariant.textColor)}
                 size="lg"
               >
                 <>

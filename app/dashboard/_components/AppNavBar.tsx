@@ -30,6 +30,7 @@ import { SiWebauthn } from "react-icons/si";
 import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/auth/_actions/signOutAction";
 import { Separator } from "@radix-ui/react-separator";
+import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
 
 type MenuContentEntryProps = {
   key: string;
@@ -160,7 +161,7 @@ export function AppNavBar() {
         </Button>
         <p className="text-lg px-4">IBM ESG PLATFORM</p>
       </div>
-      <NavigationMenu className="hidden md:block">
+      <NavigationMenu>
         <NavigationMenuList>
           {Level1Menu.map((menu, index) => {
             const RootPath = "/dashboard";
@@ -168,42 +169,46 @@ export function AppNavBar() {
             const menuLabel = menu.label;
             const menuContent = menu.content;
             return (
-              <NavigationMenuItem key={menuLabel + index}>
-                <NavigationMenuTrigger>{menuLabel}</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div
-                    className={
-                      "p-2 w-96 h-fit rounded-xl flex flex-col space-y-2 shadow-md"
-                    }
-                  >
-                    {menuContent.map((content) => {
-                      let level2Path = `${level1Path}/${content.key}`;
-                      return (
-                        <MenuContentEntry
-                          {...content}
-                          href={level2Path}
-                          key={content.label}
-                        />
-                      );
-                    })}
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+              <DesktopOnly key={menuLabel + index}>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>{menuLabel}</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div
+                      className={
+                        "p-2 w-96 h-fit rounded-xl flex flex-col space-y-2 shadow-md"
+                      }
+                    >
+                      {menuContent.map((content) => {
+                        let level2Path = `${level1Path}/${content.key}`;
+                        return (
+                          <MenuContentEntry
+                            {...content}
+                            href={level2Path}
+                            key={content.label}
+                          />
+                        );
+                      })}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </DesktopOnly>
             );
           })}
-          <NavigationMenuItem>
+          <NavigationMenuItem asChild>
             <ThemeSwitcher />
           </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Button
-              type="button"
-              variant={"destructive"}
-              onClick={async () => {
-                await signOutAction();
-              }}
-            >
-              登出
-            </Button>
+          <NavigationMenuItem asChild>
+            <DesktopOnly>
+              <Button
+                type="button"
+                variant={"destructive"}
+                onClick={async () => {
+                  await signOutAction();
+                }}
+              >
+                登出
+              </Button>
+            </DesktopOnly>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
