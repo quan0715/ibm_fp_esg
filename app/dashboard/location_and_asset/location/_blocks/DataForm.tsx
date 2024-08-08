@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { createNewData, updateData } from "../_actions/PostDataAction";
 
-import { DashboardColumnLabel } from "./DataColumn";
+import { DashboardLabelChip } from "./DataColumn";
 import {
   DashboardCard,
   DashboardCardContent,
@@ -89,7 +89,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className={cn("w-full")}>
               {/* <FormLabel>資產名稱</FormLabel> */}
-              <DashboardColumnLabel
+              <DashboardLabelChip
                 title={getAssetEntityInfo(assetData.type).label}
                 color={getAssetEntityInfo(assetData.type).color}
               />
@@ -139,7 +139,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={assetData.type}
+                labelColor={colorVariant.textColor}
                 label={"經緯度-緯度"}
                 className="w-full"
               >
@@ -165,7 +165,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={assetData.type}
+                labelColor={colorVariant.textColor}
                 label={"經緯度-經度"}
                 className="w-full"
               >
@@ -197,7 +197,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={assetData.type}
+                labelColor={colorVariant.textColor}
                 label={"所在國家"}
                 className="w-full"
               >
@@ -224,7 +224,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={assetData.type}
+                labelColor={colorVariant.textColor}
                 label={"所在城市"}
                 className="w-full"
               >
@@ -251,7 +251,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={assetData.type}
+                labelColor={colorVariant.textColor}
                 label={"郵遞區域號"}
                 className="w-full"
               >
@@ -282,7 +282,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={assetData.type}
+                labelColor={colorVariant.textColor}
                 label={"位置1"}
                 className="w-full"
               >
@@ -307,7 +307,7 @@ export function AssetLocationDataForm({
           render={({ field }) => (
             <FormItem className="w-full">
               <InfoBlock
-                assetType={assetData.type}
+                labelColor={colorVariant.textColor}
                 label={"位置2"}
                 className="w-full"
               >

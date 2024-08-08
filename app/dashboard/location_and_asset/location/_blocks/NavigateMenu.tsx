@@ -4,7 +4,7 @@ import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
-import { AssetDataList, DashboardColumnMin } from "./DataColumn";
+import { AssetDataList, LocationDataAncestorView } from "./DataColumn";
 import { LuCornerDownRight } from "react-icons/lu";
 import {
   AssetType,
@@ -43,7 +43,7 @@ export function NavigateMenu({
   ) : (
     <div className="md:flex w-full flex-col justify-start items-center space-y-2">
       {ancestors.map((ancestor) => (
-        <DashboardColumnMin
+        <LocationDataAncestorView
           assetType={ancestor.type}
           assetData={ancestor}
           onClick={() => queryRoute.setAssetId(ancestor.id!)} // adjust this if ancestors should be selectable

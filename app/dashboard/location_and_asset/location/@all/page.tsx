@@ -1,6 +1,5 @@
 "use client";
 import React, { Suspense, useEffect } from "react";
-import { AssetLocDataCard } from "../_blocks/DataCard";
 import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
 import { AssetLocationDataForm } from "../_blocks/DataForm";
 import { getAssetType } from "@/domain/entities/AssetType";
@@ -9,6 +8,7 @@ import { useAssetLocationData } from "../_hooks/useAssetLocationData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { NavigateMenu } from "../_blocks/NavigateMenu";
+import { LocationDataPageView } from "../_blocks/DataColumn";
 
 export default function Page() {
   return (
@@ -29,7 +29,6 @@ function AssetLocationDashboard() {
   }
 
   useEffect(() => {
-    // console.log("assetId", assetId, "mode", mode);
     assetDataSearch.setAssetId(assetId);
     assetDataSearch.setMode(mode);
   }, [assetId, mode]);
@@ -37,10 +36,16 @@ function AssetLocationDashboard() {
   const isBlocking =
     assetDataSearch.isFetchingData || assetDataSearch.assetData === undefined;
 
+  const suspenseWidget = (
+    <Skeleton className="bg-white w-full h-full flex flex-col justify-center items-center space-y-2">
+      <LoadingWidget />
+    </Skeleton>
+  );
+
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
       <div className="w-full min-h-screen grid grid-cols-4 gap-4">
-        <div className="hidden md:block">
+        <div className="hidden md:block w-full h-full">
           <NavigateMenu
             isBlocking={isBlocking}
             ancestors={assetDataSearch.ancestors}
@@ -50,12 +55,10 @@ function AssetLocationDashboard() {
         </div>
         <div className="col-span-4 md:col-span-3">
           {isBlocking || assetDataSearch.isFetchingChildren ? (
-            <Skeleton className="bg-white w-full h-full flex flex-col justify-center items-center space-y-2">
-              <LoadingWidget />
-            </Skeleton>
+            suspenseWidget
           ) : assetDataSearch.sibling.length > 0 &&
             queryRoute.mode === "display" ? (
-            <AssetLocDataCard
+            <LocationDataPageView
               data={assetDataSearch.assetData!}
               key={assetDataSearch.assetData!.name}
               assetChildren={assetDataSearch.children}

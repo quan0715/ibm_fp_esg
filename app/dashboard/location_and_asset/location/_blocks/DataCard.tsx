@@ -34,106 +34,55 @@ import {
   DeleteDialog,
   DisplayMenuDialog,
 } from "./DataCRUDTrigger";
+import { EditButton } from "./buttons";
+import { MobileOnly } from "@/components/layouts/layoutWidget";
+import { useAssetDataDelete } from "../_hooks/useAssetLocationData";
 
-export function AssetLocDataCard({
-  data,
-  assetChildren = [],
-  ...props
-}: {
-  data: AssetLocationEntity;
-  assetChildren: AssetLocationEntity[];
-}) {
-  const queryRoute = useAssetQueryRoute();
-  const textColor =
-    colorVariants[getAssetEntityInfo(data?.type ?? AssetType.None).color]
-      .textColor;
+type layoutsConfigType = {
+  sections: {
+    rows: {
+      blocks: InfoBlockProps[];
+    }[];
+  }[];
+};
 
-  const layoutConfig = {
-    sections: [
-      {
-        rows: [
-          {
-            blocks: [
-              {
-                assetType: data.type,
-                label: "經緯度",
-                value: `(${data.lat ?? "0"}, ${data.lon ?? "0"})`,
-              },
-              {
-                assetType: data.type,
-                label: "城市",
-                value: data.city ?? "None",
-              },
-              {
-                assetType: data.type,
-                label: "國家",
-                value: data.country ?? "None",
-              },
-              {
-                assetType: data.type,
-                label: "郵遞區號",
-                value: data.zip ?? "None",
-              },
-            ],
-          },
-          {
-            blocks: [
-              {
-                assetType: data.type,
-                label: "地址1",
-                value: data.addressLine1 ?? "None",
-              },
-              {
-                assetType: data.type,
-                label: "地址2",
-                value: data.addressLine2 ?? "None",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        rows: [
-          {
-            blocks: [
-              {
-                assetType: data.type,
-                label: "子項目",
-                children: (
-                  <MultiChildrenLayout>
-                    {assetChildren!.map((child) => (
-                      <ChildAttributeButton
-                        key={child.id}
-                        className="w-full md:max-w-[250px] h-fit"
-                        onClick={() => queryRoute.setAssetId(child.id ?? "")}
-                        label={child.name}
-                      />
-                    ))}
-                    {getAssetChildrenTypeOptions(data.type).map((type) => (
-                      <CreateNewDataButton
-                        key={type}
-                        className={cn(
-                          "rounded-md border h-full",
-                          colorVariants[getAssetEntityInfo(type).color]
-                            .textColor
-                        )}
-                        onClick={async () => {
-                          let newAncestors = [...data.ancestors, data.id!];
-                          queryRoute.createNewAsset(type, newAncestors);
-                        }}
-                        label={getAssetEntityInfo(type).label}
-                      />
-                    ))}
-                  </MultiChildrenLayout>
-                ),
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  };
+type DatCardType = {
+  colorTheme: ColorThemeType; // css color value
+  title: string;
+  description: string;
+  layoutConfig: layoutsConfigType;
+  withDelete?: boolean;
+  withEdit?: boolean;
+  onDelete?: () => void;
+  onEdit?: () => void;
+  isDeleting?: boolean;
+  isEditing?: boolean;
+};
 
+type ColorThemeType = {
+  bgColor: string;
+  leadingColor: string;
+  textColor: string;
+  borderColor: string;
+};
+
+export function DataCard({
+  colorTheme = {
+    bgColor: "bg-white",
+    leadingColor: "bg-blue-500",
+    textColor: "text-black",
+    borderColor: "border-gray-200",
+  },
+  title = "Title",
+  description = "Description",
+  layoutConfig,
+  withDelete = true,
+  withEdit = true,
+  onDelete = () => {},
+  onEdit = () => {},
+  isDeleting = false,
+  isEditing = false,
+}: DatCardType) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -143,57 +92,38 @@ export function AssetLocDataCard({
       <DashboardCard className="shadow-sm w-full min-h-screen ">
         <DashboardCardHeader>
           <DashboardCardHeaderContent>
-            <DashboardCardHeaderTitle title={data.name} className={textColor} />
-            <DashboardCardHeaderDescription description={data.description} />
+            <DashboardCardHeaderTitle
+              title={title}
+              className={colorTheme.textColor}
+            />
+            <DashboardCardHeaderDescription description={description} />
           </DashboardCardHeaderContent>
           <DashboardCardActionList>
-            <Button
-              size={"icon"}
-              variant="outline"
-              className="flex flex-row justify-center items-center space-x-2"
-              onClick={() => {
-                queryRoute.setAssetId(data.id!, true);
-              }}
-            >
-              <LuFileEdit />
-            </Button>
-
-            {assetChildren.length === 0 ? (
-              <DeleteDialog deleteAssetIndex={data.id ?? ""} />
-            ) : null}
-
-            <div className="block md:hidden">
+            <EditButton isHidden={!withEdit} onClick={onEdit} />
+            <DeleteDialog
+              onDelete={onDelete}
+              isDisabled={!withDelete}
+              isDeleting={isDeleting}
+              deleteAssetIndex={""}
+            />
+            <MobileOnly>
               <DisplayMenuDialog />
-            </div>
+            </MobileOnly>
           </DashboardCardActionList>
         </DashboardCardHeader>
         <DashboardCardContent className="flex flex-col space-y-2">
-          {layoutConfig.sections.map((section, index) => {
-            return (
-              <DataSection key={index}>
-                {section.rows.map((row, index) => {
-                  return <DataCardRow key={index} blocks={row.blocks} />;
-                })}
-              </DataSection>
-            );
-          })}
+          <DataCardContentDisplay
+            colorTheme={colorTheme}
+            layoutConfig={layoutConfig}
+          />
         </DashboardCardContent>
       </DashboardCard>
     </motion.div>
   );
 }
 
-export function AssetDataCard({
-  // data,
-  // assetChildren = [],
-  ...props
-}: {
-  // data: AssetLocationEntity;
-  // assetChildren: AssetLocationEntity[];
-}) {
-  // const queryRoute = useAssetQueryRoute();
-  const textColor =
-    colorVariants[getAssetEntityInfo(AssetType.None).color].textColor;
+export function AssetDataCard({ ...props }: {}) {
+  const colorVariant = colorVariants[getAssetEntityInfo(AssetType.None).color];
 
   const layoutConfig = {
     sections: [
@@ -299,43 +229,17 @@ export function AssetDataCard({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1, ease: "easeInOut" }}
-    >
-      <DashboardCard className="shadow-sm w-full min-h-screen ">
-        <DashboardCardHeader>
-          <DashboardCardHeaderContent>
-            <DashboardCardHeaderTitle title={"tool A"} className={textColor} />
-            <DashboardCardHeaderDescription description={"this is tool A"} />
-          </DashboardCardHeaderContent>
-          <DashboardCardActionList>
-            <Button
-              size={"icon"}
-              variant="outline"
-              className="flex flex-row justify-center items-center space-x-2"
-              onClick={() => {
-                // queryRoute.setAssetId(data.id!, true);
-              }}
-            >
-              <LuFileEdit />
-            </Button>
-          </DashboardCardActionList>
-        </DashboardCardHeader>
-        <DashboardCardContent className="flex flex-col space-y-2">
-          {layoutConfig.sections.map((section, index) => {
-            return (
-              <DataSection key={index}>
-                {section.rows.map((row, index) => {
-                  return <DataCardRow key={index} blocks={row.blocks} />;
-                })}
-              </DataSection>
-            );
-          })}
-        </DashboardCardContent>
-      </DashboardCard>
-    </motion.div>
+    <DataCard
+      colorTheme={{
+        bgColor: colorVariant.bgColor,
+        leadingColor: colorVariant.leadingColor,
+        textColor: colorVariant.textColor,
+        borderColor: "border-gray-200",
+      }}
+      title={"tool"}
+      description={"this is a tool"}
+      layoutConfig={layoutConfig}
+    />
   );
 }
 export function MultiChildrenLayout({
@@ -349,6 +253,35 @@ export function MultiChildrenLayout({
     </div>
   );
 }
+
+function DataCardContentDisplay({
+  layoutConfig,
+  colorTheme,
+}: {
+  colorTheme?: ColorThemeType;
+  layoutConfig: layoutsConfigType;
+}) {
+  return (
+    <>
+      {layoutConfig.sections.map((section, index) => {
+        return (
+          <DataSection key={index}>
+            {section.rows.map((row, index) => {
+              return (
+                <DataCardRow
+                  key={index}
+                  blocks={row.blocks}
+                  colorTheme={colorTheme}
+                />
+              );
+            })}
+          </DataSection>
+        );
+      })}
+    </>
+  );
+}
+
 export function DataSection({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full flex flex-col justify-start items-start space-y-2">
@@ -357,7 +290,13 @@ export function DataSection({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function DataCardRow({ blocks }: { blocks: InfoBlockProps[] }) {
+export function DataCardRow({
+  blocks,
+  colorTheme,
+}: {
+  colorTheme?: ColorThemeType;
+  blocks: InfoBlockProps[];
+}) {
   return (
     <>
       <div className="w-full flex flex-col md:flex-row justify-between h-fit md:space-x-4">
@@ -365,7 +304,7 @@ export function DataCardRow({ blocks }: { blocks: InfoBlockProps[] }) {
           return (
             <>
               <InfoBlock
-                assetType={block.assetType}
+                labelColor={colorTheme?.textColor}
                 label={block.label}
                 value={block.value}
                 className="w-full"
@@ -398,24 +337,23 @@ type InfoBlockProps = {
 export function InfoBlock({
   label,
   value,
-  assetType = AssetType.None,
+  // assetType = AssetType.None,
+  labelColor = "text-black",
   className,
   children,
 }: {
   label: string;
   value?: string;
-  assetType?: AssetType;
+  labelColor?: string;
+  // assetType?: AssetType;
   className?: string;
   children?: React.ReactNode;
 }) {
-  const colorVariant = colorVariants[getAssetEntityInfo(assetType).color];
   return (
     <div
       className={cn("flex flex-col justify-start items-start py-1", className)}
     >
-      <p className={cn(colorVariant.textColor, "text-md font-normal")}>
-        {label}
-      </p>
+      <p className={cn(labelColor, "text-md font-normal")}>{label}</p>
       {children ?? <p className="text-md font-semibold">{value ?? "None"}</p>}
     </div>
   );

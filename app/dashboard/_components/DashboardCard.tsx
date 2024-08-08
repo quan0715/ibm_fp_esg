@@ -1,19 +1,27 @@
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 export function DashboardCard({
   children,
+  isSuspense = false,
   className,
 }: {
   children: React.ReactNode;
+  isSuspense?: boolean;
   className?: string;
 }) {
-  return (
+  return !isSuspense ? (
     <div
       className={cn("w-full bg-background rounded-md flex flex-col", className)}
     >
       {children}
     </div>
+  ) : (
+    <Skeleton className="w-full h-full flex bg-background flex-col justify-center items-center space-y-2">
+      <LoadingWidget />
+    </Skeleton>
   );
 }
 

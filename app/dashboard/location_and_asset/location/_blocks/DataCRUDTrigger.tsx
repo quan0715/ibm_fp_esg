@@ -15,7 +15,6 @@ import {
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { AssetLocDataCard } from "./DataCard";
 import { AssetType, getAssetType } from "@/domain/entities/AssetType";
 import { getAssetEntityInfo, colorVariants } from "../_utils/assetTypeUIConfig";
 import { AssetLocationDataForm } from "./DataForm";
@@ -39,6 +38,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { NavigateMenu } from "./NavigateMenu";
+import { LocationDataPageView } from "./DataColumn";
 
 export function CreateNewAssetLocationDataDialog({
   defaultAssetType = AssetType.Organization,
@@ -89,7 +89,11 @@ export function AssetLocationDataDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button asChild>
-          <AssetLocDataCard data={data} key={data.name} assetChildren={[]} />
+          <LocationDataPageView
+            data={data}
+            key={data.name}
+            assetChildren={[]}
+          />
         </Button>
       </DialogTrigger>
       <DialogContent className={"transition-all duration-500 ease-linear"}>
@@ -161,29 +165,39 @@ export function DisplayMenuDialog({ className }: { className?: string }) {
 }
 
 export function DeleteDialog({
+  isHidden = false,
+  isDisabled = false,
+  isDeleting = false,
   deleteAssetIndex,
+  onDelete,
 }: {
+  isHidden?: boolean;
+  isDisabled?: boolean;
+  isDeleting?: boolean;
   deleteAssetIndex: string;
+  onDelete: () => void;
 }) {
-  const queryRoute = useAssetQueryRoute();
-  const deleteAssetHook = useAssetDataDelete();
-  async function onDelete(deleteAssetIndex: string) {
-    console.log(
-      "presentation: UI button clicked - delete data index",
-      deleteAssetIndex
-    );
-    try {
-      const returnIndex = await deleteAssetHook.onDelete(deleteAssetIndex);
-      queryRoute.setAssetId(returnIndex);
-    } catch (e) {
-      console.error("presentation: deleteData error", e);
-    }
-  }
+  // const queryRoute = useAssetQueryRoute();
+  // const deleteAssetHook = useAssetDataDelete();
+  // async function onDelete(deleteAssetIndex: string) {
+  //   console.log(
+  //     "presentation: UI button clicked - delete data index",
+  //     deleteAssetIndex
+  //   );
+  //   try {
+  //     const returnIndex = await deleteAssetHook.onDelete(deleteAssetIndex);
+  //     queryRoute.setAssetId(returnIndex);
+  //   } catch (e) {
+  //     console.error("presentation: deleteData error", e);
+  //   }
+  // }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
+          hidden={isHidden}
+          disabled={isDisabled}
           size={"icon"}
           variant="outline"
           className="flex flex-row justify-center items-center space-x-2 text-destructive hover:bg-destructive hover:text-white"
@@ -204,13 +218,8 @@ export function DeleteDialog({
               取消
             </Button>
           </DialogClose>
-          <Button
-            variant="destructive"
-            onClick={async () => {
-              await onDelete(deleteAssetIndex);
-            }}
-          >
-            {deleteAssetHook.isDeleting ? (
+          <Button variant="destructive" onClick={onDelete}>
+            {isDeleting ? (
               <>
                 刪除中
                 <LuLoader2 className="animate-spin" />

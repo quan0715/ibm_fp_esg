@@ -3,7 +3,10 @@ import { cn } from "@/lib/utils";
 
 import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
 import React, { memo, useState } from "react";
-import { AssetType } from "@/domain/entities/AssetType";
+import {
+  AssetType,
+  getAssetChildrenTypeOptions,
+} from "@/domain/entities/AssetType";
 import {
   DashboardCard,
   DashboardCardContent,
@@ -15,7 +18,11 @@ import {
   colorVariants,
   AssetTypeColor,
 } from "@/app/dashboard/location_and_asset/location/_utils/assetTypeUIConfig";
-import { AssetLocDataCard } from "@/app/dashboard/location_and_asset/location/_blocks/DataCard";
+import {
+  ChildAttributeButton,
+  DataCard,
+  MultiChildrenLayout,
+} from "@/app/dashboard/location_and_asset/location/_blocks/DataCard";
 import { Separator } from "@/components/ui/separator";
 import {
   LuBoxSelect,
@@ -33,9 +40,12 @@ import { date } from "zod";
 import { createNewData } from "../_actions/PostDataAction";
 import { Skeleton, Spinner } from "@nextui-org/react";
 import { CreateNewDataButton } from "./DataCRUDTrigger";
-import { useDataCreate } from "../_hooks/useAssetLocationData";
+import {
+  useAssetDataDelete,
+  useDataCreate,
+} from "../_hooks/useAssetLocationData";
 
-export function DashboardColumnLabel({
+export function DashboardLabelChip({
   title,
   color,
   length = undefined,
@@ -92,7 +102,7 @@ export function AssetDataList({
       <DashboardCardHeaderTest
         title={getAssetEntityInfo(assetType).label}
         titleComponent={(title: string) => (
-          <DashboardColumnLabel
+          <DashboardLabelChip
             title={title}
             color={tailwindColorClass}
             length={assetDataList.length}
@@ -107,7 +117,7 @@ export function AssetDataList({
                 href={queryPathService.getNewDisplayURL(data.id ?? "")}
                 key={data.id}
               >
-                <AssetLocDataListView
+                <LocationDataCardView
                   data={data}
                   selected={data.id === assetId}
                   key={data.name}
@@ -129,19 +139,16 @@ export function AssetDataList({
   );
 }
 
-export const AssetLocDataListView = memo(function AssetLocDataListView({
+export const LocationDataCardView = memo(function AssetLocDataListView({
   data,
   selected = false,
-  onClick,
 }: {
   data: AssetLocationEntity;
   selected?: boolean;
-  onClick?: () => void;
 }) {
   const colorVariant = colorVariants[getAssetEntityInfo(data.type).color];
   return (
     <div
-      // onClick={onClick}
       className={cn(
         "w-full flex flex-row justify-between items-center p-2 rounded-md",
         "hover:cursor-pointer hover:bg-gray-100"
@@ -172,7 +179,7 @@ export const AssetLocDataListView = memo(function AssetLocDataListView({
   );
 });
 
-export const DashboardColumnMin = memo(function DashboardColumnMin({
+export const LocationDataAncestorView = memo(function DashboardColumnMin({
   assetType,
   assetData,
   onClick,
@@ -183,13 +190,7 @@ export const DashboardColumnMin = memo(function DashboardColumnMin({
 }) {
   const tailwindColorClass = getAssetEntityInfo(assetType).color;
   return (
-    <div
-      onClick={() => {
-        console.log("clicked");
-        onClick?.();
-      }}
-      className="w-full"
-    >
+    <div onClick={onClick} className="w-full">
       <DashboardCard
         className={cn(
           "flex flex-row items-center justify-between",
@@ -197,7 +198,7 @@ export const DashboardColumnMin = memo(function DashboardColumnMin({
           "hover:cursor-pointer hover:rounded-xl hover:animate-pulse"
         )}
       >
-        <DashboardColumnLabel
+        <DashboardLabelChip
           title={getAssetEntityInfo(assetType).label}
           color={tailwindColorClass}
         />
@@ -211,5 +212,135 @@ export const DashboardColumnMin = memo(function DashboardColumnMin({
         </h1>
       </DashboardCard>
     </div>
+  );
+});
+
+export const LocationDataPageView = memo(function LocationDataPageView({
+  data,
+  assetChildren = [],
+}: {
+  data: AssetLocationEntity;
+  assetChildren: AssetLocationEntity[];
+}) {
+  const queryRoute = useAssetQueryRoute();
+  const deleteAssetHook = useAssetDataDelete();
+
+  const layoutConfig = {
+    sections: [
+      {
+        rows: [
+          {
+            blocks: [
+              {
+                assetType: data.type,
+                label: "經緯度",
+                value: `(${data.lat ?? "0"}, ${data.lon ?? "0"})`,
+              },
+              {
+                assetType: data.type,
+                label: "城市",
+                value: data.city ?? "None",
+              },
+              {
+                assetType: data.type,
+                label: "國家",
+                value: data.country ?? "None",
+              },
+              {
+                assetType: data.type,
+                label: "郵遞區號",
+                value: data.zip ?? "None",
+              },
+            ],
+          },
+          {
+            blocks: [
+              {
+                assetType: data.type,
+                label: "地址1",
+                value: data.addressLine1 ?? "None",
+              },
+              {
+                assetType: data.type,
+                label: "地址2",
+                value: data.addressLine2 ?? "None",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        rows: [
+          {
+            blocks: [
+              {
+                assetType: data.type,
+                label: "子項目",
+                children: (
+                  <MultiChildrenLayout>
+                    {assetChildren!.map((child) => (
+                      <ChildAttributeButton
+                        key={child.id}
+                        className="w-full md:max-w-[250px] h-fit"
+                        onClick={() => queryRoute.setAssetId(child.id ?? "")}
+                        label={child.name}
+                      />
+                    ))}
+                    {getAssetChildrenTypeOptions(data.type).map((type) => (
+                      <CreateNewDataButton
+                        key={type}
+                        className={cn(
+                          "rounded-md border h-full",
+                          colorVariants[getAssetEntityInfo(type).color]
+                            .textColor
+                        )}
+                        onClick={async () => {
+                          let newAncestors = [...data.ancestors, data.id!];
+                          queryRoute.createNewAsset(type, newAncestors);
+                        }}
+                        label={getAssetEntityInfo(type).label}
+                      />
+                    ))}
+                  </MultiChildrenLayout>
+                ),
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  const onEdit = () => queryRoute.setAssetId(data.id!, true);
+
+  const onDelete = async () => {
+    console.log("presentation: UI button clicked - delete data index", data.id);
+    try {
+      const returnIndex = await deleteAssetHook.onDelete(data.id!);
+      queryRoute.setAssetId(returnIndex);
+    } catch (e) {
+      console.error("presentation: deleteData error", e);
+    }
+  };
+
+  const colorVariant = colorVariants[getAssetEntityInfo(data.type).color];
+
+  return (
+    <DataCard
+      colorTheme={{
+        bgColor: colorVariant.bgColor,
+        leadingColor: colorVariant.leadingColor,
+        textColor: colorVariant.textColor,
+        borderColor: "border-gray-200",
+      }}
+      title={data.name}
+      description={data.description ?? ""}
+      layoutConfig={layoutConfig}
+      withDelete={true}
+      withEdit={true}
+      isDeleting={deleteAssetHook.isDeleting}
+      onDelete={onDelete}
+      onEdit={onEdit}
+    />
   );
 });

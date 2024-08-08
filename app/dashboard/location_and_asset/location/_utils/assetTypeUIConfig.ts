@@ -39,8 +39,8 @@ const colorVariants = {
   },
   yellow: {
     bgColor: "bg-yellow-50 dark:bg-yellow-900",
-    leadingColor: "bg-yellow-500 dark:bg-yellow-500",
-    textColor: "text-yellow-500 dark:text-yellow-500",
+    leadingColor: "bg-yellow-700 dark:bg-yellow-500",
+    textColor: "text-yellow-700 dark:text-yellow-500",
   },
   purple: {
     bgColor: "bg-purple-50 dark:bg-purple-900",
@@ -49,8 +49,8 @@ const colorVariants = {
   },
   green: {
     bgColor: "bg-green-50 dark:bg-green-900",
-    leadingColor: "bg-green-500 dark:bg-green-500",
-    textColor: "text-green-500 dark:text-green-500",
+    leadingColor: "bg-green-700 dark:bg-green-500",
+    textColor: "text-green-700 dark:text-green-500",
   },
   gray: {
     bgColor: "bg-gray-50 dark:bg-gray-900",
