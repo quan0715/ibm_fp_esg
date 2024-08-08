@@ -1,5 +1,4 @@
-import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
-import { AssetType } from "@/domain/entities/AssetType";
+import { AssetData, AssetLocationEntity } from "@/domain/entities/Location";
 import {
   getAssetDataWithId,
   getAssetAncestors,

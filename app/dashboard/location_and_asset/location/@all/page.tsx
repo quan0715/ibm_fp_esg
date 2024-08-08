@@ -1,14 +1,14 @@
 "use client";
 import React, { Suspense, useEffect } from "react";
-import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
+import { AssetData, AssetLocationEntity } from "@/domain/entities/Location";
 import { AssetLocationDataForm } from "../_blocks/DataForm";
-import { getAssetType } from "@/domain/entities/AssetType";
+import { getLocationType } from "@/domain/entities/LocationType";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { useAssetLocationData } from "../_hooks/useAssetLocationData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { NavigateMenu } from "../_blocks/NavigateMenu";
-import { LocationDataPageView } from "../_blocks/DataColumn";
+import { LocationDataPageView } from "../_blocks/LocationDataDisplayUI";
 
 export default function Page() {
   return (
@@ -68,7 +68,7 @@ function AssetLocationDashboard() {
               data={
                 queryRoute.mode === "create"
                   ? AssetData.createNew(
-                      getAssetType(queryRoute.assetType),
+                      getLocationType(queryRoute.assetType),
                       queryRoute.ancestors || []
                     ).toEntity()
                   : assetDataSearch.assetData!

@@ -1,12 +1,12 @@
 "use client";
 import { cn } from "@/lib/utils";
 
-import { AssetData, AssetLocationEntity } from "@/domain/entities/Asset";
+import { AssetData, AssetLocationEntity } from "@/domain/entities/Location";
 import React, { memo, useState } from "react";
 import {
-  AssetType,
-  getAssetChildrenTypeOptions,
-} from "@/domain/entities/AssetType";
+  LocationType,
+  getLocationChildrenTypeOptions,
+} from "@/domain/entities/LocationType";
 import {
   DashboardCard,
   DashboardCardContent,
@@ -16,29 +16,18 @@ import {
 import {
   getAssetEntityInfo,
   colorVariants,
-  AssetTypeColor,
-} from "@/app/dashboard/location_and_asset/location/_utils/assetTypeUIConfig";
+  LocationTypeColor,
+} from "@/app/dashboard/location_and_asset/location/_utils/locationTypeUIConfig";
 import {
   ChildAttributeButton,
   DataCard,
+  layoutsConfigType,
   MultiChildrenLayout,
 } from "@/app/dashboard/location_and_asset/location/_blocks/DataCard";
 import { Separator } from "@/components/ui/separator";
-import {
-  LuBoxSelect,
-  LuCheck,
-  LuLoader2,
-  LuPlus,
-  LuSpline,
-  LuTextSelect,
-} from "react-icons/lu";
-import { Button } from "@/components/ui/button";
+import { LuCheck } from "react-icons/lu";
 import Link from "next/link";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
-import { date } from "zod";
-import { createNewData } from "../_actions/PostDataAction";
-import { Skeleton, Spinner } from "@nextui-org/react";
 import { CreateNewDataButton } from "./DataCRUDTrigger";
 import {
   useAssetDataDelete,
@@ -51,7 +40,7 @@ export function DashboardLabelChip({
   length = undefined,
 }: {
   title: string;
-  color: AssetTypeColor;
+  color: LocationTypeColor;
   length?: number;
 }) {
   return (
@@ -86,7 +75,7 @@ export function AssetDataList({
   assetDataList,
 }: {
   className?: string;
-  assetType: AssetType;
+  assetType: LocationType;
   assetSearchPath: string[];
   assetDataList: AssetLocationEntity[];
 }) {
@@ -151,7 +140,7 @@ export const LocationDataCardView = memo(function AssetLocDataListView({
     <div
       className={cn(
         "w-full flex flex-row justify-between items-center p-2 rounded-md",
-        "hover:cursor-pointer hover:bg-gray-100"
+        "hover:cursor-pointer hover:bg-secondary"
       )}
     >
       <div
@@ -168,11 +157,11 @@ export const LocationDataCardView = memo(function AssetLocDataListView({
         <div
           className={cn(
             "flex flex-col justify-center items-center",
-            "w-5 h-5 rounded-full",
+            "rounded-full p-0.5",
             colorVariant.leadingColor
           )}
         >
-          <LuCheck className={"text-white"} />
+          <LuCheck size={16} className={"text-white"} />
         </div>
       ) : null}
     </div>
@@ -185,7 +174,7 @@ export const LocationDataAncestorView = memo(function DashboardColumnMin({
   onClick,
 }: {
   onClick?: () => void;
-  assetType: AssetType;
+  assetType: LocationType;
   assetData: AssetLocationEntity;
 }) {
   const tailwindColorClass = getAssetEntityInfo(assetType).color;
@@ -225,29 +214,25 @@ export const LocationDataPageView = memo(function LocationDataPageView({
   const queryRoute = useAssetQueryRoute();
   const deleteAssetHook = useAssetDataDelete();
 
-  const layoutConfig = {
+  const layoutConfig: layoutsConfigType = {
     sections: [
       {
         rows: [
           {
             blocks: [
               {
-                assetType: data.type,
                 label: "經緯度",
                 value: `(${data.lat ?? "0"}, ${data.lon ?? "0"})`,
               },
               {
-                assetType: data.type,
                 label: "城市",
                 value: data.city ?? "None",
               },
               {
-                assetType: data.type,
                 label: "國家",
                 value: data.country ?? "None",
               },
               {
-                assetType: data.type,
                 label: "郵遞區號",
                 value: data.zip ?? "None",
               },
@@ -256,12 +241,10 @@ export const LocationDataPageView = memo(function LocationDataPageView({
           {
             blocks: [
               {
-                assetType: data.type,
                 label: "地址1",
                 value: data.addressLine1 ?? "None",
               },
               {
-                assetType: data.type,
                 label: "地址2",
                 value: data.addressLine2 ?? "None",
               },
@@ -274,7 +257,6 @@ export const LocationDataPageView = memo(function LocationDataPageView({
           {
             blocks: [
               {
-                assetType: data.type,
                 label: "子項目",
                 children: (
                   <MultiChildrenLayout>
@@ -286,7 +268,7 @@ export const LocationDataPageView = memo(function LocationDataPageView({
                         label={child.name}
                       />
                     ))}
-                    {getAssetChildrenTypeOptions(data.type).map((type) => (
+                    {getLocationChildrenTypeOptions(data.type).map((type) => (
                       <CreateNewDataButton
                         key={type}
                         className={cn(
@@ -336,7 +318,7 @@ export const LocationDataPageView = memo(function LocationDataPageView({
       title={data.name}
       description={data.description ?? ""}
       layoutConfig={layoutConfig}
-      withDelete={true}
+      withDelete={assetChildren.length === 0}
       withEdit={true}
       isDeleting={deleteAssetHook.isDeleting}
       onDelete={onDelete}

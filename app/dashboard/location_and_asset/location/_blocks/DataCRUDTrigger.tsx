@@ -15,10 +15,13 @@ import {
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { AssetType, getAssetType } from "@/domain/entities/AssetType";
-import { getAssetEntityInfo, colorVariants } from "../_utils/assetTypeUIConfig";
+import { LocationType, getLocationType } from "@/domain/entities/LocationType";
+import {
+  getAssetEntityInfo,
+  colorVariants,
+} from "../_utils/locationTypeUIConfig";
 import { AssetLocationDataForm } from "./DataForm";
-import { AssetLocationEntity } from "@/domain/entities/Asset";
+import { AssetLocationEntity } from "@/domain/entities/Location";
 import { deleteData } from "../_actions/PostDataAction";
 import { useRouter } from "next/navigation";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
@@ -38,12 +41,12 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { NavigateMenu } from "./NavigateMenu";
-import { LocationDataPageView } from "./DataColumn";
+import { LocationDataPageView } from "./LocationDataDisplayUI";
 
 export function CreateNewAssetLocationDataDialog({
-  defaultAssetType = AssetType.Organization,
+  defaultAssetType = LocationType.organization,
 }: {
-  defaultAssetType: AssetType;
+  defaultAssetType: LocationType;
 }) {
   const [open, setOpen] = useState(false);
   const assetInfo = getAssetEntityInfo(defaultAssetType);

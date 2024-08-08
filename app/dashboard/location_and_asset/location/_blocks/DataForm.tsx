@@ -1,14 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { LuLoader2, LuPlus, LuX } from "react-icons/lu";
+import { LuLoader2 } from "react-icons/lu";
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { AssetType, getAssetType } from "@/domain/entities/AssetType";
-import { getAssetEntityInfo, colorVariants } from "../_utils/assetTypeUIConfig";
+import { LocationType } from "@/domain/entities/LocationType";
+import {
+  getAssetEntityInfo,
+  colorVariants,
+} from "../_utils/locationTypeUIConfig";
 import { useForm } from "react-hook-form";
-import { AssetLocationEntity, AssetData } from "@/domain/entities/Asset";
+import { AssetLocationEntity } from "@/domain/entities/Location";
 
 import {
   Form,
@@ -21,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { createNewData, updateData } from "../_actions/PostDataAction";
 
-import { DashboardLabelChip } from "./DataColumn";
+import { DashboardLabelChip } from "./LocationDataDisplayUI";
 import {
   DashboardCard,
   DashboardCardContent,

@@ -2,7 +2,7 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
-import { AssetDataCard } from "../_blocks/DataCard";
+import { AssetDataCard } from "../_blocks/AssetDataDisplayUI";
 
 export default function Page() {
   return (

@@ -1,26 +1,32 @@
-import { AssetType } from "@/domain/entities/AssetType";
+import { LocationType } from "@/domain/entities/LocationType";
 
-type AssetTypeColor = "blue" | "red" | "yellow" | "purple" | "green" | "gray";
+type LocationTypeColor =
+  | "blue"
+  | "red"
+  | "yellow"
+  | "purple"
+  | "green"
+  | "gray";
 
-type AssetEntityInfo = {
-  color: AssetTypeColor; //hex color code
+type LocationEntityInfo = {
+  color: LocationTypeColor; //hex color code
   label: string; //the label to be displayed
 };
-function getAssetEntityInfo(type: AssetType): AssetEntityInfo {
+function getAssetEntityInfo(type: LocationType): LocationEntityInfo {
   switch (type) {
-    case AssetType.Organization:
+    case LocationType.organization:
       return { color: "red", label: "組織" };
-    case AssetType.Site:
+    case LocationType.site:
       return { color: "blue", label: "廠區" };
-    case AssetType.Department:
+    case LocationType.department:
       return { color: "purple", label: "部門" };
-    case AssetType.System:
+    case LocationType.system:
       return { color: "green", label: "系統" };
-    case AssetType.Subsystem:
+    case LocationType.subsystem:
       return { color: "green", label: "子系統" };
-    case AssetType.Route:
+    case LocationType.route:
       return { color: "yellow", label: "Route" };
-    case AssetType.Operation:
+    case LocationType.operation:
       return { color: "yellow", label: "Operation" };
     default:
       return { color: "gray", label: "Unknown" };
@@ -58,5 +64,5 @@ const colorVariants = {
     textColor: "text-gray-500 dark:text-gray-500",
   },
 };
-export type { AssetTypeColor };
+export type { LocationTypeColor };
 export { getAssetEntityInfo, colorVariants };

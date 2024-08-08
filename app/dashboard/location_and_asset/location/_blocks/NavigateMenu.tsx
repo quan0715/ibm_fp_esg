@@ -1,16 +1,22 @@
 "use client";
-import { AssetLocationEntity } from "@/domain/entities/Asset";
+import { AssetLocationEntity } from "@/domain/entities/Location";
 import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
-import { AssetDataList, LocationDataAncestorView } from "./DataColumn";
+import {
+  AssetDataList,
+  LocationDataAncestorView,
+} from "./LocationDataDisplayUI";
 import { LuCornerDownRight } from "react-icons/lu";
 import {
-  AssetType,
-  getAssetChildrenTypeOptions,
-} from "@/domain/entities/AssetType";
-import { colorVariants, getAssetEntityInfo } from "../_utils/assetTypeUIConfig";
+  LocationType,
+  getLocationChildrenTypeOptions,
+} from "@/domain/entities/LocationType";
+import {
+  colorVariants,
+  getAssetEntityInfo,
+} from "../_utils/locationTypeUIConfig";
 
 export function NavigateMenu({
   isBlocking = false,
@@ -34,7 +40,7 @@ export function NavigateMenu({
     const parent =
       ancestors.length > 0 ? ancestors[ancestors.length - 1] : undefined;
 
-    return parent !== undefined ? parent.type : AssetType.None;
+    return parent !== undefined ? parent.type : LocationType.none;
   }
   return isBlocking ? (
     <Skeleton className="flex bg-white w-full flex-col justify-center items-center space-y-2">
@@ -61,14 +67,16 @@ export function NavigateMenu({
           />
         ) : null}
         <div className="flex-1 flex flex-col items-center justify-center space-y-2">
-          {getAssetChildrenTypeOptions(getAssetTypeFromParent()).map((type) => (
-            <AssetDataList
-              key={type}
-              assetType={type}
-              assetSearchPath={path}
-              assetDataList={siblings.filter((data) => data.type === type)}
-            />
-          ))}
+          {getLocationChildrenTypeOptions(getAssetTypeFromParent()).map(
+            (type) => (
+              <AssetDataList
+                key={type}
+                assetType={type}
+                assetSearchPath={path}
+                assetDataList={siblings.filter((data) => data.type === type)}
+              />
+            )
+          )}
         </div>
       </div>
     </div>

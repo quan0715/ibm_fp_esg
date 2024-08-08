@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { LuFileEdit, LuLink } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
-import { AssetLocationEntity } from "@/domain/entities/Asset";
+import { AssetLocationEntity } from "@/domain/entities/Location";
 import {
-  AssetType,
-  getAssetChildrenTypeOptions,
-} from "@/domain/entities/AssetType";
+  LocationType,
+  getLocationChildrenTypeOptions,
+} from "@/domain/entities/LocationType";
 import Link from "next/link";
 import {
   getAssetEntityInfo,
   colorVariants,
-} from "@/app/dashboard/location_and_asset/location/_utils/assetTypeUIConfig";
+} from "@/app/dashboard/location_and_asset/location/_utils/locationTypeUIConfig";
 import { Separator } from "@/components/ui/separator";
 import {
   DashboardCard,
@@ -29,16 +29,11 @@ import { useAssetQueryRoute } from "../_hooks/useQueryRoute";
 
 import { motion } from "framer-motion";
 
-import {
-  CreateNewDataButton,
-  DeleteDialog,
-  DisplayMenuDialog,
-} from "./DataCRUDTrigger";
+import { DeleteDialog, DisplayMenuDialog } from "./DataCRUDTrigger";
 import { EditButton } from "./buttons";
 import { MobileOnly } from "@/components/layouts/layoutWidget";
-import { useAssetDataDelete } from "../_hooks/useAssetLocationData";
 
-type layoutsConfigType = {
+export type layoutsConfigType = {
   sections: {
     rows: {
       blocks: InfoBlockProps[];
@@ -122,126 +117,6 @@ export function DataCard({
   );
 }
 
-export function AssetDataCard({ ...props }: {}) {
-  const colorVariant = colorVariants[getAssetEntityInfo(AssetType.None).color];
-
-  const layoutConfig = {
-    sections: [
-      {
-        rows: [
-          {
-            blocks: [
-              {
-                assetType: AssetType.None,
-                label: "狀態",
-                value: "啟用中",
-              },
-            ],
-          },
-          {
-            blocks: [
-              {
-                assetType: AssetType.None,
-                label: "Product",
-                value: "Product A",
-              },
-            ],
-          },
-          {
-            blocks: [
-              {
-                assetType: AssetType.None,
-                label: "有效開始日期",
-                value: new Date().toLocaleDateString(),
-              },
-              {
-                assetType: AssetType.None,
-                label: "有效結束日期",
-                value: new Date().toLocaleDateString(),
-              },
-              {
-                assetType: AssetType.None,
-                label: "啟用日期",
-                value: new Date().toLocaleDateString(),
-              },
-              {
-                assetType: AssetType.None,
-                label: "停運日期",
-                value: new Date().toLocaleDateString(),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        rows: [
-          {
-            blocks: [
-              {
-                assetType: AssetType.None,
-                label: "位置資料",
-                children: (
-                  <MultiChildrenLayout>
-                    <ChildAttributeButton
-                      className="w-full md:max-w-[250px] h-fit"
-                      label={"System 1"}
-                    />
-                  </MultiChildrenLayout>
-                ),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        rows: [
-          {
-            blocks: [
-              {
-                assetType: AssetType.None,
-                label: "子資產",
-                children: (
-                  <MultiChildrenLayout>
-                    <ChildAttributeButton
-                      className="w-full md:max-w-[250px] h-fit"
-                      label={"Component1"}
-                    />
-                    <ChildAttributeButton
-                      className="w-full md:max-w-[250px] h-fit"
-                      label={"Component2"}
-                    />
-                    <ChildAttributeButton
-                      className="w-full md:max-w-[250px] h-fit"
-                      label={"Component3"}
-                    />
-                    <ChildAttributeButton
-                      className="w-full md:max-w-[250px] h-fit"
-                      label={"Component4"}
-                    />
-                  </MultiChildrenLayout>
-                ),
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  };
-
-  return (
-    <DataCard
-      colorTheme={{
-        bgColor: colorVariant.bgColor,
-        leadingColor: colorVariant.leadingColor,
-        textColor: colorVariant.textColor,
-        borderColor: "border-gray-200",
-      }}
-      title={"tool"}
-      description={"this is a tool"}
-      layoutConfig={layoutConfig}
-    />
-  );
-}
 export function MultiChildrenLayout({
   children,
 }: {
@@ -325,11 +200,9 @@ export function DataCardRow({
     </>
   );
 }
-
 type InfoBlockProps = {
   label: string;
   value?: string;
-  assetType: AssetType;
   children?: React.ReactNode;
   className?: string;
 };
@@ -337,7 +210,7 @@ type InfoBlockProps = {
 export function InfoBlock({
   label,
   value,
-  // assetType = AssetType.None,
+  // LocationType = LocationType.None,
   labelColor = "text-black",
   className,
   children,
@@ -345,7 +218,7 @@ export function InfoBlock({
   label: string;
   value?: string;
   labelColor?: string;
-  // assetType?: AssetType;
+  // LocationType?: LocationType;
   className?: string;
   children?: React.ReactNode;
 }) {
