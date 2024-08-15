@@ -7,13 +7,14 @@ import {
   deleteData,
   updateData,
   createNewData,
-} from "../_actions/PostDataAction";
+} from "@/app/dashboard/management/location_and_asset/_actions/LocationDataAction";
 import { useCallback, useState } from "react";
 import { useEffect } from "react";
 import { useTransition } from "react";
+import { DocumentObject } from "@/domain/entities/Document";
 
-class SearchPathCache {
-  cache: Map<string, Map<string, AssetLocationEntity>>;
+class SearchPathCache<T> {
+  cache: Map<string, Map<string, T>>;
   constructor() {
     this.cache = new Map();
   }
@@ -47,12 +48,12 @@ class SearchPathCache {
     return false;
   }
 
-  setPath(path: string, value: Map<string, AssetLocationEntity>) {
+  setPath(path: string, value: Map<string, T>) {
     this.cache.set(path, value);
     // console.log("set", path, value);
   }
 
-  setAsset(path: string, assetId: string, value: AssetLocationEntity) {
+  setAsset(path: string, assetId: string, value: T) {
     let map = this.cache.get(path) || new Map();
     map.set(assetId, value);
     this.cache.set(path, map);
@@ -74,11 +75,13 @@ class SearchPathCache {
   }
 }
 
-export const searchPathCache = new SearchPathCache();
+export const documentSearchPathCache = new SearchPathCache<DocumentObject>();
+export const searchPathCache = new SearchPathCache<AssetLocationEntity>();
 
 export function useAssetLocationData() {
   const [assetId, setAssetId] = useState("");
   const [mode, setMode] = useState("display");
+  const [enable, setEnable] = useState(true);
 
   const [assetData, setAssetData] = useState<AssetLocationEntity>();
   const [ancestors, setAncestors] = useState<AssetLocationEntity[]>([]);
@@ -90,16 +93,15 @@ export function useAssetLocationData() {
 
   useEffect(() => {
     if (assetId !== undefined) {
-      //   console.log("useEffect: fetch data ", assetId);
       console.log("fetching data", assetId);
-      if (assetId && assetId !== "") {
+      console.log("enable", enable);
+      console.log("mode", mode);
+      console.log("assetData", assetData);
+      if (assetId && assetId !== "" && enable) {
         fetchData();
       }
-      //   if (assetId == "none" && mode == "display") {
-      //     emptyIndex();
-      //   }
     }
-  }, [assetId, mode]);
+  }, [assetId, mode, enable]);
 
   useEffect(() => {
     if (assetId && assetId !== "") {
@@ -284,7 +286,6 @@ export function useDataCreate() {
     let newDataIndex = "";
     try {
       newDataIndex = await createNewData(data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       searchPathCache.setAsset((data.ancestors ?? []).join(","), newDataIndex, {
         ...data,

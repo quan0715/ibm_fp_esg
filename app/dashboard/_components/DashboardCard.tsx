@@ -77,7 +77,7 @@ export function DashboardCardHeaderDescription({
   className?: string;
 }) {
   return (
-    <p className={cn("text-sm text-gray-500 text-start", className)}>
+    <p className={cn("text-sm text-start font-semibold", className)}>
       {description}
     </p>
   );

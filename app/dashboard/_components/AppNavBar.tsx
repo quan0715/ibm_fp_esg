@@ -76,27 +76,22 @@ function MenuContentEntry({
 
 export const Level1Menu: Level1MenuContentEntryProps[] = [
   {
-    key: "location_and_asset",
-    label: "位置與資產",
+    key: "management",
+    label: "主檔管理",
     content: [
       {
-        key: "location",
-        label: "位置",
+        key: "location_and_asset",
+        label: "位置&資產",
         description: "組織、廠區、Phase、課別",
         icon: <LuFactory size={24} />,
       },
-      {
-        key: "tool",
-        label: "系統管理",
-        description: "系統、Tool資料管理與課別對應",
-        icon: <GrSystem size={24} />,
-      },
-      {
-        key: "asset",
-        label: "資產",
-        description: "資產基本資料/分類/監控點管理",
-        icon: <MdOutlinePrecisionManufacturing size={24} />,
-      },
+
+      // {
+      //   key: "asset",
+      //   label: "資產",
+      //   description: "資產基本資料/分類/監控點管理",
+      //   icon: <MdOutlinePrecisionManufacturing size={24} />,
+      // },
     ],
   },
   {
