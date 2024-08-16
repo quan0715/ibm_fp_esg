@@ -1,9 +1,9 @@
 import {
   DocumentObject,
   DocumentTypeString,
-  getDocumentType,
   Property,
 } from "@/domain/entities/Document";
+import { getDocumentType } from "@/domain/entities/DocumentTemplate";
 
 // import { AssetType } from "@/domain/entities/LocationType";
 import { ObjectId } from "mongodb";

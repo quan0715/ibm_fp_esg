@@ -15,10 +15,10 @@ export function StatusChip({ status }: { status: Status }) {
       "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-100",
   };
   return (
-    <span
+    <div
       className={`px-2 py-1 rounded-full text-sm font-semibold ${statusColor[status]}`}
     >
       {status}
-    </span>
+    </div>
   );
 }

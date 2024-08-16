@@ -1,6 +1,4 @@
 import { ObjectId } from "mongodb";
-import { LocationRepositoryInterface } from "@/domain/repository/LocationRepository";
-// import { AssetLocationEntity } from "../entities/Location";
 import { DocumentObject, DocumentGroupType } from "../entities/Document";
 import { DocumentRepositoryInterface } from "../repository/DocumentRepository";
 

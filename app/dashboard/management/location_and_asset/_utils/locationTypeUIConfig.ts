@@ -1,6 +1,4 @@
-import { AssetType } from "@/domain/entities/AssetType";
 import { DocumentObjectType } from "@/domain/entities/Document";
-import { LocationType } from "@/domain/entities/LocationType";
 
 type DocumentTypeColor =
   | "blue"
@@ -36,55 +34,16 @@ export function getDocumentEntityUIConfig(
     case DocumentObjectType.operation:
       return { color: "yellow", label: "Operation" };
     case DocumentObjectType.component:
-      return { color: "orange", label: "子資產" };
+      return { color: "green", label: "子資產" };
     case DocumentObjectType.tool:
-      return { color: "stone", label: "資產" };
+      return { color: "blue", label: "資產" };
     case DocumentObjectType.unknown:
-      return { color: "gray", label: "Unknown" };
-  }
-}
-
-function getAssetEntityUIConfig(type: AssetType): ObjectUIConfig {
-  switch (type) {
-    case AssetType.tool:
-      return { color: "stone", label: "資產" };
-    case AssetType.component:
-      return { color: "orange", label: "子資產" };
-    case AssetType.none:
-      return { color: "gray", label: "Unknown" };
-  }
-}
-
-function getLocationEntityUIConfig(type: LocationType): ObjectUIConfig {
-  switch (type) {
-    case LocationType.organization:
-      return { color: "red", label: "組織" };
-    case LocationType.site:
-      return { color: "blue", label: "廠區" };
-    case LocationType.department:
-      return { color: "purple", label: "部門" };
-    case LocationType.system:
-      return { color: "green", label: "系統" };
-    case LocationType.subsystem:
-      return { color: "green", label: "子系統" };
-    case LocationType.route:
-      return { color: "yellow", label: "Route" };
-    case LocationType.operation:
-      return { color: "yellow", label: "Operation" };
-    default:
       return { color: "gray", label: "Unknown" };
   }
 }
 
 export function getDocumentTypeColor(type: DocumentObjectType) {
   return colorVariants[getDocumentEntityUIConfig(type).color];
-}
-
-function getLocationColor(type: LocationType) {
-  return colorVariants[getLocationEntityUIConfig(type).color];
-}
-function getAssetColor(type: AssetType) {
-  return colorVariants[getAssetEntityUIConfig(type).color];
 }
 
 const colorVariants = {
@@ -130,10 +89,4 @@ const colorVariants = {
   },
 };
 export type { DocumentTypeColor };
-export {
-  getLocationEntityUIConfig,
-  getAssetEntityUIConfig,
-  colorVariants,
-  getLocationColor,
-  getAssetColor,
-};
+export { colorVariants };

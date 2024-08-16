@@ -1,8 +1,6 @@
 "use client";
-import {
-  DocumentObjectType,
-  getDocumentObjectType,
-} from "@/domain/entities/Document";
+import { DocumentObjectType } from "@/domain/entities/Document";
+import { getDocumentObjectType } from "@/domain/entities/DocumentConfig";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 export function useDataQueryRoute() {
@@ -55,7 +53,7 @@ export function useDataQueryRoute() {
   function createNewData(type: string, ancestors: string) {
     const params = new URLSearchParams();
     params.set("mode", "create");
-    // params.set("data", dataId);
+    params.set("data", dataId);
     params.set("ancestors", ancestors);
     params.set("type", type);
     if (searchParams.get("page")) {

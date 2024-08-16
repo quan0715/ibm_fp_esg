@@ -1,12 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 
-import { AssetData, AssetLocationEntity } from "@/domain/entities/Location";
 import React, { memo, useState } from "react";
-import {
-  LocationType,
-  getLocationChildrenTypeOptions,
-} from "@/domain/entities/LocationType";
 import {
   DashboardCard,
   DashboardCardContent,

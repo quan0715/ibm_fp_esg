@@ -2,8 +2,6 @@ import {
   DocumentGroupType,
   DocumentObject,
   DocumentObjectType,
-  getDocumentChildrenTypeOptions,
-  getDocumentLayerRules,
 } from "@/domain/entities/Document";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 import { useEffect } from "react";
@@ -11,6 +9,10 @@ import {
   DocumentDataAncestorView,
   DocumentDataCardListView,
 } from "./DocumentDataDisplayUI";
+import {
+  getDocumentChildrenTypeOptions,
+  getDocumentLayerRules,
+} from "@/domain/entities/DocumentConfig";
 
 export function DocumentNavigateMenu({
   data,

@@ -1,10 +1,9 @@
-import { documentSearchPathCache } from "./useAssetLocationData";
+import { documentSearchPathCache } from "../../../../../lib/documentDataCache";
 import { useState, useEffect, useCallback, useTransition } from "react";
 import {
   DocumentGroupType,
   DocumentObject,
   DocumentObjectType,
-  createNewDocument as getNewDocument,
 } from "@/domain/entities/Document";
 import {
   getAssetSibling,
@@ -15,7 +14,8 @@ import {
   createNewData,
   deleteData,
 } from "../_actions/DocumentAction";
-
+import { set } from "date-fns";
+import { createNewDocument as getNewDocTemplate } from "@/domain/entities/DocumentTemplate";
 function messageLog(message?: any, ...optionalParams: any[]) {
   console.log("useDocumentData", message, ...optionalParams);
 }
@@ -24,6 +24,10 @@ export function useDocumentData(group: DocumentGroupType) {
   messageLog(group);
   const [dataId, setDataId] = useState("");
   const [mode, setMode] = useState("display");
+  // const [createNewDocumentConfig, setCreateNewDocumentConfig] = useState({
+  //   type: DocumentObjectType.unknown,
+  //   ancestors: "",
+  // });
 
   const [assetData, setAssetData] = useState<DocumentObject>();
   const [ancestors, setAncestors] = useState<DocumentObject[]>([]);
@@ -38,19 +42,18 @@ export function useDocumentData(group: DocumentGroupType) {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    if (dataId.length > 0) {
-      setErrorMessage("");
-      messageLog(`fetching data ${dataId ?? "None"}`);
-      messageLog(`mode ${mode}`);
-      messageLog(`assetData ${assetData}`);
-      if (dataId && dataId !== "") {
+    if (mode === "display") {
+      if (dataId.length > 0) {
+        setErrorMessage("");
+        messageLog(`fetching data ${dataId ?? "None"}`);
         fetchData();
       }
     }
   }, [dataId, mode]);
 
   useEffect(() => {
-    if (dataId && dataId !== "") {
+    // console.log("assetData", assetData);
+    if (assetData && assetData.id !== "") {
       fetchChildren();
     }
   }, [assetData]);
@@ -113,8 +116,8 @@ export function useDocumentData(group: DocumentGroupType) {
   const fetchData = useCallback(async () => {
     startGetData(async () => {
       //   console.log("fetching data");
-      messageLog("fetching data");
       setErrorMessage("");
+      messageLog("fetching data");
       let isCached = documentSearchPathCache.hasAsset(dataId);
       let data: DocumentObject;
       let ancestorData: DocumentObject[] = [];
@@ -155,12 +158,10 @@ export function useDocumentData(group: DocumentGroupType) {
         ancestor.length > 0
           ? [assetData?.ancestors, assetData?.id].join(",")
           : assetData?.id ?? "";
-      console.log("childrenPath", childrenPath);
       let isCached = documentSearchPathCache.hasPath(childrenPath);
 
       if (isCached) {
         // console.log("data is cached");
-        console.log("data is cached", documentSearchPathCache);
         childrenData = Array.from(
           documentSearchPathCache.getPath(childrenPath)!
         ).map(([key, value]) => value);
@@ -256,5 +257,6 @@ export function useDocumentData(group: DocumentGroupType) {
     deleteDocument,
     getDefaultData,
     errorMessage,
+    // setCreateNewDocumentConfig,
   };
 }

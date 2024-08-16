@@ -1,10 +1,6 @@
-import { MongoAssetDataModel } from "@/data/models/mongo/AssetModel";
 import { MongoDocumentObjectModel } from "@/data/models/mongo/DocumentModel";
-import {
-  DocumentGroupType,
-  DocumentObject,
-  getDocumentGroupTypeList,
-} from "@/domain/entities/Document";
+import { DocumentGroupType, DocumentObject } from "@/domain/entities/Document";
+import { getDocumentGroupTypeList } from "@/domain/entities/DocumentConfig";
 import { DocumentRepositoryInterface } from "@/domain/repository/DocumentRepository";
 import clientPromise from "@/lib/mongoClient";
 import { ObjectId } from "mongodb";
