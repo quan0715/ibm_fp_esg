@@ -14,12 +14,19 @@ import {
 } from "../_utils/locationTypeUIConfig";
 
 import { Separator } from "@/components/ui/separator";
-import { LuCheck } from "react-icons/lu";
+import {
+  LuCheck,
+  LuPlus,
+  LuMinus,
+  LuArrowLeft,
+  LuArrowRight,
+} from "react-icons/lu";
 import Link from "next/link";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 import { CreateNewDataButton } from "./DataCRUDTrigger";
 import { DashboardLabelChip } from "./DocumentLabelChip";
 import { DocumentObject, DocumentObjectType } from "@/domain/entities/Document";
+import { Button } from "@/components/ui/button";
 
 export function DocumentDataCardListView({
   className,
@@ -130,7 +137,7 @@ export const DocumentDataAncestorView = memo(function DashboardColumnMin({
   const typeUIConfig = getDocumentEntityUIConfig(type);
   const tailwindColorClass = getDocumentTypeColor(type);
   return (
-    <div onClick={onClick} className="w-full">
+    <div onClick={onClick} className="w-full min-w-[250px]">
       <DashboardCard
         className={cn(
           "flex flex-row items-center justify-between",
@@ -147,6 +154,66 @@ export const DocumentDataAncestorView = memo(function DashboardColumnMin({
         >
           {data.title}
         </h1>
+      </DashboardCard>
+    </div>
+  );
+});
+
+export const DocumentReferencePropertyView = memo(function DashboardColumnMin({
+  data,
+  onClick,
+  mode = "display",
+}: {
+  onClick?: () => void;
+  data: DocumentObject;
+  mode: "selected" | "candidate" | "display";
+}) {
+  const type = data.type;
+  const typeUIConfig = getDocumentEntityUIConfig(type);
+  const tailwindColorClass = getDocumentTypeColor(type);
+
+  function getModeIcon() {
+    switch (mode) {
+      case "selected":
+        return <LuMinus className={tailwindColorClass.textColor} />;
+      case "candidate":
+        return <LuPlus className={tailwindColorClass.textColor} />;
+      case "display":
+        return <LuArrowRight className={tailwindColorClass.textColor} />;
+    }
+  }
+  return (
+    <div className="w-full min-w-[250px] group">
+      <DashboardCard
+        className={cn(
+          "flex flex-row items-center justify-start space-x-6",
+          "w-full rounded-md px-2 py-1",
+          "group-hover:cursor-pointer group-hover:bg-secondary"
+        )}
+      >
+        <div className="flex flex-1 flex-row justify-start items-center space-x-4">
+          <DashboardLabelChip
+            title={typeUIConfig.label}
+            color={typeUIConfig.color}
+          />
+          <h1
+            className={cn(
+              "font-semibold text-sm",
+              tailwindColorClass.textColor
+            )}
+          >
+            {data.title}
+          </h1>
+        </div>
+        <Button
+          type="button"
+          className={cn("invisible group-hover:visible", "hover:bg-background")}
+          onClick={onClick}
+          size={"icon"}
+          variant={"outline"}
+        >
+          {getModeIcon()}
+        </Button>
       </DashboardCard>
     </div>
   );

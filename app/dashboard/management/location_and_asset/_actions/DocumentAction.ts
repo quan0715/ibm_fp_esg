@@ -28,6 +28,13 @@ export async function deleteData(id: string, groupType: DocumentGroupType) {
   return await useCase.deleteDocument(id);
 }
 
+export async function getDocuments(groupType: DocumentGroupType) {
+  const repo = new MongoDocumentRepository();
+  const useCase = new DocumentUseCase(repo, groupType);
+  const data = await useCase.getDocuments();
+  return data;
+}
+
 export async function getDocumentDataWithId(
   id: string,
   groupType: DocumentGroupType

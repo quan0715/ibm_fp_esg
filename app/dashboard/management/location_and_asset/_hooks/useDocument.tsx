@@ -1,5 +1,5 @@
 import { documentSearchPathCache } from "../../../../../lib/documentDataCache";
-import { useState, useEffect, useCallback, useTransition } from "react";
+import { useState, useEffect, useCallback, useTransition, use } from "react";
 import {
   DocumentGroupType,
   DocumentObject,
@@ -13,6 +13,7 @@ import {
   updateData,
   createNewData,
   deleteData,
+  getDocuments,
 } from "../_actions/DocumentAction";
 import { set } from "date-fns";
 import { createNewDocument as getNewDocTemplate } from "@/domain/entities/DocumentTemplate";
@@ -22,13 +23,9 @@ function messageLog(message?: any, ...optionalParams: any[]) {
 
 export function useDocumentData(group: DocumentGroupType) {
   messageLog(group);
+
   const [dataId, setDataId] = useState("");
   const [mode, setMode] = useState("display");
-  // const [createNewDocumentConfig, setCreateNewDocumentConfig] = useState({
-  //   type: DocumentObjectType.unknown,
-  //   ancestors: "",
-  // });
-
   const [assetData, setAssetData] = useState<DocumentObject>();
   const [ancestors, setAncestors] = useState<DocumentObject[]>([]);
   const [sibling, setSibling] = useState<DocumentObject[]>([]);
@@ -52,7 +49,6 @@ export function useDocumentData(group: DocumentGroupType) {
   }, [dataId, mode]);
 
   useEffect(() => {
-    // console.log("assetData", assetData);
     if (assetData && assetData.id !== "") {
       fetchChildren();
     }
@@ -257,6 +253,85 @@ export function useDocumentData(group: DocumentGroupType) {
     deleteDocument,
     getDefaultData,
     errorMessage,
-    // setCreateNewDocumentConfig,
+  };
+}
+
+export function useDocument(documentId: string, group: DocumentGroupType) {
+  const [isFetchingData, startGetData] = useTransition();
+  const [data, setData] = useState<DocumentObject>();
+
+  useEffect(() => {
+    if (documentId !== "") {
+      getDocument();
+    }
+  }, [documentId]);
+
+  const getDocument = useCallback(async () => {
+    startGetData(async () => {
+      messageLog("fetching data");
+      if (documentId === "") throw new Error("Document Id is empty");
+
+      let isCached = documentSearchPathCache.hasAsset(documentId);
+      let data: DocumentObject;
+      try {
+        if (!isCached) {
+          console.log("data is not cached");
+          data = await getDocumentDataWithId(documentId, group);
+          documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
+        }
+        data = documentSearchPathCache.getAsset(documentId)!;
+        messageLog("fetchData : data", data);
+        setData(data);
+      } catch (e) {
+        console.error("presentation: fetchData error", e);
+      }
+    });
+  }, [documentId, group]);
+
+  return {
+    data,
+    isFetchingData,
+    getDocument,
+  };
+}
+
+export function useDocumentReference(group: DocumentGroupType) {
+  const [isFetchingData, startGetData] = useTransition();
+  const [documentList, setDocumentList] = useState<DocumentObject[]>();
+
+  useEffect(() => {
+    getReferenceDocuments();
+  }, [group]);
+
+  const getReferenceDocuments = useCallback(async () => {
+    startGetData(async () => {
+      messageLog("fetching data");
+      // delay for 1 second
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        let data = await getDocuments(group);
+        // sort data
+        data = data.sort((a, b) => {
+          if (a.ancestors < b.ancestors) {
+            return -1;
+          }
+          if (a.ancestors > b.ancestors) {
+            return 1;
+          }
+          return 0;
+        });
+
+        messageLog("fetchData : data", data);
+        setDocumentList(data);
+      } catch (e) {
+        console.error("presentation: fetchData error", e);
+      }
+    });
+  }, [group]);
+
+  return {
+    documentList,
+    isFetchingData,
+    getDocuments,
   };
 }

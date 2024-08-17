@@ -19,6 +19,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import {
+  DocumentReferenceProperty,
   OptionsProperty,
   Property,
   PropertyType,
@@ -27,12 +28,35 @@ import { cn } from "@/lib/utils";
 import { SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useFormContext } from "react-hook-form";
-import { LuLock } from "react-icons/lu";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { LuLoader, LuLoader2, LuLock, LuSearch } from "react-icons/lu";
 import { InfoBlock } from "./DocumentDataCard";
 import { Status } from "@/domain/entities/Status";
 import { StatusChip } from "@/components/blocks/chips";
 import React, { Key } from "react";
+import { DocumentGroupType } from "@/domain/entities/Document";
+import {
+  useDocument,
+  useDocumentData,
+  useDocumentReference,
+} from "../_hooks/useDocument";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DocumentCardView,
+  DocumentDataAncestorView,
+  DocumentReferencePropertyView,
+} from "./DocumentDataDisplayUI";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { LoadingWidget } from "@/components/blocks/LoadingWidget";
+import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 
 // shdcn UI Kit css disable
 const focusSettings =
@@ -70,6 +94,20 @@ export function getPropertyValue(property: Property, index?: number) {
               isRequired={property.required}
               name={`properties.${index}.value`}
               isDisabled={property.readonly}
+            />
+          </InfoBlock>
+        );
+      case PropertyType.reference:
+        return (
+          <InfoBlock label={property.name}>
+            <DocumentReferenceField
+              isRequired={property.required}
+              name={`properties.${index}.value`}
+              isDisabled={property.readonly}
+              referenceGroup={
+                (property as DocumentReferenceProperty).referenceGroup
+              }
+              referenceIndex={(property as DocumentReferenceProperty).value}
             />
           </InfoBlock>
         );
@@ -261,6 +299,153 @@ export function DashboardDatePickerField({
           <FormMessage />
         </FormItem>
       )}
+    />
+  );
+}
+
+function DocumentReferenceField({
+  name,
+  isHidden = false,
+  isDisabled = false,
+  isRequired = false,
+  textCss,
+  referenceGroup,
+  referenceIndex = "",
+}: DocumentPropFieldProps & {
+  referenceGroup: DocumentGroupType;
+  referenceIndex?: string;
+}) {
+  const { control, ...form } = useFormContext();
+  const useQueryRoute = useDataQueryRoute();
+  const documentOptions = useDocumentReference(referenceGroup);
+
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => {
+        const isBlocking = documentOptions.isFetchingData;
+        const data = documentOptions.documentList?.find(
+          (doc) => doc.id === field.value
+        );
+
+        const options = documentOptions.documentList?.filter(
+          (doc) => doc.id !== data?.id
+        );
+
+        return (
+          <FormItem className="w-full flex flex-row justify-start items-center">
+            <FormControl>
+              <div
+                className={cn(
+                  "w-full flex flex-row justify-start items-center space-x-2 rounded-md py-0.5 px-1",
+                  hoverSettings
+                )}
+              >
+                {!isBlocking && data ? (
+                  <DocumentReferencePropertyView
+                    data={data}
+                    onClick={() => {
+                      // console.log("click: select document", document.title);
+                      useQueryRoute.setAssetId(data.id!, "location");
+                    }}
+                    mode="display"
+                  />
+                ) : (
+                  <LoadingWidget />
+                  // <LuLoader2 className="animate-spin h-4 w-4 text-gray-500" />
+                )}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    {field.value ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="text-gray-500"
+                        size="icon"
+                      >
+                        <LuSearch />
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="text-gray-500"
+                      >
+                        <span>+ 新增關聯</span>
+                      </Button>
+                    )}
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>新增關聯</DialogTitle>
+                      <DialogDescription>選擇你要關聯的文檔</DialogDescription>
+                    </DialogHeader>
+                    {documentOptions.isFetchingData ? (
+                      <Skeleton className="w-100">
+                        <LoadingWidget />
+                      </Skeleton>
+                    ) : (
+                      <div className="w-full flex flex-col justify-start items-start space-y-4">
+                        {data ? (
+                          <div
+                            className={cn(
+                              // !data ? "hidden" : "block",
+                              "w-full flex flex-col justify-start items-start space-y-2"
+                            )}
+                          >
+                            <p className={cn("text-sm")}>已選擇的文檔</p>
+
+                            <DialogClose asChild>
+                              <Button type="button" variant="secondary" asChild>
+                                <DocumentReferencePropertyView
+                                  data={data}
+                                  onClick={() => {
+                                    // console.log("click: select document", document.title);
+                                    // onReferenceChange("");
+                                    field.onChange("");
+                                    // DialogClose();
+                                  }}
+                                  mode="selected"
+                                />
+                              </Button>
+                            </DialogClose>
+                          </div>
+                        ) : null}
+
+                        <div
+                          className={cn(
+                            "w-full flex flex-col justify-start items-start space-y-2"
+                          )}
+                        >
+                          <p className="text-sm">選擇其他文檔</p>
+                          {(options ?? [])?.map((document) => (
+                            <DialogClose asChild key={document.id}>
+                              <Button type="button" variant="secondary" asChild>
+                                <DocumentReferencePropertyView
+                                  data={document}
+                                  onClick={() => {
+                                    // console.log("click: select document", document.title);
+                                    // onReferenceChange(document.id!);
+                                    field.onChange(document.id!);
+                                  }}
+                                  mode="candidate"
+                                />
+                              </Button>
+                            </DialogClose>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </FormControl>
+            {isDisabled ? <LuLock /> : null}
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }

@@ -13,21 +13,21 @@ export function useDataQueryRoute() {
   const page = searchParams.get("page") || "";
   const ancestors = searchParams.get("ancestors") ?? "";
   const dataType = getDocumentObjectType(searchParams.get("type") ?? "");
-  function createQueryString(
-    selected?: string,
-    mode?: string
-    // ancestorPath?: string
-  ): string {
+  function createQueryString({
+    selected,
+    mode,
+    page,
+  }: {
+    selected?: string;
+    mode?: string;
+    page?: string;
+  }): string {
     const params = new URLSearchParams();
     if (selected) {
       params.set("data", selected);
     }
-    if (mode) {
-      params.set("mode", mode);
-    }
-    if (searchParams.get("page")) {
-      params.set("page", searchParams.get("page") || "");
-    }
+    params.set("mode", mode ?? "display");
+    params.set("page", page ?? (searchParams.get("page") || "location"));
 
     return params.toString();
   }
@@ -44,11 +44,26 @@ export function useDataQueryRoute() {
   }
 
   function getNewDisplayURL(assetId: string) {
-    return getPath(createQueryString(assetId, "display"));
+    return getPath(
+      createQueryString({
+        selected: assetId,
+        mode: "display",
+      })
+    );
   }
 
-  const editURL = getPath(createQueryString(dataId, "edit"));
-  const createURL = getPath(createQueryString(dataId, "create"));
+  const editURL = getPath(
+    createQueryString({
+      selected: dataId,
+      mode: "edit",
+    })
+  );
+  const createURL = getPath(
+    createQueryString({
+      selected: dataId,
+      mode: "create",
+    })
+  );
 
   function createNewData(type: string, ancestors: string) {
     const params = new URLSearchParams();
@@ -61,8 +76,12 @@ export function useDataQueryRoute() {
     }
     router.push(getPath(params.toString()));
   }
-  function setDataId(selected: string, isEdit: boolean = false) {
-    const newRoute = createQueryString(selected, isEdit ? "edit" : "display");
+  function setDataId(selected: string, page?: string) {
+    const newRoute = createQueryString({
+      selected: selected,
+      mode: "display",
+      page: page,
+    });
     router.push(getPath(newRoute));
   }
 

@@ -43,10 +43,10 @@ interface StatusProperty extends BaseProperty {
   value: Status;
 }
 
-interface DocumentReferenceProperty extends BaseProperty {
+export interface DocumentReferenceProperty extends BaseProperty {
   type: PropertyType.reference;
   referenceGroup: DocumentGroupType;
-  referenceIndex: string;
+  value: string;
 }
 
 export type Property =

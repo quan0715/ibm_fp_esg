@@ -11,6 +11,10 @@ export class DocumentUseCase {
     this.documentGroupType = documentGroupType;
   }
 
+  async getDocuments(): Promise<DocumentObject[]> {
+    return await this.repository.retrieveDocument({}, this.documentGroupType);
+  }
+
   async createNewDocument(data: DocumentObject): Promise<string> {
     return await this.repository.createDocument(data);
   }

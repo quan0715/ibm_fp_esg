@@ -108,6 +108,14 @@ export function createNewDocument(
             readonly: false,
           },
           {
+            name: "位置",
+            type: PropertyType.reference,
+            referenceGroup: DocumentGroupType.Location,
+            value: "",
+            isHidden: false,
+            readonly: false,
+          },
+          {
             name: "產品名稱",
             type: PropertyType.text,
             value: "",

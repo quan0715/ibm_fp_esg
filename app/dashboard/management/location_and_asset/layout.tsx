@@ -1,7 +1,7 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import React, { ReactNode, Suspense } from "react";
+import React, { ReactNode, Suspense, use, useEffect } from "react";
 import { DashboardPageHeader } from "@/app/dashboard/_components/DashboardPageHeader";
 import {
   useSearchParams,
