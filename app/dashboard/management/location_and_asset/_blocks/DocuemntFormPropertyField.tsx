@@ -347,7 +347,7 @@ function DocumentReferenceField({
                     data={data}
                     onClick={() => {
                       // console.log("click: select document", document.title);
-                      useQueryRoute.setAssetId(data.id!, "location");
+                      useQueryRoute.setAssetId(data.id!, referenceGroup);
                     }}
                     mode="display"
                   />

@@ -9,7 +9,7 @@ import {
   useRouter,
   useSelectedLayoutSegments,
 } from "next/navigation";
-type tabsString = "location" | "assets";
+type tabsString = "Location" | "Asset";
 
 export default function Layout({
   children,
@@ -21,13 +21,13 @@ export default function Layout({
   location: React.ReactNode;
 }) {
   const tabConfig = {
-    location: {
-      index: "location",
+    Location: {
+      index: "Location",
       title: "位置主檔",
       content: location,
     },
-    assets: {
-      index: "assets",
+    Asset: {
+      index: "Asset",
       title: "資產主檔",
       content: asset,
     },
@@ -48,7 +48,7 @@ export function TabListWidget({
     { index: string; title: string; content: ReactNode }
   >;
 }) {
-  const defaultPage = tabConfig["location"];
+  const defaultPage = tabConfig["Location"];
 
   const searchParams = useSearchParams();
   const subPage = searchParams.get("page");
@@ -68,6 +68,7 @@ export function TabListWidget({
       />
       <Separator />
       <Tabs
+        value={subPage || defaultPage.index}
         defaultValue={subPage || defaultPage.index}
         className="w-full h-full"
         onValueChange={(value) => {

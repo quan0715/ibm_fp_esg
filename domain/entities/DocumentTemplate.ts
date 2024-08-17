@@ -86,6 +86,14 @@ export function createNewDocument(
             type: PropertyType.text,
             value: "",
           },
+          // {
+          //   name: "位置",
+          //   type: PropertyType.reference,
+          //   referenceGroup: DocumentGroupType.Asset,
+          //   value: "",
+          //   isHidden: false,
+          //   readonly: false,
+          // },
         ],
       } as DocumentObject;
     case DocumentGroupType.Asset:
