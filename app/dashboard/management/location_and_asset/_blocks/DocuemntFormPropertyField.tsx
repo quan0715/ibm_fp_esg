@@ -351,10 +351,9 @@ function DocumentReferenceField({
                     }}
                     mode="display"
                   />
-                ) : (
+                ) : field.value ? (
                   <LoadingWidget />
-                  // <LuLoader2 className="animate-spin h-4 w-4 text-gray-500" />
-                )}
+                ) : null}
                 <Dialog>
                   <DialogTrigger asChild>
                     {field.value ? (

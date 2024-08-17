@@ -307,7 +307,6 @@ export function useDocumentReference(group: DocumentGroupType) {
     startGetData(async () => {
       messageLog("fetching data");
       // delay for 1 second
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       try {
         let data = await getDocuments(group);
         // sort data
