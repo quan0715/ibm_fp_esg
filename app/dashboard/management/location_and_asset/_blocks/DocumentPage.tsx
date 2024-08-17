@@ -1,7 +1,10 @@
 "use client";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DocumentGroupType } from "@/domain/entities/Document";
+import {
+  DocumentGroupType,
+  getDocumentGroupTypeFromString,
+} from "@/domain/entities/Document";
 import { DocumentDataCardForm } from "../_blocks/DocumentDataCard";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 import { Suspense, useEffect, useState } from "react";
@@ -11,10 +14,6 @@ import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
 import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 
-type DocumentPageProps = {
-  pageIndex: string;
-  docGroupType: DocumentGroupType;
-};
 function SuspenseWidget() {
   return (
     <Skeleton className="bg-background w-full h-full flex flex-col justify-center items-center space-y-2">
@@ -30,13 +29,16 @@ function ErrorWidget({ message }: { message: string }) {
     </DashboardCard>
   );
 }
-export function DocumentPage({ pageIndex, docGroupType }: DocumentPageProps) {
+export function DocumentPage() {
   const queryRoute = useDataQueryRoute();
-  const dateQueryService = useDocumentData(docGroupType);
+
   const mode = queryRoute.mode;
   const dataId = queryRoute.dataId;
   const isDisplayMode = queryRoute.mode === "display";
   const isCreateMode = queryRoute.mode === "create";
+  const page = queryRoute.page;
+  const groupType = getDocumentGroupTypeFromString(page);
+  const dateQueryService = useDocumentData(groupType);
   const isFetching =
     dateQueryService.isFetchingData || dateQueryService.isFetchingChildren;
   const isError = dateQueryService.errorMessage !== "";
@@ -45,7 +47,7 @@ export function DocumentPage({ pageIndex, docGroupType }: DocumentPageProps) {
     async function handleEmptyData() {
       const defaultData = await dateQueryService.getDefaultData();
       if (defaultData === null) {
-        queryRoute.createNewAsset(getGroupDefaultType(docGroupType), "");
+        queryRoute.createNewAsset(getGroupDefaultType(groupType), "");
       } else {
         queryRoute.setAssetId(defaultData.id!);
         dateQueryService.setMode(mode);
@@ -57,7 +59,7 @@ export function DocumentPage({ pageIndex, docGroupType }: DocumentPageProps) {
       dateQueryService.setDataId(dataId);
       dateQueryService.setMode(mode);
     }
-  }, [dataId, mode]);
+  }, [dataId, mode, page]);
 
   const isBlocking =
     isFetching || (isDisplayMode && dateQueryService.assetData === undefined);
@@ -73,7 +75,7 @@ export function DocumentPage({ pageIndex, docGroupType }: DocumentPageProps) {
           ) : dateQueryService.assetData ? (
             <DocumentNavigateMenu
               key={"navigate menu: display"}
-              group={docGroupType}
+              group={groupType}
               data={dateQueryService.assetData!}
               ancestors={dateQueryService.ancestors}
               siblings={dateQueryService.sibling}
@@ -88,19 +90,19 @@ export function DocumentPage({ pageIndex, docGroupType }: DocumentPageProps) {
             isDisplayMode ? (
               <DocumentDataCardForm
                 key={"display data"}
-                groupType={docGroupType}
+                groupType={groupType}
                 data={dateQueryService.assetData!}
                 childData={dateQueryService.children}
               />
             ) : (
               <DocumentDataCardForm
                 key={"create new data"}
-                groupType={docGroupType}
+                groupType={groupType}
                 // data={dateQueryService.assetData!}
                 data={createNewDocument(
                   queryRoute.dataType,
                   queryRoute.ancestors ?? "",
-                  docGroupType
+                  groupType
                 )}
               />
             )

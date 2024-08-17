@@ -7,10 +7,7 @@ import { DocumentGroupType } from "@/domain/entities/Document";
 export default function Page() {
   return (
     <Suspense>
-      <DocumentPage
-        pageIndex="location"
-        docGroupType={DocumentGroupType.Location}
-      />
+      <DocumentPage />
     </Suspense>
   );
 }

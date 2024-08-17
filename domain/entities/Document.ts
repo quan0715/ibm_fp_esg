@@ -29,6 +29,7 @@ interface DocumentObject {
 // example of a document
 
 type DocumentTypeString = keyof typeof DocumentObjectType;
+
 enum DocumentGroupType {
   Location = "Location",
   Asset = "Asset",
@@ -36,6 +37,17 @@ enum DocumentGroupType {
   Root = "Root",
 }
 
+function getDocumentGroupTypeFromString(type: string): DocumentGroupType {
+  if (!Object.keys(DocumentGroupType).includes(type)) {
+    return DocumentGroupType.Unknown;
+  }
+  return DocumentGroupType[type as keyof typeof DocumentGroupType];
+}
+
 export type { DocumentObject, Property, DocumentTypeString };
 
-export { DocumentGroupType, DocumentObjectType };
+export {
+  DocumentGroupType,
+  DocumentObjectType,
+  getDocumentGroupTypeFromString,
+};

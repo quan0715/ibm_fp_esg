@@ -7,7 +7,7 @@ import { DocumentGroupType } from "@/domain/entities/Document";
 export default function Page() {
   return (
     <Suspense>
-      <DocumentPage pageIndex="assets" docGroupType={DocumentGroupType.Asset} />
+      <DocumentPage />
     </Suspense>
   );
 }
