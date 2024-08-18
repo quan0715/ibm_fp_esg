@@ -79,8 +79,7 @@ export function useDocumentData(group: DocumentGroupType) {
       messageLog("fetchAndCache : data", data);
       let path = getSearchPath(data.ancestors);
       messageLog("fetchAndCache : path", path);
-      documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
-      // documentMenuDataCache.setAsset(data.ancestors, data.id!, data);
+      documentSearchPathCache.setAsset(data.ancestors, group, data.id!, data);
     }
   }
 
@@ -115,12 +114,12 @@ export function useDocumentData(group: DocumentGroupType) {
         ancestor.length > 0
           ? [document?.ancestors, document?.id].join(",")
           : document?.id ?? "";
-      let isCached = documentSearchPathCache.hasPath(childrenPath);
+      let isCached = documentSearchPathCache.hasPath(childrenPath, group);
 
       if (isCached) {
         // console.log("data is cached");
         childrenData = Array.from(
-          documentSearchPathCache.getPath(childrenPath)!
+          documentSearchPathCache.getPath(childrenPath, group)!
         ).map(([key, value]) => value);
       } else {
         childrenData = await getDocumentChildren(
@@ -130,6 +129,7 @@ export function useDocumentData(group: DocumentGroupType) {
         );
         documentSearchPathCache.setPath(
           childrenPath,
+          group,
           new Map(childrenData.map((child) => [child.id!, child]))
         );
         // documentMenuDataCache.setPath(
@@ -148,8 +148,8 @@ export function useDocumentData(group: DocumentGroupType) {
     setUpdatingDataState(true);
     try {
       await updateData(data, group);
-      documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
-      documentMenuDataCache.setAsset(data.ancestors, data.id!, data);
+      documentSearchPathCache.setAsset(data.ancestors, group, data.id!, data);
+      documentMenuDataCache.setAsset(data.ancestors, group, data.id!, data);
     } catch (e) {
       console.error("presentation: updateData error", e);
     }
@@ -167,8 +167,18 @@ export function useDocumentData(group: DocumentGroupType) {
         id: newDataIndex,
       };
       dataId = newDataIndex;
-      documentSearchPathCache.setAsset(doc.ancestors, newDataIndex, newDoc);
-      documentMenuDataCache.setAsset(doc.ancestors, newDataIndex, newDoc);
+      documentSearchPathCache.setAsset(
+        doc.ancestors,
+        group,
+        newDataIndex,
+        newDoc
+      );
+      documentMenuDataCache.setAsset(
+        doc.ancestors,
+        group,
+        newDataIndex,
+        newDoc
+      );
     } catch (e) {
       console.error("presentation: createNewDocument error", e);
     } finally {
@@ -243,8 +253,13 @@ export function useDocument(documentId: string, group: DocumentGroupType) {
         if (!isCached) {
           console.log("data is not cached");
           data = await getDocumentDataWithId(documentId, group);
-          documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
-          documentMenuDataCache.setAsset(data.ancestors, data.id!, data);
+          documentSearchPathCache.setAsset(
+            data.ancestors,
+            group,
+            data.id!,
+            data
+          );
+          documentMenuDataCache.setAsset(data.ancestors, group, data.id!, data);
         }
         data = documentSearchPathCache.getAsset(documentId)!;
         messageLog("fetchData : data", data);
@@ -311,6 +326,7 @@ export function useDocumentWithSearchPath(
   const [sibling, setSibling] = useState<DocumentObject[]>([]);
 
   useEffect(() => {
+    console.log("useDocumentWithSearchPath", searchPath, group);
     getDocumentSearchPath();
   }, [searchPath, group]);
 
@@ -322,7 +338,7 @@ export function useDocumentWithSearchPath(
       let siblingData = await getAssetSibling(path, group);
 
       siblingData.map((sibling) =>
-        documentMenuDataCache.setAsset(path, sibling.id!, sibling)
+        documentMenuDataCache.setAsset(path, group, sibling.id!, sibling)
       );
 
       for (let ancestor of ancestors) {
@@ -337,6 +353,7 @@ export function useDocumentWithSearchPath(
             ancestorSiblingData.map((sibling) =>
               documentMenuDataCache.setAsset(
                 ancestor.ancestors,
+                group,
                 sibling.id!,
                 sibling
               )
@@ -345,6 +362,7 @@ export function useDocumentWithSearchPath(
           fetchAndCache(ancestor.ancestors);
         }
       }
+      console.log("cache stack", documentMenuDataCache.cache);
     } catch (e) {
       console.error("presentation: fetchData error", e);
     }
@@ -355,10 +373,7 @@ export function useDocumentWithSearchPath(
       messageLog("getDocumentSearchPath fetching data");
       // delay for 1 second
       try {
-        // let isCached = documentSearchPathCache.hasPath(searchPath);
-        // const siblingDataCache = documentMenuDataCache.getPath(searchPath);
-        const isCached = documentMenuDataCache.hasPath(searchPath);
-        // siblingDataCache && siblingDataCache.entries.length > 1;
+        const isCached = documentMenuDataCache.hasPath(searchPath, group);
 
         if (!isCached) {
           console.log("data is not cached");
@@ -373,15 +388,16 @@ export function useDocumentWithSearchPath(
         );
 
         let siblingData = Array.from(
-          documentMenuDataCache.getPath(searchPath) ?? []
+          documentMenuDataCache.getPath(searchPath, group) ?? []
         ).map(([key, value]) => value);
+        console.log("siblingData", siblingData);
         setAncestors(ancestors);
         setSibling(siblingData);
       } catch (e) {
         console.error("presentation: fetchData error", e);
       }
     });
-  }, [searchPath]);
+  }, [searchPath, group]);
 
   return {
     ancestors,

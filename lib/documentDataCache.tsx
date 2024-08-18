@@ -6,8 +6,8 @@ class SearchPathCache<T> {
     this.cache = new Map();
   }
 
-  getPath(path: string) {
-    return this.cache.get(path);
+  getPath(path: string, group: string) {
+    return this.cache.get(path + group);
   }
 
   getAsset(assetId: string) {
@@ -21,8 +21,8 @@ class SearchPathCache<T> {
     return false;
   }
 
-  hasPath(path: string) {
-    return this.cache.has(path);
+  hasPath(path: string, group: string) {
+    return this.cache.has(path + group);
   }
 
   hasAsset(assetId: string) {
@@ -35,16 +35,14 @@ class SearchPathCache<T> {
     return false;
   }
 
-  setPath(path: string, value: Map<string, T>) {
-    this.cache.set(path, value);
-    // console.log("set", path, value);
+  setPath(path: string, group: string, value: Map<string, T>) {
+    this.cache.set(path + group, value);
   }
 
-  setAsset(path: string, assetId: string, value: T) {
-    let map = this.cache.get(path) || new Map();
+  setAsset(path: string, group: string, assetId: string, value: T) {
+    let map = this.cache.get(path + group) || new Map();
     map.set(assetId, value);
-    this.cache.set(path, map);
-    // console.log("set: ", "path:", path, "id: ", assetId, "data: ", value);
+    this.cache.set(path + group, map);
   }
 
   deleteAsset(assetId: string) {
