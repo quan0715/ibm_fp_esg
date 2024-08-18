@@ -312,7 +312,7 @@ export function useDocumentWithSearchPath(
 
   useEffect(() => {
     getDocumentSearchPath();
-  }, [searchPath]);
+  }, [searchPath, group]);
 
   async function fetchAndCache(path: string) {
     try {
