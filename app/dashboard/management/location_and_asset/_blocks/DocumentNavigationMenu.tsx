@@ -44,8 +44,12 @@ export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
     layerRule.group
   );
 
-  return (
-    <div className="md:flex w-full flex-col justify-start items-center space-y-2">
+  return isFetchingData ? (
+    <Skeleton className="bg-background w-full h-full flex flex-col justify-center items-center space-y-2">
+      <LoadingWidget />
+    </Skeleton>
+  ) : (
+    <div className="md:flex w-full flex-col justify-start items-center space-y-2 max-h-[600px] overflow-auto">
       {ancestors.map((ancestor) => (
         <DocumentDataAncestorView
           data={ancestor}
@@ -77,7 +81,7 @@ export function DocumentNavigateMenuDialog({ data }: { data: DocumentObject }) {
           <LuMenu />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="p-2 max-h-[600px] overflow-scroll">
+      <DrawerContent className="p-2 ">
         <DocumentNavigateMenu data={data} />
       </DrawerContent>
     </Drawer>

@@ -63,3 +63,4 @@ class SearchPathCache<T> {
 }
 
 export const documentSearchPathCache = new SearchPathCache<DocumentObject>();
+export const documentMenuDataCache = new SearchPathCache<DocumentObject>();

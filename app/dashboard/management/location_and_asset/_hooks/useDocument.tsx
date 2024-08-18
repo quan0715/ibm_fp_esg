@@ -1,4 +1,7 @@
-import { documentSearchPathCache } from "../../../../../lib/documentDataCache";
+import {
+  documentMenuDataCache,
+  documentSearchPathCache,
+} from "../../../../../lib/documentDataCache";
 import { useState, useEffect, useCallback, useTransition, use } from "react";
 import {
   DocumentGroupType,
@@ -77,18 +80,16 @@ export function useDocumentData(group: DocumentGroupType) {
       let path = getSearchPath(data.ancestors);
       messageLog("fetchAndCache : path", path);
       documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
+      // documentMenuDataCache.setAsset(data.ancestors, data.id!, data);
     }
   }
 
   const fetchData = useCallback(async () => {
     startGetData(async () => {
-      //   console.log("fetching data");
       setErrorMessage("");
       messageLog("fetching data");
       let isCached = documentSearchPathCache.hasAsset(dataId);
       let data: DocumentObject;
-      let ancestorData: DocumentObject[] = [];
-      let siblingData: DocumentObject[] = [];
       try {
         if (!isCached) {
           console.log("data is not cached");
@@ -97,17 +98,7 @@ export function useDocumentData(group: DocumentGroupType) {
         console.log("data is cached");
         data = documentSearchPathCache.getAsset(dataId)!;
         messageLog("fetchData : data", data);
-        // let path = getSearchPath(data.ancestors);
-        // ancestorData = path.map(
-        //   (ancestor) => documentSearchPathCache.getAsset(ancestor)!
-        // );
-
-        // siblingData = Array.from(
-        //   documentSearchPathCache.getPath(data.ancestors) ?? []
-        // ).map(([key, value]) => value);
         setDocument(data);
-        // setSibling(siblingData);
-        // setAncestors(ancestorData);
       } catch (e) {
         console.error("presentation: fetchData error", e);
         setErrorMessage("Data Fetching Error With Id: " + dataId);
@@ -117,7 +108,6 @@ export function useDocumentData(group: DocumentGroupType) {
 
   const fetchChildren = useCallback(async () => {
     startFetchChildren(async () => {
-      //   console.log("fetching children");
       messageLog("fetching children");
       let childrenData: DocumentObject[] = [];
       let ancestor = document?.ancestors ?? "";
@@ -139,6 +129,10 @@ export function useDocumentData(group: DocumentGroupType) {
           group
         );
         documentSearchPathCache.setPath(
+          childrenPath,
+          new Map(childrenData.map((child) => [child.id!, child]))
+        );
+        documentMenuDataCache.setPath(
           childrenPath,
           new Map(childrenData.map((child) => [child.id!, child]))
         );
@@ -247,6 +241,7 @@ export function useDocument(documentId: string, group: DocumentGroupType) {
           console.log("data is not cached");
           data = await getDocumentDataWithId(documentId, group);
           documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
+          documentMenuDataCache.setAsset(data.ancestors, data.id!, data);
         }
         data = documentSearchPathCache.getAsset(documentId)!;
         messageLog("fetchData : data", data);
@@ -324,11 +319,11 @@ export function useDocumentWithSearchPath(
       let siblingData = await getAssetSibling(path, group);
 
       siblingData.map((sibling) =>
-        documentSearchPathCache.setAsset(path, sibling.id!, sibling)
+        documentMenuDataCache.setAsset(path, sibling.id!, sibling)
       );
 
       for (let ancestor of ancestors) {
-        if (documentSearchPathCache.hasAsset(ancestor.id!)) {
+        if (documentMenuDataCache.hasAsset(ancestor.id!)) {
           continue;
         } else {
           let ancestorSiblingData = await getAssetSibling(
@@ -337,7 +332,7 @@ export function useDocumentWithSearchPath(
           );
           if (ancestorSiblingData.length > 0) {
             ancestorSiblingData.map((sibling) =>
-              documentSearchPathCache.setAsset(
+              documentMenuDataCache.setAsset(
                 ancestor.ancestors,
                 sibling.id!,
                 sibling
@@ -358,9 +353,9 @@ export function useDocumentWithSearchPath(
       // delay for 1 second
       try {
         // let isCached = documentSearchPathCache.hasPath(searchPath);
-        const siblingDataCache = documentSearchPathCache.getPath(searchPath);
-        const isCached =
-          siblingDataCache && siblingDataCache.entries.length > 1;
+        // const siblingDataCache = documentMenuDataCache.getPath(searchPath);
+        const isCached = documentMenuDataCache.hasPath(searchPath);
+        // siblingDataCache && siblingDataCache.entries.length > 1;
 
         if (!isCached) {
           console.log("data is not cached");
@@ -371,11 +366,11 @@ export function useDocumentWithSearchPath(
         let ancestorIndexList = searchPath === "" ? [] : searchPath.split(",");
 
         let ancestors = ancestorIndexList.map(
-          (ancestor) => documentSearchPathCache.getAsset(ancestor)!
+          (ancestor) => documentMenuDataCache.getAsset(ancestor)!
         );
 
         let siblingData = Array.from(
-          documentSearchPathCache.getPath(searchPath) ?? []
+          documentMenuDataCache.getPath(searchPath) ?? []
         ).map(([key, value]) => value);
         setAncestors(ancestors);
         setSibling(siblingData);
