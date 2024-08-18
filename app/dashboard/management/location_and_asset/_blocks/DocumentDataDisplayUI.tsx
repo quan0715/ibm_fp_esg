@@ -73,13 +73,15 @@ export function DocumentDataCardListView({
             );
           })}
         </div>
-        <CreateNewDataButton
-          className={cn(getDocumentColor.textColor)}
-          onClick={async () => {
-            queryPathService.createNewAsset(type, searchPath);
-          }}
-          label={`${docUIConfig.label}`}
-        />
+        {queryPathService.mode === "display" ? (
+          <CreateNewDataButton
+            className={cn(getDocumentColor.textColor)}
+            onClick={async () => {
+              queryPathService.createNewAsset(type, searchPath);
+            }}
+            label={`${docUIConfig.label}`}
+          />
+        ) : null}
       </DashboardCardContent>
     </DashboardCard>
   );
@@ -137,7 +139,7 @@ export const DocumentDataAncestorView = memo(function DashboardColumnMin({
   const typeUIConfig = getDocumentEntityUIConfig(type);
   const tailwindColorClass = getDocumentTypeColor(type);
   return (
-    <div onClick={onClick} className="w-full min-w-[250px]">
+    <div onClick={onClick} className="w-full">
       <DashboardCard
         className={cn(
           "flex flex-row items-center justify-between",

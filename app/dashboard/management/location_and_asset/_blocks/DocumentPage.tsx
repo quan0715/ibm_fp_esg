@@ -1,13 +1,10 @@
 "use client";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DocumentGroupType,
-  getDocumentGroupTypeFromString,
-} from "@/domain/entities/Document";
+import { getDocumentGroupTypeFromString } from "@/domain/entities/Document";
 import { DocumentDataCardForm } from "../_blocks/DocumentDataCard";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDocumentData } from "../_hooks/useDocument";
 import { DocumentNavigateMenu } from "../_blocks/DocumentNavigationMenu";
 import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
@@ -39,8 +36,10 @@ export function DocumentPage() {
   const page = queryRoute.page;
   const groupType = getDocumentGroupTypeFromString(page);
   const dateQueryService = useDocumentData(groupType);
+
   const isFetching =
     dateQueryService.isFetchingData || dateQueryService.isFetchingChildren;
+
   const isError = dateQueryService.errorMessage !== "";
 
   useEffect(() => {
@@ -62,7 +61,15 @@ export function DocumentPage() {
   }, [dataId, mode, page]);
 
   const isBlocking =
-    isFetching || (isDisplayMode && dateQueryService.assetData === undefined);
+    isFetching || (isDisplayMode && dateQueryService.document === undefined);
+
+  const data = isCreateMode
+    ? createNewDocument(
+        queryRoute.dataType,
+        queryRoute.ancestors ?? "",
+        groupType
+      )
+    : dateQueryService.document;
 
   return (
     <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
@@ -72,42 +79,22 @@ export function DocumentPage() {
             <ErrorWidget message={dateQueryService.errorMessage} />
           ) : isBlocking ? (
             <SuspenseWidget />
-          ) : dateQueryService.assetData ? (
-            <DocumentNavigateMenu
-              key={"navigate menu: display"}
-              group={groupType}
-              data={dateQueryService.assetData!}
-              ancestors={dateQueryService.ancestors}
-              siblings={dateQueryService.sibling}
-              searchPath={dateQueryService.assetData?.ancestors ?? ""}
-            />
-          ) : null}
+          ) : (
+            <DocumentNavigateMenu data={data!} />
+          )}
         </div>
         <div className="col-span-4 md:col-span-3">
           {isError ? (
             <ErrorWidget message={dateQueryService.errorMessage} />
-          ) : !isBlocking ? (
-            isDisplayMode ? (
-              <DocumentDataCardForm
-                key={"display data"}
-                groupType={groupType}
-                data={dateQueryService.assetData!}
-                childData={dateQueryService.children}
-              />
-            ) : (
-              <DocumentDataCardForm
-                key={"create new data"}
-                groupType={groupType}
-                // data={dateQueryService.assetData!}
-                data={createNewDocument(
-                  queryRoute.dataType,
-                  queryRoute.ancestors ?? "",
-                  groupType
-                )}
-              />
-            )
-          ) : (
+          ) : isBlocking ? (
             <SuspenseWidget />
+          ) : (
+            <DocumentDataCardForm
+              key={isDisplayMode ? "display data" : "create new data"}
+              groupType={groupType}
+              data={data!}
+              childData={isDisplayMode ? dateQueryService.children : []}
+            />
           )}
         </div>
       </div>

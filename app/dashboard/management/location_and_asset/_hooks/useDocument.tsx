@@ -26,9 +26,9 @@ export function useDocumentData(group: DocumentGroupType) {
 
   const [dataId, setDataId] = useState("");
   const [mode, setMode] = useState("display");
-  const [assetData, setAssetData] = useState<DocumentObject>();
-  const [ancestors, setAncestors] = useState<DocumentObject[]>([]);
-  const [sibling, setSibling] = useState<DocumentObject[]>([]);
+  const [document, setDocument] = useState<DocumentObject>();
+  // const [ancestors, setAncestors] = useState<DocumentObject[]>([]);
+  // const [sibling, setSibling] = useState<DocumentObject[]>([]);
   const [children, setChildren] = useState<DocumentObject[]>([]);
 
   const [isFetchingData, startGetData] = useTransition();
@@ -49,10 +49,10 @@ export function useDocumentData(group: DocumentGroupType) {
   }, [dataId, mode]);
 
   useEffect(() => {
-    if (assetData && assetData.id !== "") {
+    if (document && dataId) {
       fetchChildren();
     }
-  }, [assetData]);
+  }, [document]);
 
   function getSearchPath(pathString: string) {
     if (pathString === "") {
@@ -76,36 +76,7 @@ export function useDocumentData(group: DocumentGroupType) {
       messageLog("fetchAndCache : data", data);
       let path = getSearchPath(data.ancestors);
       messageLog("fetchAndCache : path", path);
-      let siblingData = await getAssetSibling(data.ancestors, group);
-      messageLog("fetchAndCache : siblingData", siblingData);
-      let ancestorData = await getDocumentAncestors(path, group);
-      messageLog("fetchAndCache : ancestorData", ancestorData);
-
-      siblingData.map((sibling) =>
-        documentSearchPathCache.setAsset(data!.ancestors, sibling.id!, sibling)
-      );
-
-      for (let ancestor of ancestorData) {
-        if (documentSearchPathCache.hasAsset(ancestor.id!)) {
-          continue;
-        } else {
-          // let path = getSearchPath(ancestor.ancestors);
-          let ancestorSiblingData = await getAssetSibling(
-            ancestor.ancestors,
-            group
-          );
-          if (ancestorSiblingData.length > 0) {
-            ancestorSiblingData.map((sibling) =>
-              documentSearchPathCache.setAsset(
-                ancestor.ancestors,
-                sibling.id!,
-                sibling
-              )
-            );
-          }
-          fetchAndCache(ancestor.id!);
-        }
-      }
+      documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
     }
   }
 
@@ -126,17 +97,17 @@ export function useDocumentData(group: DocumentGroupType) {
         console.log("data is cached");
         data = documentSearchPathCache.getAsset(dataId)!;
         messageLog("fetchData : data", data);
-        let path = getSearchPath(data.ancestors);
-        ancestorData = path.map(
-          (ancestor) => documentSearchPathCache.getAsset(ancestor)!
-        );
+        // let path = getSearchPath(data.ancestors);
+        // ancestorData = path.map(
+        //   (ancestor) => documentSearchPathCache.getAsset(ancestor)!
+        // );
 
-        siblingData = Array.from(
-          documentSearchPathCache.getPath(data.ancestors) ?? []
-        ).map(([key, value]) => value);
-        setAssetData(data);
-        setSibling(siblingData);
-        setAncestors(ancestorData);
+        // siblingData = Array.from(
+        //   documentSearchPathCache.getPath(data.ancestors) ?? []
+        // ).map(([key, value]) => value);
+        setDocument(data);
+        // setSibling(siblingData);
+        // setAncestors(ancestorData);
       } catch (e) {
         console.error("presentation: fetchData error", e);
         setErrorMessage("Data Fetching Error With Id: " + dataId);
@@ -149,11 +120,11 @@ export function useDocumentData(group: DocumentGroupType) {
       //   console.log("fetching children");
       messageLog("fetching children");
       let childrenData: DocumentObject[] = [];
-      let ancestor = assetData?.ancestors ?? "";
+      let ancestor = document?.ancestors ?? "";
       let childrenPath =
         ancestor.length > 0
-          ? [assetData?.ancestors, assetData?.id].join(",")
-          : assetData?.id ?? "";
+          ? [document?.ancestors, document?.id].join(",")
+          : document?.id ?? "";
       let isCached = documentSearchPathCache.hasPath(childrenPath);
 
       if (isCached) {
@@ -163,7 +134,7 @@ export function useDocumentData(group: DocumentGroupType) {
         ).map(([key, value]) => value);
       } else {
         childrenData = await getDocumentChildren(
-          assetData?.ancestors ?? "",
+          document?.ancestors ?? "",
           dataId,
           group
         );
@@ -177,7 +148,7 @@ export function useDocumentData(group: DocumentGroupType) {
 
       setChildren(childrenData);
     });
-  }, [assetData]);
+  }, [document]);
 
   async function updateDocument(data: DocumentObject) {
     setUpdatingDataState(true);
@@ -234,13 +205,11 @@ export function useDocumentData(group: DocumentGroupType) {
   }
 
   return {
-    assetData,
-    ancestors,
-    sibling,
+    document,
     dataId,
     mode,
     setDataId,
-    setAssetData,
+    setDocument,
     setMode,
     children,
     isFetchingData,
@@ -332,5 +301,93 @@ export function useDocumentReference(group: DocumentGroupType) {
     documentList,
     isFetchingData,
     getDocuments,
+  };
+}
+
+export function useDocumentWithSearchPath(
+  searchPath: string,
+  group: DocumentGroupType
+) {
+  const [isFetchingData, startGetData] = useTransition();
+  const [ancestors, setAncestors] = useState<DocumentObject[]>([]);
+  const [sibling, setSibling] = useState<DocumentObject[]>([]);
+
+  useEffect(() => {
+    getDocumentSearchPath();
+  }, [searchPath]);
+
+  async function fetchAndCache(path: string) {
+    try {
+      let ancestorIndexList = path === "" ? [] : searchPath.split(",");
+      let ancestors = await getDocumentAncestors(ancestorIndexList, group);
+      // sort data
+      let siblingData = await getAssetSibling(path, group);
+
+      siblingData.map((sibling) =>
+        documentSearchPathCache.setAsset(path, sibling.id!, sibling)
+      );
+
+      for (let ancestor of ancestors) {
+        if (documentSearchPathCache.hasAsset(ancestor.id!)) {
+          continue;
+        } else {
+          let ancestorSiblingData = await getAssetSibling(
+            ancestor.ancestors,
+            group
+          );
+          if (ancestorSiblingData.length > 0) {
+            ancestorSiblingData.map((sibling) =>
+              documentSearchPathCache.setAsset(
+                ancestor.ancestors,
+                sibling.id!,
+                sibling
+              )
+            );
+          }
+          fetchAndCache(ancestor.ancestors);
+        }
+      }
+    } catch (e) {
+      console.error("presentation: fetchData error", e);
+    }
+  }
+
+  const getDocumentSearchPath = useCallback(async () => {
+    startGetData(async () => {
+      messageLog("getDocumentSearchPath fetching data");
+      // delay for 1 second
+      try {
+        // let isCached = documentSearchPathCache.hasPath(searchPath);
+        const siblingDataCache = documentSearchPathCache.getPath(searchPath);
+        const isCached =
+          siblingDataCache && siblingDataCache.entries.length > 1;
+
+        if (!isCached) {
+          console.log("data is not cached");
+          await fetchAndCache(searchPath);
+        }
+        console.log("data is cached");
+
+        let ancestorIndexList = searchPath === "" ? [] : searchPath.split(",");
+
+        let ancestors = ancestorIndexList.map(
+          (ancestor) => documentSearchPathCache.getAsset(ancestor)!
+        );
+
+        let siblingData = Array.from(
+          documentSearchPathCache.getPath(searchPath) ?? []
+        ).map(([key, value]) => value);
+        setAncestors(ancestors);
+        setSibling(siblingData);
+      } catch (e) {
+        console.error("presentation: fetchData error", e);
+      }
+    });
+  }, [searchPath]);
+
+  return {
+    ancestors,
+    sibling,
+    isFetchingData,
   };
 }

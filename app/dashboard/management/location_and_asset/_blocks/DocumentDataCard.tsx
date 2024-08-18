@@ -38,6 +38,8 @@ import {
   getDocumentChildrenTypeOptions,
   getDocumentLayerRules,
 } from "@/domain/entities/DocumentConfig";
+import { DocumentNavigateMenuDialog } from "./DocumentNavigationMenu";
+import { DocumentReferencePropertyView } from "./DocumentDataDisplayUI";
 
 type DocumentDataCardProps = {
   data: DocumentObject;
@@ -161,6 +163,9 @@ export function DocumentDataCardForm({
                       isDeleting={dataQueryService.isDeletingData}
                     />
                   ) : null}
+                  <MobileOnly>
+                    <DocumentNavigateMenuDialog data={data} />
+                  </MobileOnly>
                 </DashboardCardActionList>
               </DashboardCardHeader>
               <Separator />
@@ -265,7 +270,7 @@ export function InfoBlock({
         )}
       >
         {label}
-        <Separator orientation="vertical" className="h-8 hidden md:block" />
+        <Separator orientation="vertical" className="min-h-8 hidden md:block" />
       </div>
 
       <div className="col-span-6 flex flex-col justify-center items-start">
@@ -295,14 +300,27 @@ function MultiChildrenBlock<T extends DocumentObject>({
   );
   return (
     <InfoBlock label={label} className={cn(className)}>
-      <div className="w-full grid gap-2 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
+      <div className="w-full grid  grid-cols-1">
+        {child.map((child, index) => {
+          return (
+            <DocumentReferencePropertyView
+              key={child.id}
+              data={child}
+              onClick={() => queryPathService.setAssetId(child.id!)}
+              mode={"display"}
+            />
+          );
+        })}
+        {childrenOptions.length === 0 && child.length === 0 ? (
+          <p className={"text-sm text-gray-500 font-semibold"}>無下層資料</p>
+        ) : null}
         {queryPathService.mode === "create"
           ? null
           : childrenOptions.map((type) => (
               <CreateNewDataButton
                 key={type}
                 className={cn(
-                  "w-full rounded-md border h-fit",
+                  "w-fit rounded-md h-fit",
                   getDocumentTypeColor(type).textColor
                 )}
                 onClick={async () => {
@@ -317,18 +335,6 @@ function MultiChildrenBlock<T extends DocumentObject>({
                 label={getDocumentEntityUIConfig(type).label}
               />
             ))}
-        {child.map((child, index) => {
-          return (
-            <DocumentChildrenBlock
-              onClick={() => queryPathService.setAssetId(child.id!)}
-              key={child.title + index}
-              document={child}
-            />
-          );
-        })}
-        {childrenOptions.length === 0 && child.length === 0 ? (
-          <p className={"text-sm text-gray-500 font-semibold"}>無下層資料</p>
-        ) : null}
       </div>
     </InfoBlock>
   );

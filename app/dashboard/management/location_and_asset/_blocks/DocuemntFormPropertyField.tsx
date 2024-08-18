@@ -29,7 +29,7 @@ import { SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { LuLoader, LuLoader2, LuLock, LuSearch } from "react-icons/lu";
+import { LuLock, LuSearch } from "react-icons/lu";
 import { InfoBlock } from "./DocumentDataCard";
 import { Status } from "@/domain/entities/Status";
 import { StatusChip } from "@/components/blocks/chips";
@@ -375,7 +375,7 @@ function DocumentReferenceField({
                       </Button>
                     )}
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="h-[500px]">
                     <DialogHeader>
                       <DialogTitle>新增關聯</DialogTitle>
                       <DialogDescription>選擇你要關聯的文檔</DialogDescription>
@@ -385,7 +385,7 @@ function DocumentReferenceField({
                         <LoadingWidget />
                       </Skeleton>
                     ) : (
-                      <div className="w-full flex flex-col justify-start items-start space-y-4">
+                      <div className="w-full flex flex-col justify-start items-start space-y-2 overflow-scroll">
                         {data ? (
                           <div
                             className={cn(

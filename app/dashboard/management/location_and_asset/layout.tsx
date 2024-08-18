@@ -75,7 +75,7 @@ export function TabListWidget({
           let newSearchParams = new URLSearchParams();
           newSearchParams.set("page", value);
           console.log("change page", value);
-          router.push("?" + newSearchParams.toString());
+          router.replace("?" + newSearchParams.toString());
         }}
       >
         <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
