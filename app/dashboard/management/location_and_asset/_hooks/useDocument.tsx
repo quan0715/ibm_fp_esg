@@ -132,10 +132,10 @@ export function useDocumentData(group: DocumentGroupType) {
           childrenPath,
           new Map(childrenData.map((child) => [child.id!, child]))
         );
-        documentMenuDataCache.setPath(
-          childrenPath,
-          new Map(childrenData.map((child) => [child.id!, child]))
-        );
+        // documentMenuDataCache.setPath(
+        //   childrenPath,
+        //   new Map(childrenData.map((child) => [child.id!, child]))
+        // );
       }
 
       messageLog("fetching children: data", childrenData);
@@ -149,6 +149,7 @@ export function useDocumentData(group: DocumentGroupType) {
     try {
       await updateData(data, group);
       documentSearchPathCache.setAsset(data.ancestors, data.id!, data);
+      documentMenuDataCache.setAsset(data.ancestors, data.id!, data);
     } catch (e) {
       console.error("presentation: updateData error", e);
     }
@@ -167,6 +168,7 @@ export function useDocumentData(group: DocumentGroupType) {
       };
       dataId = newDataIndex;
       documentSearchPathCache.setAsset(doc.ancestors, newDataIndex, newDoc);
+      documentMenuDataCache.setAsset(doc.ancestors, newDataIndex, newDoc);
     } catch (e) {
       console.error("presentation: createNewDocument error", e);
     } finally {
@@ -181,6 +183,7 @@ export function useDocumentData(group: DocumentGroupType) {
     try {
       returnIndex = await deleteData(dataId, group);
       documentSearchPathCache.deleteAsset(dataId);
+      documentMenuDataCache.deleteAsset(dataId);
       console.log("return result", returnIndex);
     } catch (e) {
       console.error("presentation: deleteData error", e);
