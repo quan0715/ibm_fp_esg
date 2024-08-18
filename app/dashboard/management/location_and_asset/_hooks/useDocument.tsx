@@ -19,7 +19,7 @@ import {
   getDocuments,
 } from "../_actions/DocumentAction";
 import { set } from "date-fns";
-import { createNewDocument as getNewDocTemplate } from "@/domain/entities/DocumentTemplate";
+// import { createNewDocument as getNewDocTemplate } from "@/domain/entities/DocumentTemplate";
 function messageLog(message?: any, ...optionalParams: any[]) {
   console.log("useDocumentData", message, ...optionalParams);
 }
@@ -30,8 +30,6 @@ export function useDocumentData(group: DocumentGroupType) {
   const [dataId, setDataId] = useState("");
   const [mode, setMode] = useState("display");
   const [document, setDocument] = useState<DocumentObject>();
-  // const [ancestors, setAncestors] = useState<DocumentObject[]>([]);
-  // const [sibling, setSibling] = useState<DocumentObject[]>([]);
   const [children, setChildren] = useState<DocumentObject[]>([]);
 
   const [isFetchingData, startGetData] = useTransition();
@@ -49,7 +47,7 @@ export function useDocumentData(group: DocumentGroupType) {
         fetchData();
       }
     }
-  }, [dataId, mode]);
+  }, [dataId, mode, group]);
 
   useEffect(() => {
     if (document && dataId) {

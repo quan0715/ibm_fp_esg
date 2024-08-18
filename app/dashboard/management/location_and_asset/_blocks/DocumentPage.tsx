@@ -43,8 +43,10 @@ export function DocumentPage() {
   const isError = dateQueryService.errorMessage !== "";
 
   useEffect(() => {
+    console.log("DocumentPage useEffect", dataId, mode, page);
     async function handleEmptyData() {
       const defaultData = await dateQueryService.getDefaultData();
+      console.log(defaultData);
       if (defaultData === null) {
         queryRoute.createNewAsset(getGroupDefaultType(groupType), "");
       } else {

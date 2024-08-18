@@ -35,14 +35,16 @@ export default function Layout({
 
   return (
     <Suspense>
-      <TabListWidget tabConfig={tabConfig} />
+      <TabListWidget tabConfig={tabConfig}>{children}</TabListWidget>
     </Suspense>
   );
 }
 
 export function TabListWidget({
   tabConfig,
+  children,
 }: {
+  children?: React.ReactNode;
   tabConfig: Record<
     tabsString,
     { index: string; title: string; content: ReactNode }
@@ -57,6 +59,8 @@ export function TabListWidget({
   if (!subPage) {
     let newSearchParams = new URLSearchParams();
     newSearchParams.set("page", defaultPage.index);
+    newSearchParams.set("data", "");
+    newSearchParams.set("mode", "display");
     router.push("?" + newSearchParams.toString());
   }
 
@@ -73,9 +77,13 @@ export function TabListWidget({
         className="w-full h-full"
         onValueChange={(value) => {
           let newSearchParams = new URLSearchParams();
+          if (value === subPage) return;
           newSearchParams.set("page", value);
+          newSearchParams.set("data", "");
+          newSearchParams.set("mode", "display");
           console.log("change page", value);
-          router.replace("?" + newSearchParams.toString());
+          router.prefetch("?" + newSearchParams.toString());
+          router.push("?" + newSearchParams.toString());
         }}
       >
         <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
@@ -90,14 +98,15 @@ export function TabListWidget({
         </TabsList>
         <Separator />
         <div className="w-full h-full bg-secondary p-4">
-          {Object.keys(tabConfig).map((key) => {
+          {/* {Object.keys(tabConfig).map((key) => {
             const tab = tabConfig[key as tabsString];
             return (
               <TabsContent key={tab.index + "content"} value={tab.index}>
                 {tab.content}
               </TabsContent>
             );
-          })}
+          })} */}
+          {children}
         </div>
       </Tabs>
     </div>
