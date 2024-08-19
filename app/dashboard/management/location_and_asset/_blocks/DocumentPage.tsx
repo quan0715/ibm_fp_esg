@@ -35,7 +35,7 @@ export function DocumentPage() {
   const page = queryRoute.page;
   const groupType = getDocumentGroupTypeFromString(page);
 
-  const dateQueryService = useDocumentData(dataId, groupType);
+  let dateQueryService = useDocumentData(dataId, groupType);
 
   const isFetching =
     dateQueryService.isFetchingData || dateQueryService.isFetchingChildren;
