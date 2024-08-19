@@ -5,7 +5,7 @@ import {
   getDocumentGroupTypeFromString,
 } from "@/domain/entities/Document";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import {
   DocumentDataAncestorView,
   DocumentDataCardListView,
@@ -30,13 +30,15 @@ import { MobileOnly } from "@/components/layouts/layoutWidget";
 import { LuMenu } from "react-icons/lu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
+import { DocumentContext } from "./DocumentPage";
 
 export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
   const queryRoute = useDataQueryRoute();
   const isCreateMode = queryRoute.mode === "create";
+  const dbConfig = useContext(DocumentContext);
   const { isFetchingData, ancestors, sibling } = useDocumentWithSearchPath(
     isCreateMode ? queryRoute.ancestors : data.ancestors ?? "",
-    getDocumentGroupTypeFromString(queryRoute.page)
+    getDocumentGroupTypeFromString(dbConfig.type)
   );
   const layerRule = getDocumentLayerRules(data.type);
   const siblingTypeOptions = getDocumentChildrenTypeOptions(

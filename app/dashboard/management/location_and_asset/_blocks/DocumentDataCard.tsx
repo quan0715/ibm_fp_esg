@@ -44,6 +44,7 @@ import { DocumentReferencePropertyView } from "./DocumentDataDisplayUI";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
+import { DocumentContext } from "./DocumentPage";
 
 type DocumentDataCardProps = {
   data: DocumentObject;
@@ -58,15 +59,13 @@ const ThemeContext = createContext(colorVariants["blue"]);
 
 export function DocumentDataCardForm({
   data,
-  // dataId,
-  // childData = [],
-  groupType,
   className,
 }: DocumentDataCardProps) {
+  const dbType = useContext(DocumentContext);
   const queryPathService = useDataQueryRoute();
   const isCreatingNewData = queryPathService.mode === "create";
 
-  const dataQueryService = useDocumentData(data.id ?? "", groupType);
+  const dataQueryService = useDocumentData(data.id ?? "", dbType.type);
 
   const children = dataQueryService.children;
 
@@ -84,7 +83,7 @@ export function DocumentDataCardForm({
   });
 
   async function onSubmit(values: DocumentObject) {
-    console.log("submit");
+    // console.log("submit");
     let newData = {
       ...values,
       updateAt: new Date(),

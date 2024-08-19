@@ -31,8 +31,26 @@ function messageLog(message?: any, ...optionalParams: any[]) {
   console.log("useDocumentData", message, ...optionalParams);
 }
 
-export function useDocumentData(dataId: string, group: DocumentGroupType) {
-  const [documentId, setDocumentId] = useState(dataId);
+export function useRootData(group: DocumentGroupType) {
+  const getDefaultData = useCallback(async () => {
+    const searchPath = "";
+    let data = await getAssetSibling(searchPath, group);
+    if (data.length > 0) {
+      return data[0];
+    }
+    return null;
+  }, [group]);
+
+  return useMemo(
+    () => ({
+      getDefaultData,
+    }),
+    [getDefaultData]
+  );
+}
+
+export function useDocumentData(documentId: string, group: DocumentGroupType) {
+  // const [documentId, setDocumentId] = useState(dataId);
   const [document, setDocument] = useState<DocumentObject>();
   const [children, setChildren] = useState<DocumentObject[]>([]);
 
@@ -44,24 +62,25 @@ export function useDocumentData(dataId: string, group: DocumentGroupType) {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    messageLog("useDocumentData", dataId, group);
-    if (dataId !== "") {
+    messageLog("useDocumentData", documentId, group);
+    // setDocumentId(dataId);
+    if (documentId !== "") {
       setErrorMessage("");
-      messageLog(`fetching data ${dataId ?? "None"}`);
+      messageLog(`fetching data ${documentId ?? "None"}`);
       fetchData();
     }
   }, [documentId, group]);
 
   useEffect(() => {
-    if (document && dataId != "") {
+    if (document && documentId != "") {
       fetchChildren();
     }
   }, [document, documentId]);
 
-  async function fetchAndCache(assetId: string) {
+  async function fetchAndCache(docId: string) {
     let data: DocumentObject | null = null;
     try {
-      data = await getDocumentDataWithId(assetId, group);
+      data = await getDocumentDataWithId(docId, group);
     } catch (e) {
       messageLog("fetchAndCache error", e);
     }
@@ -69,7 +88,7 @@ export function useDocumentData(dataId: string, group: DocumentGroupType) {
       messageLog("fetchAndCache : data is null");
       return Promise.reject("Data not found");
     }
-    // documentSearchPathCache.setAsset(data.ancestors, group, data.id!, data);
+    documentSearchPathCache.setAsset(data.ancestors, group, data.id!, data);
   }
 
   const fetchData = useCallback(async () => {
@@ -77,20 +96,20 @@ export function useDocumentData(dataId: string, group: DocumentGroupType) {
       setErrorMessage("");
       // messageLog("fetching data");
       messageLog("fetching data", documentId, group);
-      // let isCached = documentSearchPathCache.hasAsset(documentId);
+      let isCached = documentSearchPathCache.hasAsset(documentId);
       let data: DocumentObject;
       try {
-        // if (!isCached) {
-        //   console.log("data is not cached");
-        //   await fetchAndCache(dataId);
-        // }
-        // data = documentSearchPathCache.getAsset(dataId)!;
-        data = await getDocumentDataWithId(documentId, group);
+        if (!isCached) {
+          console.log("data is not cached");
+          await fetchAndCache(documentId);
+        }
+        data = documentSearchPathCache.getAsset(documentId)!;
+        // data = await getDocumentDataWithId(documentId, group);
         messageLog("fetchData : data", data);
         setDocument(data);
       } catch (e) {
         messageLog("presentation: fetchData error", e);
-        // setErrorMessage("Data Fetching Error With Id: " + documentId);
+        setErrorMessage("Data Fetching Error With Id: " + documentId);
       }
     });
   }, [documentId, fetchAndCache, group]);
@@ -99,32 +118,32 @@ export function useDocumentData(dataId: string, group: DocumentGroupType) {
     startFetchChildren(async () => {
       let childrenData: DocumentObject[] = [];
       let ancestor = document?.ancestors ?? "";
-      // let childrenPath =
-      //   ancestor.length > 0
-      //     ? [document?.ancestors, document?.id].join(",")
-      //     : document?.id ?? "";
-      // let isCached = documentSearchPathCache.hasPath(childrenPath, group);
+      let childrenPath =
+        ancestor.length > 0
+          ? [document?.ancestors, document?.id].join(",")
+          : document?.id ?? "";
+      let isCached = documentSearchPathCache.hasPath(childrenPath, group);
 
-      // if (isCached) {
-      //   messageLog("children data is cached");
-      //   childrenData = Array.from(
-      //     documentSearchPathCache.getPath(childrenPath, group)!
-      //   ).map(([key, value]) => value);
-      // } else {
-      //   messageLog("children data is not cached");
-      //   childrenData = await getDocumentChildren(ancestor, dataId, group);
-      //   documentSearchPathCache.setPath(
-      //     childrenPath,
-      //     group,
-      //     new Map(childrenData.map((child) => [child.id!, child]))
-      //   );
-      // }
-      childrenData = await getDocumentChildren(ancestor, dataId, group);
+      if (isCached) {
+        messageLog("children data is cached");
+        childrenData = Array.from(
+          documentSearchPathCache.getPath(childrenPath, group)!
+        ).map(([key, value]) => value);
+      } else {
+        messageLog("children data is not cached");
+        childrenData = await getDocumentChildren(ancestor, documentId, group);
+        documentSearchPathCache.setPath(
+          childrenPath,
+          group,
+          new Map(childrenData.map((child) => [child.id!, child]))
+        );
+      }
+      // childrenData = await getDocumentChildren(ancestor, documentId, group);
       messageLog("fetching children: data", childrenData);
 
       setChildren(childrenData);
     });
-  }, [document, documentId, group]);
+  }, [document]);
 
   async function updateDocument(data: DocumentObject) {
     setUpdatingDataState(true);
@@ -173,9 +192,9 @@ export function useDocumentData(dataId: string, group: DocumentGroupType) {
     setDeletingDataState(true);
     let returnIndex = "";
     try {
-      returnIndex = await deleteData(dataId, group);
-      documentSearchPathCache.deleteAsset(dataId);
-      documentMenuDataCache.deleteAsset(dataId);
+      returnIndex = await deleteData(documentId, group);
+      documentSearchPathCache.deleteAsset(documentId);
+      documentMenuDataCache.deleteAsset(documentId);
       console.log("return result", returnIndex);
     } catch (e) {
       console.error("presentation: deleteData error", e);
@@ -197,7 +216,6 @@ export function useDocumentData(dataId: string, group: DocumentGroupType) {
     () => ({
       document,
       documentId,
-      setDocumentId,
       setDocument,
       children,
       isFetchingData,
@@ -244,24 +262,19 @@ export function useDocument(documentId: string, group: DocumentGroupType) {
       messageLog("fetching data");
       if (documentId === "") throw new Error("Document Id is empty");
 
-      // let isCached = documentSearchPathCache.hasAsset(documentId);
-      // let data: DocumentObject;
+      let isCached = documentSearchPathCache.hasAsset(documentId);
+      let doc: DocumentObject;
       try {
-        //   if (!isCached) {
-        //     console.log("data is not cached");
-        //     data = await getDocumentDataWithId(documentId, group);
-        //     documentSearchPathCache.setAsset(
-        //       data.ancestors,
-        //       group,
-        //       data.id!,
-        //       data
-        //     );
-        //     documentMenuDataCache.setAsset(data.ancestors, group, data.id!, data);
-        //   }
-        //   data = documentSearchPathCache.getAsset(documentId)!;
-        let data = await getDocumentDataWithId(documentId, group);
-        messageLog("fetchData : data", data);
-        setData(data);
+        if (!isCached) {
+          console.log("data is not cached");
+          doc = await getDocumentDataWithId(documentId, group);
+          documentSearchPathCache.setAsset(doc.ancestors, group, doc.id!, doc);
+          documentMenuDataCache.setAsset(doc.ancestors, group, doc.id!, doc);
+        }
+        doc = documentSearchPathCache.getAsset(documentId)!;
+        // let data = await getDocumentDataWithId(documentId, group);
+        messageLog("fetchData : data", doc);
+        setData(doc);
       } catch (e) {
         console.error("presentation: fetchData error", e);
       }
@@ -372,23 +385,23 @@ export function useDocumentWithSearchPath(
       try {
         const isCached = documentMenuDataCache.hasPath(searchPath, group);
 
-        // if (!isCached) {
-        //   console.log("getDocumentSearchPath: data is not cached");
-        //   await fetchAndCache(searchPath);
-        // }
+        if (!isCached) {
+          console.log("getDocumentSearchPath: data is not cached");
+          await fetchAndCache(searchPath);
+        }
         // console.log("data is cached");
 
         let ancestorIndexList = searchPath === "" ? [] : searchPath.split(",");
 
-        // let ancestors = ancestorIndexList.map(
-        //   (ancestor) => documentMenuDataCache.getAsset(ancestor)!
-        // );
+        let ancestors = ancestorIndexList.map(
+          (ancestor) => documentMenuDataCache.getAsset(ancestor)!
+        );
 
-        // let siblingData = Array.from(
-        //   documentMenuDataCache.getPath(searchPath, group) ?? []
-        // ).map(([key, value]) => value);
-        let ancestors = await getDocumentAncestors(ancestorIndexList, group);
-        let siblingData = await getAssetSibling(searchPath, group);
+        let siblingData = Array.from(
+          documentMenuDataCache.getPath(searchPath, group) ?? []
+        ).map(([key, value]) => value);
+        // let ancestors = await getDocumentAncestors(ancestorIndexList, group);
+        // let siblingData = await getAssetSibling(searchPath, group);
         // console.log("siblingData", siblingData);
         setAncestors(ancestors);
         setSibling(siblingData);

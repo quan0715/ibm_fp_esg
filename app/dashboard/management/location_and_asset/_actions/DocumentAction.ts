@@ -39,6 +39,7 @@ export async function getDocumentDataWithId(
   id: string,
   groupType: DocumentGroupType
 ) {
+  // console.log("getDocumentDataWithId", id, groupType);
   const repo = new MongoDocumentRepository();
   const useCase = new DocumentUseCase(repo, groupType);
   const data = await useCase.getAssetData(id);

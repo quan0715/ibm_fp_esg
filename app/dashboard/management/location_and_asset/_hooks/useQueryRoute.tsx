@@ -62,6 +62,15 @@ export function useDataQueryRoute() {
     router.push(getPath(params.toString()));
   }
 
+  function setPage(page: string) {
+    const newRoute = createQueryString({
+      selected: dataId,
+      mode: "display",
+      page: page,
+    });
+    router.push(getPath(newRoute));
+  }
+
   function setDataId(selected: string, page?: string) {
     const newRoute = createQueryString({
       selected: selected,
@@ -69,6 +78,7 @@ export function useDataQueryRoute() {
       page: page ?? (searchParams.get("page") || "Location"),
     });
     router.push(getPath(newRoute));
+    router.refresh();
   }
 
   return {
@@ -80,6 +90,7 @@ export function useDataQueryRoute() {
     dataId,
     ancestors,
     dataType,
+    setPage,
     setAssetId: setDataId,
     createURL,
     createNewAsset: createNewData,
