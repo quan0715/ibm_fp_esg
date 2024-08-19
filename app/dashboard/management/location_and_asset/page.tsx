@@ -8,16 +8,9 @@ import {
 import { DatabasePage } from "./_blocks/DocumentPage";
 import { useDataQueryRoute } from "./_hooks/useQueryRoute";
 import { getAssetSibling } from "./_actions/DocumentAction";
+import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
 
 export default function Page() {
-  return (
-    <Suspense>
-      <MainPage />
-    </Suspense>
-  );
-}
-
-function MainPage() {
   const queryRoute = useDataQueryRoute();
   const dbType = getDocumentGroupTypeFromString(queryRoute.page);
 
@@ -29,7 +22,8 @@ function MainPage() {
         console.log("data", data);
         queryRoute.setAssetId(data[0].id!, queryRoute.page);
       } else {
-        queryRoute.createNewAsset(dbType, queryRoute.page);
+        const rootType = getGroupDefaultType(dbType);
+        queryRoute.createNewAsset(rootType, "");
       }
     }
     if (queryRoute.dataId === "" && queryRoute.mode === "display") {

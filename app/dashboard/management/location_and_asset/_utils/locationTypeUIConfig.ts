@@ -34,9 +34,11 @@ export function getDocumentEntityUIConfig(
     case DocumentObjectType.operation:
       return { color: "yellow", label: "Operation" };
     case DocumentObjectType.component:
-      return { color: "green", label: "子資產" };
+      return { color: "green", label: "元件" };
     case DocumentObjectType.tool:
       return { color: "blue", label: "資產" };
+    case DocumentObjectType.meter:
+      return { color: "stone", label: "Meter" };
     case DocumentObjectType.unknown:
       return { color: "gray", label: "Unknown" };
   }

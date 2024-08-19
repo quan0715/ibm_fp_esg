@@ -9,7 +9,7 @@ import { useRootData } from "./_hooks/useDocument";
 import { getDocumentGroupTypeFromString } from "@/domain/entities/Document";
 import { getAssetSibling } from "./_actions/DocumentAction";
 
-type TabsString = "Location" | "Asset";
+type TabsString = "Location" | "Asset" | "Meter";
 
 interface TabConfig {
   index: string;
@@ -36,6 +36,10 @@ export default function Layout({
       index: "Asset",
       title: "資產主檔",
       // content: asset,
+    },
+    Meter: {
+      index: "Meter",
+      title: "Meter 主檔",
     },
   };
 
@@ -116,7 +120,7 @@ function TabListWidget({
               </TabsContent>
             );
           })} */}
-          <Suspense>{children}</Suspense>
+          {children}
         </div>
       </Tabs>
     </div>

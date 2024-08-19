@@ -4,6 +4,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,7 @@ import {
 } from "@/components/ui/dialog";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // shdcn UI Kit css disable
 const focusSettings =
@@ -98,6 +100,16 @@ export function PropertyValueField({
         return (
           <InfoBlock label={property.name}>
             <DashboardInputField
+              isRequired={property.required}
+              name={`properties.${index}.value`}
+              isDisabled={property.readonly}
+            />
+          </InfoBlock>
+        );
+      case PropertyType.boolean:
+        return (
+          <InfoBlock label={property.name}>
+            <DashboardCheckboxField
               isRequired={property.required}
               name={`properties.${index}.value`}
               isDisabled={property.readonly}
@@ -204,6 +216,52 @@ export function DashboardInputField({
               // disabled={isDisabled}
             />
           </FormControl>
+          {isDisabled ? <LuLock /> : null}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+export function DashboardCheckboxField({
+  name,
+  placeholder = "空值",
+  isHidden = false,
+  isDisabled = false,
+  isRequired = false,
+  textCss,
+}: DocumentPropFieldProps) {
+  const { control } = useFormContext();
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className="w-full flex flex-row items-start space-x-3 space-y-0 px-2">
+          <FormControl>
+            <Checkbox
+              className={cn(
+                "data-[state=checked]:bg-stone-900 border-stone-900",
+                "data-[state=checked]:text-white",
+                "w-5 h-5"
+              )}
+              {...field}
+              disabled={isDisabled}
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              required={isRequired}
+            />
+          </FormControl>
+          <div
+            className={
+              "leading-none h-full flex flex-col items-center justify-center"
+            }
+          >
+            <FormLabel className="text-sm font-semibold">
+              {field.value ? "是" : "否"}
+            </FormLabel>
+          </div>
           {isDisabled ? <LuLock /> : null}
           <FormMessage />
         </FormItem>

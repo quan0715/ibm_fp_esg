@@ -8,6 +8,7 @@ export enum PropertyType {
   dateTime = "dateTime",
   status = "status",
   reference = "reference",
+  boolean = "boolean",
 }
 
 interface BaseProperty {
@@ -30,6 +31,11 @@ interface DateTimeProperty extends BaseProperty {
 interface NumberProperty extends BaseProperty {
   type: PropertyType.number;
   value: number;
+}
+
+interface BooleanProperty extends BaseProperty {
+  type: PropertyType.boolean;
+  value: boolean;
 }
 
 export interface OptionsProperty extends BaseProperty {
@@ -55,4 +61,5 @@ export type Property =
   | DateTimeProperty
   | OptionsProperty
   | StatusProperty
-  | DocumentReferenceProperty;
+  | DocumentReferenceProperty
+  | BooleanProperty;

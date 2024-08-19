@@ -10,6 +10,7 @@ import { Status } from "./Status";
 
 export function getDocumentType(type: string): DocumentObjectType {
   if (!Object.keys(DocumentObjectType).includes(type)) {
+    console.error("Document type not found: ", type);
     return DocumentObjectType.unknown;
   }
   return DocumentObjectType[type as DocumentTypeString];
@@ -86,14 +87,6 @@ export function createNewDocument(
             type: PropertyType.text,
             value: "",
           },
-          // {
-          //   name: "位置",
-          //   type: PropertyType.reference,
-          //   referenceGroup: DocumentGroupType.Asset,
-          //   value: "",
-          //   isHidden: false,
-          //   readonly: false,
-          // },
         ],
       } as DocumentObject;
     case DocumentGroupType.Asset:
@@ -111,7 +104,7 @@ export function createNewDocument(
           {
             name: "狀態",
             type: PropertyType.status,
-            value: Status.ACTIVE,
+            value: "ACTIVE",
             isHidden: false,
             readonly: false,
           },
@@ -155,6 +148,55 @@ export function createNewDocument(
             name: "生效時間(迄)",
             type: PropertyType.dateTime,
             value: new Date(),
+            isHidden: false,
+            readonly: false,
+          },
+        ],
+      } as DocumentObject;
+    case DocumentGroupType.Meter:
+      return {
+        id: "",
+        type: type,
+        ancestors: ancestors,
+        title: "",
+        description: "",
+        createAt: new Date(),
+        updateAt: new Date(),
+        createBy: user,
+        updateBy: user,
+        properties: [
+          {
+            name: "狀態",
+            type: PropertyType.status,
+            value: "ACTIVE",
+            isHidden: false,
+            readonly: false,
+          },
+          {
+            name: "讀數類型",
+            type: PropertyType.text,
+            value: "",
+            isHidden: false,
+            readonly: false,
+          },
+          {
+            name: "單位",
+            type: PropertyType.text,
+            value: "",
+            isHidden: false,
+            readonly: false,
+          },
+          {
+            name: "移動源",
+            type: PropertyType.boolean,
+            value: false,
+            isHidden: false,
+            readonly: false,
+          },
+          {
+            name: "生物能源",
+            type: PropertyType.boolean,
+            value: false,
             isHidden: false,
             readonly: false,
           },

@@ -10,6 +10,7 @@ enum DocumentObjectType {
   operation = "operation",
   component = "component",
   tool = "tool",
+  meter = "meter",
   unknown = "unknown",
 }
 
@@ -33,6 +34,7 @@ type DocumentTypeString = keyof typeof DocumentObjectType;
 enum DocumentGroupType {
   Location = "Location",
   Asset = "Asset",
+  Meter = "Meter",
   Unknown = "Unknown",
   Root = "Root",
 }

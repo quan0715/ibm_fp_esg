@@ -56,6 +56,8 @@ export function DatabasePage({
     ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
     : dateQueryService.document;
 
+  console.log("data", data);
+
   const isBlocking =
     dateQueryService.isFetchingData ||
     (isDisplayMode && dateQueryService.document === undefined);

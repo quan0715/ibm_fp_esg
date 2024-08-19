@@ -48,6 +48,10 @@ const DocumentTypeRule: {
     group: DocumentGroupType.Asset,
     parentType: DocumentObjectType.tool,
   },
+  [DocumentObjectType.meter]: {
+    group: DocumentGroupType.Meter,
+    parentType: DocumentObjectType.unknown,
+  },
   [DocumentObjectType.unknown]: {
     group: DocumentGroupType.Root,
     parentType: DocumentObjectType.unknown,
