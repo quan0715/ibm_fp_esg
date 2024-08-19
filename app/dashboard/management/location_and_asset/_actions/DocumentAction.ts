@@ -73,6 +73,8 @@ export async function getAssetSibling(
 ) {
   const repo = new MongoDocumentRepository();
   const useCase = new DocumentUseCase(repo, groupType);
+  // console.log("getAssetSibling", searchPathString, groupType);
   const data = await useCase.getSibling(searchPathString);
+  // console.log("getAssetSibling", data);
   return data;
 }

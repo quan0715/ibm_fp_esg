@@ -11,6 +11,7 @@ import {
 import {
   DocumentGroupType,
   DocumentObject,
+  DocumentObjectType,
   Property,
 } from "@/domain/entities/Document";
 import { motion } from "framer-motion";
@@ -22,17 +23,17 @@ import {
   getDocumentEntityUIConfig,
   getDocumentTypeColor,
 } from "../_utils/locationTypeUIConfig";
-import { useContext, createContext, useState } from "react";
+import { useContext, createContext, useState, use, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LuLink, LuLoader2, LuLock, LuUnlock } from "react-icons/lu";
 import { useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { useDocumentData } from "../_hooks/useDocument";
+import { useCreateDocument, useDocumentData } from "../_hooks/useDocument";
 import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
 import {
   DashboardInputField,
-  getPropertyValue,
+  PropertyValueField,
 } from "./DocuemntFormPropertyField";
 import {
   getDocumentChildrenTypeOptions,
@@ -40,32 +41,46 @@ import {
 } from "@/domain/entities/DocumentConfig";
 import { DocumentNavigateMenuDialog } from "./DocumentNavigationMenu";
 import { DocumentReferencePropertyView } from "./DocumentDataDisplayUI";
+import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingWidget } from "@/components/blocks/LoadingWidget";
+import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 
 type DocumentDataCardProps = {
   data: DocumentObject;
-  // color?: keyof typeof colorVariants;
+  // mode?: "display" | "create";
+  // dataId: string;
   groupType: DocumentGroupType;
   className?: string;
-  childData?: DocumentObject[];
+  // childData?: DocumentObject[];
 };
 
 const ThemeContext = createContext(colorVariants["blue"]);
 
 export function DocumentDataCardForm({
   data,
-  childData = [],
+  // dataId,
+  // childData = [],
   groupType,
   className,
 }: DocumentDataCardProps) {
-  // const [doc, setDocument] = useState<DocumentObject>(data);
-  const colorTheme = getDocumentTypeColor(data.type);
   const queryPathService = useDataQueryRoute();
-
   const isCreatingNewData = queryPathService.mode === "create";
-  const dataQueryService = useDocumentData(groupType);
+
+  const dataQueryService = useDocumentData(data.id ?? "", groupType);
+
+  const children = dataQueryService.children;
+
+  const colorTheme = getDocumentTypeColor(
+    data.type ?? DocumentObjectType.unknown
+  );
 
   const form = useForm<DocumentObject>({
     defaultValues: data,
+  });
+
+  const propsField = useFieldArray({
+    name: "properties",
+    control: form.control,
   });
 
   async function onSubmit(values: DocumentObject) {
@@ -94,7 +109,7 @@ export function DocumentDataCardForm({
 
   async function onDelete() {
     try {
-      const returnIndex = await dataQueryService.deleteDocument(data.id!);
+      const returnIndex = await dataQueryService.deleteDocument();
       queryPathService.setAssetId(returnIndex);
     } catch (e) {
       console.error("presentation: deleteData error", e);
@@ -103,7 +118,6 @@ export function DocumentDataCardForm({
 
   const reset = () => {
     if (isCreatingNewData) {
-      // form.reset();
       queryPathService.moveBack();
     } else {
       form.reset(data);
@@ -149,17 +163,17 @@ export function DocumentDataCardForm({
 
                         <StaticAttrChip
                           label="上次修改者"
-                          value={data.updateBy}
+                          value={data!.updateBy}
                         />
                       </div>
                     </DesktopOnly>
                   )}
                 </DashboardCardHeaderContent>
                 <DashboardCardActionList>
-                  {!isCreatingNewData && data.id ? (
+                  {!isCreatingNewData && data!.id ? (
                     <DeleteDialog
                       onDelete={onDelete}
-                      isDisabled={childData.length > 0}
+                      isDisabled={children.length > 0}
                       isDeleting={dataQueryService.isDeletingData}
                     />
                   ) : null}
@@ -170,12 +184,26 @@ export function DocumentDataCardForm({
               </DashboardCardHeader>
               <Separator />
               <DashboardCardContent className="flex flex-col space-y-2">
-                <PropertiesDisplay properties={data.properties} />
+                <div className="w-full grid grid-cols-1 justify-between h-fit gap-2">
+                  {propsField.fields.map((field, index) => {
+                    return (
+                      <div
+                        className="w-full flex flex-row flex-1"
+                        key={field.id}
+                      >
+                        <PropertyValueField
+                          property={form.watch().properties[index]}
+                          index={index}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
                 <Separator />
                 <MultiChildrenBlock
                   label="子資產"
-                  child={childData}
-                  parent={data}
+                  child={children}
+                  parent={data!}
                 />
                 <Separator />
                 <div
@@ -217,25 +245,6 @@ export function DocumentDataCardForm({
         </form>
       </Form>
     </motion.div>
-  );
-}
-
-export function PropertiesDisplay({ properties }: { properties: Property[] }) {
-  const form = useFormContext();
-  const propsField = useFieldArray({
-    name: "properties",
-    control: form.control,
-  });
-  return (
-    <div className="w-full grid grid-cols-1 justify-between h-fit gap-2">
-      {propsField.fields.map((field, index) => {
-        return (
-          <div className="w-full flex flex-row flex-1" key={field.id}>
-            {getPropertyValue(properties[index], index)}
-          </div>
-        );
-      })}
-    </div>
   );
 }
 
@@ -306,7 +315,7 @@ function MultiChildrenBlock<T extends DocumentObject>({
             <DocumentReferencePropertyView
               key={child.id}
               data={child}
-              onClick={() => queryPathService.setAssetId(child.id!)}
+              onClick={() => queryPathService.setAssetId(child.id ?? "")}
               mode={"display"}
             />
           );

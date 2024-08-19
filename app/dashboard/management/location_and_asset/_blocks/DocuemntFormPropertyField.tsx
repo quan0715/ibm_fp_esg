@@ -72,7 +72,14 @@ type DocumentPropFieldProps = {
   textCss?: string;
 };
 
-export function getPropertyValue(property: Property, index?: number) {
+export function PropertyValueField({
+  property,
+  index,
+}: {
+  property: Property;
+  index?: number;
+}) {
+  // console.log("getPropertyValue", property, index);
   if (property === undefined) {
     return null;
   } else {
@@ -134,8 +141,9 @@ export function getPropertyValue(property: Property, index?: number) {
         return (
           <InfoBlock label={property.name}>
             <DashboardDatePickerField
+              key={index + property.name}
               isRequired={property.required}
-              name={`properties.${index}.value`}
+              name={`properties.${index}.value` as const}
               isDisabled={property.readonly}
             />
           </InfoBlock>
@@ -258,47 +266,49 @@ export function DashboardDatePickerField({
   isRequired = false,
   textCss,
 }: DocumentPropFieldProps) {
-  const { control } = useFormContext();
+  const { control, ...form } = useFormContext();
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="w-full flex flex-col">
-          <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full text-sm font-semibold border-0 bg-transparent px-2 py-1 m-0",
-                    !field.value && "text-muted-foreground"
-                  )}
-                >
-                  {field.value ? (
-                    format(field.value, "PPP")
-                  ) : (
-                    <span>選擇日期</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 " align="start">
-              <Calendar
-                mode="single"
-                selected={field.value}
-                onSelect={field.onChange}
-                disabled={(date) =>
-                  date > new Date() || date < new Date("1900-01-01")
-                }
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        return (
+          <FormItem className="w-full flex flex-col">
+            <Popover>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full text-sm font-semibold border-0 bg-transparent px-2 py-1 m-0",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    {field.value ? (
+                      format(field.value, "PPP")
+                    ) : (
+                      <span>選擇日期</span>
+                    )}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 " align="start">
+                <Calendar
+                  mode="single"
+                  selected={field.value}
+                  onSelect={field.onChange}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }
@@ -346,8 +356,8 @@ function DocumentReferenceField({
                   <DocumentReferencePropertyView
                     data={data}
                     onClick={() => {
-                      // console.log("click: select document", document.title);
-                      useQueryRoute.setAssetId(data.id!, referenceGroup);
+                      console.log("click: select document", data);
+                      useQueryRoute.setAssetId(data.id ?? "", referenceGroup);
                     }}
                     mode="display"
                   />

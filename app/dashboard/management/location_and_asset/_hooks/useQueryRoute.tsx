@@ -2,33 +2,32 @@
 import { DocumentObjectType } from "@/domain/entities/Document";
 import { getDocumentObjectType } from "@/domain/entities/DocumentConfig";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-
+interface QueryParams {
+  selected?: string;
+  mode?: string;
+  page?: string;
+}
 export function useDataQueryRoute() {
   const pathName = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const mode = searchParams.get("mode") || "display";
   const dataId = searchParams.get("data") || "";
-  const parentId: string = searchParams.get("parent") || "";
   const page = searchParams.get("page") || "";
   const ancestors = searchParams.get("ancestors") ?? "";
   const dataType = getDocumentObjectType(searchParams.get("type") ?? "");
-  function createQueryString({
-    selected,
-    mode,
-    page,
-  }: {
-    selected?: string;
-    mode?: string;
-    page?: string;
-  }): string {
+
+  function createQueryString({ selected, mode, page }: QueryParams): string {
     const params = new URLSearchParams();
     if (selected) {
       params.set("data", selected);
     }
-    params.set("mode", mode ?? "display");
-    params.set("page", page ?? (searchParams.get("page") || "location"));
-
+    if (mode) {
+      params.set("mode", mode);
+    }
+    if (page) {
+      params.set("page", page);
+    }
     return params.toString();
   }
 
@@ -36,32 +35,18 @@ export function useDataQueryRoute() {
     return pathName + "?" + queryPath;
   }
 
-  function refresh() {
+  function refresh(): void {
     router.refresh();
   }
-  function moveBack() {
+  function moveBack(): void {
     router.back();
   }
 
-  function getNewDisplayURL(assetId: string) {
-    return getPath(
-      createQueryString({
-        selected: assetId,
-        mode: "display",
-      })
-    );
-  }
-
-  const editURL = getPath(
-    createQueryString({
-      selected: dataId,
-      mode: "edit",
-    })
-  );
   const createURL = getPath(
     createQueryString({
       selected: dataId,
       mode: "create",
+      page: searchParams.get("page") || "Location",
     })
   );
 
@@ -76,11 +61,12 @@ export function useDataQueryRoute() {
     }
     router.push(getPath(params.toString()));
   }
+
   function setDataId(selected: string, page?: string) {
     const newRoute = createQueryString({
       selected: selected,
       mode: "display",
-      page: page,
+      page: page ?? (searchParams.get("page") || "Location"),
     });
     router.push(getPath(newRoute));
   }
@@ -92,14 +78,11 @@ export function useDataQueryRoute() {
     mode,
     page,
     dataId,
-    parentId,
     ancestors,
     dataType,
     setAssetId: setDataId,
-    editURL,
     createURL,
     createNewAsset: createNewData,
-    getNewDisplayURL,
     moveBack,
     refresh,
   };

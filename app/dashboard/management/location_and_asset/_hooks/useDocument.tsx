@@ -2,7 +2,14 @@ import {
   documentMenuDataCache,
   documentSearchPathCache,
 } from "../../../../../lib/documentDataCache";
-import { useState, useEffect, useCallback, useTransition, use } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useTransition,
+  use,
+  useMemo,
+} from "react";
 import {
   DocumentGroupType,
   DocumentObject,
@@ -18,17 +25,14 @@ import {
   deleteData,
   getDocuments,
 } from "../_actions/DocumentAction";
-import { set } from "date-fns";
-// import { createNewDocument as getNewDocTemplate } from "@/domain/entities/DocumentTemplate";
+import { create } from "domain";
+import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 function messageLog(message?: any, ...optionalParams: any[]) {
   console.log("useDocumentData", message, ...optionalParams);
 }
 
-export function useDocumentData(group: DocumentGroupType) {
-  messageLog(group);
-
-  const [dataId, setDataId] = useState("");
-  const [mode, setMode] = useState("display");
+export function useDocumentData(dataId: string, group: DocumentGroupType) {
+  const [documentId, setDocumentId] = useState(dataId);
   const [document, setDocument] = useState<DocumentObject>();
   const [children, setChildren] = useState<DocumentObject[]>([]);
 
@@ -40,28 +44,18 @@ export function useDocumentData(group: DocumentGroupType) {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    if (mode === "display") {
-      if (dataId.length > 0) {
-        setErrorMessage("");
-        messageLog(`fetching data ${dataId ?? "None"}`);
-        fetchData();
-      }
+    if (dataId !== "") {
+      setErrorMessage("");
+      messageLog(`fetching data ${dataId ?? "None"}`);
+      fetchData();
     }
-  }, [dataId, mode, group]);
+  }, [dataId, group]);
 
   useEffect(() => {
     if (document && dataId) {
       fetchChildren();
     }
-  }, [document]);
-
-  function getSearchPath(pathString: string) {
-    if (pathString === "") {
-      return [];
-    } else {
-      return pathString.split(",");
-    }
-  }
+  }, [document, dataId]);
 
   async function fetchAndCache(assetId: string) {
     let data: DocumentObject | null = null;
@@ -73,18 +67,14 @@ export function useDocumentData(group: DocumentGroupType) {
     if (data === null) {
       messageLog("fetchAndCache : data is null");
       return Promise.reject("Data not found");
-    } else {
-      messageLog("fetchAndCache : data", data);
-      let path = getSearchPath(data.ancestors);
-      messageLog("fetchAndCache : path", path);
-      documentSearchPathCache.setAsset(data.ancestors, group, data.id!, data);
     }
+    documentSearchPathCache.setAsset(data.ancestors, group, data.id!, data);
   }
 
   const fetchData = useCallback(async () => {
     startGetData(async () => {
       setErrorMessage("");
-      messageLog("fetching data");
+      // messageLog("fetching data");
       let isCached = documentSearchPathCache.hasAsset(dataId);
       let data: DocumentObject;
       try {
@@ -92,7 +82,7 @@ export function useDocumentData(group: DocumentGroupType) {
           console.log("data is not cached");
           await fetchAndCache(dataId);
         }
-        console.log("data is cached");
+        // console.log("data is cached");
         data = documentSearchPathCache.getAsset(dataId)!;
         messageLog("fetchData : data", data);
         setDocument(data);
@@ -101,11 +91,10 @@ export function useDocumentData(group: DocumentGroupType) {
         setErrorMessage("Data Fetching Error With Id: " + dataId);
       }
     });
-  }, [dataId]);
+  }, [dataId, fetchAndCache, group]);
 
   const fetchChildren = useCallback(async () => {
     startFetchChildren(async () => {
-      messageLog("fetching children");
       let childrenData: DocumentObject[] = [];
       let ancestor = document?.ancestors ?? "";
       let childrenPath =
@@ -115,32 +104,24 @@ export function useDocumentData(group: DocumentGroupType) {
       let isCached = documentSearchPathCache.hasPath(childrenPath, group);
 
       if (isCached) {
-        // console.log("data is cached");
+        messageLog("children data is cached");
         childrenData = Array.from(
           documentSearchPathCache.getPath(childrenPath, group)!
         ).map(([key, value]) => value);
       } else {
-        childrenData = await getDocumentChildren(
-          document?.ancestors ?? "",
-          dataId,
-          group
-        );
+        messageLog("children data is not cached");
+        childrenData = await getDocumentChildren(ancestor, dataId, group);
         documentSearchPathCache.setPath(
           childrenPath,
           group,
           new Map(childrenData.map((child) => [child.id!, child]))
         );
-        // documentMenuDataCache.setPath(
-        //   childrenPath,
-        //   new Map(childrenData.map((child) => [child.id!, child]))
-        // );
       }
-
-      messageLog("fetching children: data", childrenData);
+      // messageLog("fetching children: data", childrenData);
 
       setChildren(childrenData);
     });
-  }, [document]);
+  }, [document, dataId, group]);
 
   async function updateDocument(data: DocumentObject) {
     setUpdatingDataState(true);
@@ -185,7 +166,7 @@ export function useDocumentData(group: DocumentGroupType) {
     }
   }
 
-  async function deleteDocument(dataId: string) {
+  async function deleteDocument() {
     setDeletingDataState(true);
     let returnIndex = "";
     try {
@@ -200,34 +181,49 @@ export function useDocumentData(group: DocumentGroupType) {
     return returnIndex;
   }
 
-  async function getDefaultData() {
+  const getDefaultData = useCallback(async () => {
     const searchPath = "";
     let data = await getAssetSibling(searchPath, group);
     if (data.length > 0) {
       return data[0];
     }
     return null;
-  }
+  }, [group]);
 
-  return {
-    document,
-    dataId,
-    mode,
-    setDataId,
-    setDocument,
-    setMode,
-    children,
-    isFetchingData,
-    isFetchingChildren,
-    isUpdatingData,
-    isCreatingData,
-    isDeletingData,
-    updateDocument,
-    createNewDocument,
-    deleteDocument,
-    getDefaultData,
-    errorMessage,
-  };
+  return useMemo(
+    () => ({
+      document,
+      documentId,
+      setDocumentId,
+      setDocument,
+      children,
+      isFetchingData,
+      isFetchingChildren,
+      isUpdatingData,
+      isCreatingData,
+      isDeletingData,
+      updateDocument,
+      createNewDocument,
+      deleteDocument,
+      getDefaultData,
+      errorMessage,
+    }),
+    [
+      document,
+      documentId,
+      children,
+      isFetchingData,
+      isFetchingChildren,
+      isUpdatingData,
+      isCreatingData,
+      isDeletingData,
+      updateDocument,
+      createNewDocument,
+      deleteDocument,
+      getDefaultData,
+      errorMessage,
+    ]
+  );
 }
 
 export function useDocument(documentId: string, group: DocumentGroupType) {
@@ -285,7 +281,7 @@ export function useDocumentReference(group: DocumentGroupType) {
 
   const getReferenceDocuments = useCallback(async () => {
     startGetData(async () => {
-      messageLog("fetching data");
+      // messageLog("fetching data");
       // delay for 1 second
       try {
         let data = await getDocuments(group);
@@ -300,7 +296,7 @@ export function useDocumentReference(group: DocumentGroupType) {
           return 0;
         });
 
-        messageLog("fetchData : data", data);
+        // messageLog("fetchData : data", data);
         setDocumentList(data);
       } catch (e) {
         console.error("presentation: fetchData error", e);
@@ -330,14 +326,15 @@ export function useDocumentWithSearchPath(
 
   async function fetchAndCache(path: string) {
     try {
+      console.log("fetchAndCache", path);
       let ancestorIndexList = path === "" ? [] : searchPath.split(",");
       let ancestors = await getDocumentAncestors(ancestorIndexList, group);
-      // sort data
       let siblingData = await getAssetSibling(path, group);
 
       siblingData.map((sibling) =>
         documentMenuDataCache.setAsset(path, group, sibling.id!, sibling)
       );
+      console.log("cache stack", documentMenuDataCache.cache);
 
       for (let ancestor of ancestors) {
         if (documentMenuDataCache.hasAsset(ancestor.id!)) {
@@ -357,10 +354,10 @@ export function useDocumentWithSearchPath(
               )
             );
           }
-          fetchAndCache(ancestor.ancestors);
+          console.log("cache stack", documentMenuDataCache.cache);
+          await fetchAndCache(ancestor.ancestors);
         }
       }
-      console.log("cache stack", documentMenuDataCache.cache);
     } catch (e) {
       console.error("presentation: fetchData error", e);
     }
@@ -368,16 +365,14 @@ export function useDocumentWithSearchPath(
 
   const getDocumentSearchPath = useCallback(async () => {
     startGetData(async () => {
-      messageLog("getDocumentSearchPath fetching data");
-      // delay for 1 second
       try {
         const isCached = documentMenuDataCache.hasPath(searchPath, group);
 
         if (!isCached) {
-          console.log("data is not cached");
+          console.log("getDocumentSearchPath: data is not cached");
           await fetchAndCache(searchPath);
         }
-        console.log("data is cached");
+        // console.log("data is cached");
 
         let ancestorIndexList = searchPath === "" ? [] : searchPath.split(",");
 
@@ -388,7 +383,7 @@ export function useDocumentWithSearchPath(
         let siblingData = Array.from(
           documentMenuDataCache.getPath(searchPath, group) ?? []
         ).map(([key, value]) => value);
-        console.log("siblingData", siblingData);
+        // console.log("siblingData", siblingData);
         setAncestors(ancestors);
         setSibling(siblingData);
       } catch (e) {

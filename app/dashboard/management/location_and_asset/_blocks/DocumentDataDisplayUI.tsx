@@ -59,8 +59,11 @@ export function DocumentDataCardListView({
         <div className={"w-full h-fit grid grid-cols-1 gap-4"}>
           {documents.map((data, index) => {
             return (
-              <Link
-                href={queryPathService.getNewDisplayURL(data.id ?? "")}
+              <div
+                onClick={() => {
+                  queryPathService.setAssetId(data.id ?? "");
+                }}
+                // href={queryPathService.getNewDisplayURL(data.id ?? "")}
                 key={data.id}
               >
                 <DocumentCardView
@@ -69,7 +72,7 @@ export function DocumentDataCardListView({
                   key={data.id}
                 />
                 {index < documents.length - 1 ? <Separator /> : null}
-              </Link>
+              </div>
             );
           })}
         </div>

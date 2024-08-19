@@ -28,14 +28,14 @@ function ErrorWidget({ message }: { message: string }) {
 }
 export function DocumentPage() {
   const queryRoute = useDataQueryRoute();
-
   const mode = queryRoute.mode;
   const dataId = queryRoute.dataId;
   const isDisplayMode = queryRoute.mode === "display";
   const isCreateMode = queryRoute.mode === "create";
   const page = queryRoute.page;
   const groupType = getDocumentGroupTypeFromString(page);
-  const dateQueryService = useDocumentData(groupType);
+
+  const dateQueryService = useDocumentData(dataId, groupType);
 
   const isFetching =
     dateQueryService.isFetchingData || dateQueryService.isFetchingChildren;
@@ -46,19 +46,20 @@ export function DocumentPage() {
     console.log("DocumentPage useEffect", dataId, mode, page);
     async function handleEmptyData() {
       const defaultData = await dateQueryService.getDefaultData();
-      console.log(defaultData);
+      console.log("default data", defaultData);
       if (defaultData === null) {
         queryRoute.createNewAsset(getGroupDefaultType(groupType), "");
       } else {
+        console.log("set asset id", defaultData.id);
         queryRoute.setAssetId(defaultData.id!);
-        dateQueryService.setMode(mode);
+        return defaultData.id;
+        // dateQueryService.setDocumentId(defaultData.id!);
       }
     }
     if (dataId === "" && isDisplayMode) {
       handleEmptyData();
     } else {
-      dateQueryService.setDataId(dataId);
-      dateQueryService.setMode(mode);
+      dateQueryService.setDocumentId(dataId);
     }
   }, [dataId, mode, page]);
 
@@ -66,11 +67,7 @@ export function DocumentPage() {
     isFetching || (isDisplayMode && dateQueryService.document === undefined);
 
   const data = isCreateMode
-    ? createNewDocument(
-        queryRoute.dataType,
-        queryRoute.ancestors ?? "",
-        groupType
-      )
+    ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
     : dateQueryService.document;
 
   return (
@@ -95,7 +92,6 @@ export function DocumentPage() {
               key={isDisplayMode ? "display data" : "create new data"}
               groupType={groupType}
               data={data!}
-              childData={isDisplayMode ? dateQueryService.children : []}
             />
           )}
         </div>
