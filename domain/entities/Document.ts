@@ -11,6 +11,7 @@ enum DocumentObjectType {
   component = "component",
   tool = "tool",
   meter = "meter",
+  ghg = "ghg",
   unknown = "unknown",
 }
 
@@ -35,6 +36,7 @@ enum DocumentGroupType {
   Location = "Location",
   Asset = "Asset",
   Meter = "Meter",
+  GHG = "GHG",
   Unknown = "Unknown",
   Root = "Root",
 }

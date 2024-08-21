@@ -5,7 +5,7 @@ import React from "react";
 import {
   colorVariants,
   DocumentTypeColor,
-} from "../_utils/locationTypeUIConfig";
+} from "../_utils/documentTypeUIConfig";
 
 export function DashboardLabelChip({
   title,

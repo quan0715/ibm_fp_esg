@@ -9,7 +9,7 @@ import { useRootData } from "./_hooks/useDocument";
 import { getDocumentGroupTypeFromString } from "@/domain/entities/Document";
 import { getAssetSibling } from "./_actions/DocumentAction";
 
-type TabsString = "Location" | "Asset" | "Meter";
+type TabsString = "Location" | "Asset" | "Meter" | "GHG";
 
 interface TabConfig {
   index: string;
@@ -40,6 +40,10 @@ export default function Layout({
     Meter: {
       index: "Meter",
       title: "Meter 主檔",
+    },
+    GHG: {
+      index: "GHG",
+      title: "GHG 主檔",
     },
   };
 
@@ -111,17 +115,7 @@ function TabListWidget({
           })}
         </TabsList>
         <Separator />
-        <div className="w-full h-full bg-secondary p-4">
-          {/* {Object.keys(tabConfig).map((key) => {
-            const tab = tabConfig[key as TabsString];
-            return (
-              <TabsContent key={tab.index + "contents"} value={tab.index}>
-                {tab.content}
-              </TabsContent>
-            );
-          })} */}
-          {children}
-        </div>
+        <div className="w-full h-full bg-secondary p-4">{children}</div>
       </Tabs>
     </div>
   );

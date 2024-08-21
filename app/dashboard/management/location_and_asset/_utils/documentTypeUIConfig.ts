@@ -39,8 +39,10 @@ export function getDocumentEntityUIConfig(
       return { color: "blue", label: "資產" };
     case DocumentObjectType.meter:
       return { color: "stone", label: "Meter" };
+    case DocumentObjectType.ghg:
+      return { color: "green", label: "GHG" };
     case DocumentObjectType.unknown:
-      return { color: "gray", label: "Unknown" };
+      return { color: "stone", label: "Unknown" };
   }
 }
 
@@ -65,7 +67,7 @@ const colorVariants = {
     textColor: "text-yellow-700 dark:text-yellow-500",
   },
   orange: {
-    bgColor: "bg-orange -50 dark:bg-orange-900",
+    bgColor: "bg-orange-50 dark:bg-orange-900",
     leadingColor: "bg-orange-500 dark:bg-orange-500",
     textColor: "text-orange-500 dark:text-orange",
   },

@@ -30,12 +30,12 @@ import { SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { LuLock, LuSearch } from "react-icons/lu";
+import { LuLock, LuPlus, LuSearch } from "react-icons/lu";
 import { InfoBlock } from "./DocumentDataCard";
 import { Status } from "@/domain/entities/Status";
 import { StatusChip } from "@/components/blocks/chips";
 import React, { Key } from "react";
-import { DocumentGroupType } from "@/domain/entities/Document";
+import { DocumentGroupType, DocumentObject } from "@/domain/entities/Document";
 import {
   useDocument,
   useDocumentData,
@@ -123,10 +123,10 @@ export function PropertyValueField({
               isRequired={property.required}
               name={`properties.${index}.value`}
               isDisabled={property.readonly}
+              limit={(property as DocumentReferenceProperty).limit}
               referenceGroup={
                 (property as DocumentReferenceProperty).referenceGroup
               }
-              referenceIndex={(property as DocumentReferenceProperty).value}
             />
           </InfoBlock>
         );
@@ -205,7 +205,7 @@ export function DashboardInputField({
             <Input
               readOnly={isDisabled}
               className={cn(
-                'w-full text-sm font-semibold border-0 bg-transparent px-2 py-1 m-0 required:after:content-["*"]',
+                'w-full text-md border-0 bg-transparent px-2 py-1 m-0 required:after:content-["*"]',
                 focusSettings,
                 hoverSettings,
                 textCss
@@ -371,6 +371,20 @@ export function DashboardDatePickerField({
   );
 }
 
+function DialogCloseWrapper({
+  wrapped,
+  children,
+}: {
+  wrapped: boolean;
+  children: React.ReactNode;
+}) {
+  return wrapped ? (
+    <DialogClose className="w-full">{children}</DialogClose>
+  ) : (
+    <>{children}</>
+  );
+}
+
 function DocumentReferenceField({
   name,
   isHidden = false,
@@ -378,10 +392,10 @@ function DocumentReferenceField({
   isRequired = false,
   textCss,
   referenceGroup,
-  referenceIndex = "",
+  limit = false,
 }: DocumentPropFieldProps & {
+  limit?: boolean;
   referenceGroup: DocumentGroupType;
-  referenceIndex?: string;
 }) {
   const { control, ...form } = useFormContext();
   const useQueryRoute = useDataQueryRoute();
@@ -393,57 +407,49 @@ function DocumentReferenceField({
       name={name}
       render={({ field }) => {
         const isBlocking = documentOptions.isFetchingData;
-        const data = documentOptions.documentList?.find(
-          (doc) => doc.id === field.value
-        );
 
-        const options = documentOptions.documentList?.filter(
-          (doc) => doc.id !== data?.id
-        );
+        const selected: DocumentObject[] =
+          documentOptions.documentList?.filter((doc) =>
+            field.value.includes(doc.id)
+          ) ?? [];
 
+        const options =
+          documentOptions.documentList?.filter(
+            (doc) => !field.value.includes(doc.id)
+          ) ?? [];
         return (
           <FormItem className="w-full flex flex-row justify-start items-center">
             <FormControl>
               <div
                 className={cn(
-                  "w-full flex flex-row justify-start items-center space-x-2 rounded-md py-0.5 px-1",
-                  hoverSettings
+                  "w-full flex flex-col justify-start items-start space-x-2 rounded-md py-0.5"
+                  // hoverSettings
                 )}
               >
-                {!isBlocking && data ? (
-                  <DocumentReferencePropertyView
-                    data={data}
-                    onClick={() => {
-                      console.log("click: select document", data);
-                      useQueryRoute.setAssetId(data.id ?? "", referenceGroup);
-                    }}
-                    mode="display"
-                  />
-                ) : field.value ? (
-                  <LoadingWidget />
-                ) : null}
                 <Dialog>
-                  <DialogTrigger asChild>
-                    {field.value ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="text-gray-500"
-                        size="icon"
-                      >
-                        <LuSearch />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="text-gray-500"
-                      >
-                        <span>+ 新增關聯</span>
-                      </Button>
-                    )}
-                  </DialogTrigger>
-                  <DialogContent className="h-[500px]">
+                  <div className="w-full flex flex-row justify-start items-center rounded-md">
+                    <DialogTrigger asChild>
+                      {field.value && field.value.length > 0 ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="text-gray-600 gap-2"
+                        >
+                          <LuSearch /> 修改關聯
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="text-gray-500 gap-2"
+                        >
+                          <LuPlus /> 添加關聯
+                        </Button>
+                      )}
+                    </DialogTrigger>
+                  </div>
+
+                  <DialogContent className="">
                     <DialogHeader>
                       <DialogTitle>新增關聯</DialogTitle>
                       <DialogDescription>選擇你要關聯的文檔</DialogDescription>
@@ -453,59 +459,98 @@ function DocumentReferenceField({
                         <LoadingWidget />
                       </Skeleton>
                     ) : (
-                      <div className="w-full flex flex-col justify-start items-start space-y-2 overflow-scroll">
-                        {data ? (
+                      <div className="w-full flex flex-col justify-start items-start space-y-2 max-h-[500px]">
+                        {selected ? (
                           <div
                             className={cn(
-                              // !data ? "hidden" : "block",
                               "w-full flex flex-col justify-start items-start space-y-2"
                             )}
                           >
                             <p className={cn("text-sm")}>已選擇的文檔</p>
-
-                            <DialogClose asChild>
-                              <Button type="button" variant="secondary" asChild>
-                                <DocumentReferencePropertyView
-                                  data={data}
-                                  onClick={() => {
-                                    // console.log("click: select document", document.title);
-                                    // onReferenceChange("");
-                                    field.onChange("");
-                                    // DialogClose();
-                                  }}
-                                  mode="selected"
-                                />
-                              </Button>
-                            </DialogClose>
+                            {selected.map((data) => {
+                              return (
+                                <DialogCloseWrapper
+                                  wrapped={limit}
+                                  key={data.id}
+                                >
+                                  <DocumentReferencePropertyView
+                                    data={data}
+                                    onClick={() => {
+                                      field.onChange(
+                                        limit
+                                          ? []
+                                          : selected
+                                              .filter(
+                                                (selectedDoc) =>
+                                                  selectedDoc.id !== data.id
+                                              )
+                                              .map((data) => data.id)
+                                      );
+                                    }}
+                                    mode="selected"
+                                  />
+                                </DialogCloseWrapper>
+                              );
+                            })}
                           </div>
                         ) : null}
 
                         <div
                           className={cn(
-                            "w-full flex flex-col justify-start items-start space-y-2"
+                            "w-full flex flex-col justify-start items-start space-y-2 overflow-auto"
                           )}
                         >
                           <p className="text-sm">選擇其他文檔</p>
-                          {(options ?? [])?.map((document) => (
-                            <DialogClose asChild key={document.id}>
-                              <Button type="button" variant="secondary" asChild>
+                          {(options ?? [])?.map((document) => {
+                            return (
+                              <DialogCloseWrapper
+                                wrapped={limit}
+                                key={document.id}
+                              >
                                 <DocumentReferencePropertyView
                                   data={document}
                                   onClick={() => {
-                                    // console.log("click: select document", document.title);
-                                    // onReferenceChange(document.id!);
-                                    field.onChange(document.id!);
+                                    field.onChange(
+                                      limit
+                                        ? [document.id!]
+                                        : [...field.value, document.id!]
+                                    );
                                   }}
                                   mode="candidate"
                                 />
-                              </Button>
-                            </DialogClose>
-                          ))}
+                              </DialogCloseWrapper>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
                   </DialogContent>
                 </Dialog>
+                {field.value && field.value.length > 0 ? (
+                  !isBlocking ? (
+                    <div className="w-full h-fit grid grid-cols-1">
+                      {selected.map((data) => {
+                        return (
+                          <DocumentReferencePropertyView
+                            key={data.id}
+                            data={data}
+                            onClick={() => {
+                              useQueryRoute.setAssetId(
+                                data.id ?? "",
+                                referenceGroup
+                              );
+                            }}
+                            mode="display"
+                          />
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <Skeleton className="w-100">
+                      <LoadingWidget />
+                    </Skeleton>
+                  )
+                ) : null}
               </div>
             </FormControl>
             {isDisabled ? <LuLock /> : null}

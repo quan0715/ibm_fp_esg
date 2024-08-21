@@ -11,7 +11,7 @@ import {
 import {
   getDocumentTypeColor,
   getDocumentEntityUIConfig,
-} from "../_utils/locationTypeUIConfig";
+} from "../_utils/documentTypeUIConfig";
 
 import { Separator } from "@/components/ui/separator";
 import {
@@ -192,7 +192,7 @@ export const DocumentReferencePropertyView = memo(function DashboardColumnMin({
       <DashboardCard
         className={cn(
           "flex flex-row items-center justify-start space-x-6",
-          "w-full rounded-md px-2 py-1",
+          "w-full rounded-md px-1 py-0.5",
           "group-hover:cursor-pointer group-hover:bg-secondary"
         )}
       >

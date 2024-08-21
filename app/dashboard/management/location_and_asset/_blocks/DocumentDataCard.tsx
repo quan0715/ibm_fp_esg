@@ -22,7 +22,7 @@ import {
   colorVariants,
   getDocumentEntityUIConfig,
   getDocumentTypeColor,
-} from "../_utils/locationTypeUIConfig";
+} from "../_utils/documentTypeUIConfig";
 import { useContext, createContext, useState, use, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LuLink, LuLoader2, LuLock, LuUnlock } from "react-icons/lu";
@@ -138,11 +138,11 @@ export function DocumentDataCardForm({
                   <DashboardInputField
                     name="title"
                     isRequired={true}
-                    textCss={cn("text-lg font-semibold", colorTheme.textColor)}
+                    textCss={cn("text-xl font-semibold", colorTheme.textColor)}
                   ></DashboardInputField>
                   <DashboardInputField
                     name="description"
-                    textCss={cn("text-sm font-semibold")}
+                    textCss={cn("text-md font-semibold")}
                   ></DashboardInputField>
                   {isCreatingNewData ? null : (
                     <DesktopOnly>
@@ -267,21 +267,21 @@ export function InfoBlock({
   ) : (
     <div
       className={cn(
-        "w-full grid grid-cols-7 py-1 gap-2 grid-flow-col",
+        "w-full grid grid-cols-8 py-1 gap-2 grid-flow-col",
         className
       )}
     >
       <div
         className={cn(
           colorTheme.textColor,
-          "col-span-1 flex flex-rol justify-between items-center text-sm font-normal"
+          "col-span-2 flex flex-rol justify-between items-start text-md font-normal"
         )}
       >
         {label}
-        <Separator orientation="vertical" className="min-h-8 hidden md:block" />
+        <Separator orientation="vertical" className="min-h-1 hidden md:block" />
       </div>
 
-      <div className="col-span-6 flex flex-col justify-center items-start">
+      <div className="col-span-6 flex flex-col justify-start items-start">
         {children}
       </div>
     </div>

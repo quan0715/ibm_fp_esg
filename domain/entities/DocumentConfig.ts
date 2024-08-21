@@ -52,6 +52,10 @@ const DocumentTypeRule: {
     group: DocumentGroupType.Meter,
     parentType: DocumentObjectType.unknown,
   },
+  [DocumentObjectType.ghg]: {
+    group: DocumentGroupType.GHG,
+    parentType: DocumentObjectType.unknown,
+  },
   [DocumentObjectType.unknown]: {
     group: DocumentGroupType.Root,
     parentType: DocumentObjectType.unknown,
