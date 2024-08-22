@@ -1,78 +1,18 @@
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
 import {
   DocumentReferenceProperty,
   OptionsProperty,
   Property,
   PropertyType,
 } from "@/domain/entities/DocumentProperty";
-import { cn } from "@/lib/utils";
-import { SelectValue } from "@/components/ui/select";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { useFieldArray, useFormContext } from "react-hook-form";
-import { LuLock, LuPlus, LuSearch } from "react-icons/lu";
 import { InfoBlock } from "./DocumentDataCard";
 import { Status } from "@/domain/entities/Status";
 import { StatusChip } from "@/components/blocks/chips";
-import React, { Key } from "react";
-import { DocumentGroupType, DocumentObject } from "@/domain/entities/Document";
-import {
-  useDocument,
-  useDocumentData,
-  useDocumentReference,
-} from "../_hooks/useDocument";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DocumentCardView,
-  DocumentDataAncestorView,
-  DocumentReferencePropertyView,
-} from "./DocumentDataDisplayUI";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { LoadingWidget } from "@/components/blocks/LoadingWidget";
-import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { Checkbox } from "@/components/ui/checkbox";
-
-// shdcn UI Kit css disable
-const focusSettings =
-  "focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-background focus-visible:shadow-lg";
-const hoverSettings = "hover:bg-secondary";
-
-type DocumentPropFieldProps = {
-  name: string;
-  placeholder?: string;
-  isHidden?: boolean;
-  isDisabled?: boolean;
-  isRequired?: boolean;
-  textCss?: string;
-};
+import React from "react";
+import { DocumentReferenceField } from "./property_field/ReferencePropField";
+import { InputPropField } from "./property_field/InputPropField";
+import { CheckBoxPropField } from "./property_field/CheckBoxPropField";
+import { DashboardSelectionField } from "./property_field/SelectionPropField";
+import { DateTimePickerField } from "./property_field/DateTimePropField";
 
 export function PropertyValueField({
   property,
@@ -81,483 +21,105 @@ export function PropertyValueField({
   property: Property;
   index?: number;
 }) {
-  // console.log("getPropertyValue", property, index);
   if (property === undefined) {
     return null;
-  } else {
-    switch (property.type as PropertyType) {
-      case PropertyType.text:
-        return (
-          <InfoBlock label={property.name}>
-            <DashboardInputField
-              isRequired={property.required}
-              name={`properties.${index}.value`}
-              isDisabled={property.readonly}
-            />
-          </InfoBlock>
-        );
-      case PropertyType.number:
-        return (
-          <InfoBlock label={property.name}>
-            <DashboardInputField
-              isRequired={property.required}
-              name={`properties.${index}.value`}
-              isDisabled={property.readonly}
-            />
-          </InfoBlock>
-        );
-      case PropertyType.boolean:
-        return (
-          <InfoBlock label={property.name}>
-            <DashboardCheckboxField
-              isRequired={property.required}
-              name={`properties.${index}.value`}
-              isDisabled={property.readonly}
-            />
-          </InfoBlock>
-        );
-      case PropertyType.reference:
-        return (
-          <InfoBlock label={property.name}>
-            <DocumentReferenceField
-              isRequired={property.required}
-              name={`properties.${index}.value`}
-              isDisabled={property.readonly}
-              limit={(property as DocumentReferenceProperty).limit}
-              referenceGroup={
-                (property as DocumentReferenceProperty).referenceGroup
-              }
-            />
-          </InfoBlock>
-        );
-      case PropertyType.options:
-        return (
-          <InfoBlock label={property.name}>
-            <DashboardSelectionField
-              isRequired={property.required}
-              name={`properties.${index}.value`}
-              items={(property as OptionsProperty).options.map(
-                (option: string, index: Key | null | undefined) => {
-                  return (
-                    <SelectItem key={index} value={option} className="py-2">
-                      {option}
-                    </SelectItem>
-                  );
-                }
-              )}
-              isDisabled={property.readonly}
-            />
-          </InfoBlock>
-        );
-      case PropertyType.dateTime:
-        return (
-          <InfoBlock label={property.name}>
-            <DashboardDatePickerField
-              key={index + property.name}
-              isRequired={property.required}
-              name={`properties.${index}.value` as const}
-              isDisabled={property.readonly}
-            />
-          </InfoBlock>
-        );
-      case PropertyType.status:
-        return (
-          <InfoBlock label={property.name}>
-            <DashboardSelectionField
-              isRequired={property.required}
-              name={`properties.${index}.value`}
-              isDisabled={property.readonly}
-              items={Object.keys(Status).map(
-                (status: string, index: Key | null | undefined) => {
-                  return (
-                    <SelectItem key={index} value={status} className="py-2">
-                      <StatusChip
-                        status={Status[status as keyof typeof Status]}
-                      />
-                    </SelectItem>
-                  );
-                }
-              )}
-            />
-          </InfoBlock>
-        );
-      default:
-        return null;
-    }
   }
-}
-export function DashboardInputField({
-  name,
-  placeholder = "空值",
-  isHidden = false,
-  isDisabled = false,
-  isRequired = false,
-  textCss,
-}: DocumentPropFieldProps) {
-  const { control } = useFormContext();
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="w-full flex flex-row justify-start items-center">
-          <FormControl>
-            <Input
-              readOnly={isDisabled}
-              className={cn(
-                'w-full text-md border-0 bg-transparent px-2 py-1 m-0 required:after:content-["*"]',
-                focusSettings,
-                hoverSettings,
-                textCss
-              )}
-              {...field}
-              placeholder={placeholder}
-              required={isRequired}
-              // disabled={isDisabled}
-            />
-          </FormControl>
-          {isDisabled ? <LuLock /> : null}
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-export function DashboardCheckboxField({
-  name,
-  placeholder = "空值",
-  isHidden = false,
-  isDisabled = false,
-  isRequired = false,
-  textCss,
-}: DocumentPropFieldProps) {
-  const { control } = useFormContext();
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="w-full flex flex-row items-start space-x-3 space-y-0 px-2">
-          <FormControl>
-            <Checkbox
-              className={cn(
-                "data-[state=checked]:bg-stone-900 border-stone-900",
-                "data-[state=checked]:text-white",
-                "w-5 h-5"
-              )}
-              {...field}
-              disabled={isDisabled}
-              checked={field.value}
-              onCheckedChange={field.onChange}
-              required={isRequired}
-            />
-          </FormControl>
-          <div
-            className={
-              "leading-none h-full flex flex-col items-center justify-center"
+  switch (property.type as PropertyType) {
+    case PropertyType.text:
+      return (
+        <InfoBlock label={property.name}>
+          <InputPropField
+            isRequired={property.required}
+            name={`properties.${index}.value`}
+            isDisabled={property.readonly}
+          />
+        </InfoBlock>
+      );
+    case PropertyType.number:
+      return (
+        <InfoBlock label={property.name}>
+          <InputPropField
+            isRequired={property.required}
+            name={`properties.${index}.value`}
+            isDisabled={property.readonly}
+            inputType="text"
+          />
+        </InfoBlock>
+      );
+    case PropertyType.boolean:
+      return (
+        <InfoBlock label={property.name}>
+          <CheckBoxPropField
+            isRequired={property.required}
+            name={`properties.${index}.value`}
+            isDisabled={property.readonly}
+          />
+        </InfoBlock>
+      );
+    case PropertyType.reference:
+      return (
+        <InfoBlock label={property.name}>
+          <DocumentReferenceField
+            // isRequired={property.required}
+            name={`properties.${index}.value`}
+            isDisabled={property.readonly}
+            limit={(property as DocumentReferenceProperty).limit}
+            referenceGroup={
+              (property as DocumentReferenceProperty).referenceGroup
             }
-          >
-            <FormLabel className="text-sm font-semibold">
-              {field.value ? "是" : "否"}
-            </FormLabel>
-          </div>
-          {isDisabled ? <LuLock /> : null}
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-export function DashboardSelectionField({
-  name,
-  isHidden = false,
-  isDisabled = false,
-  isRequired = false,
-  items,
-  textCss,
-}: DocumentPropFieldProps & { items: React.ReactNode[] }) {
-  const { control } = useFormContext();
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormControl>
-            <Select
-              disabled={isDisabled}
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-            >
-              <FormControl>
-                <SelectTrigger
-                  className={cn(
-                    'w-full text-sm font-semibold border-0 bg-transparent px-2 py-1 m-0 required:after:content-["*"]',
-                    focusSettings,
-                    hoverSettings,
-                    textCss
-                  )}
-                >
-                  <SelectValue
-                    className="w-full"
-                    placeholder="Select a verified email to display"
-                  />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>{...items}</SelectContent>
-            </Select>
-          </FormControl>
-          {isDisabled ? <LuLock /> : null}
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
-export function DashboardDatePickerField({
-  name,
-  isHidden = false,
-  isDisabled = false,
-  isRequired = false,
-  textCss,
-}: DocumentPropFieldProps) {
-  const { control, ...form } = useFormContext();
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => {
-        return (
-          <FormItem className="w-full flex flex-col">
-            <Popover>
-              <PopoverTrigger asChild>
-                <FormControl>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full text-sm font-semibold border-0 bg-transparent px-2 py-1 m-0",
-                      !field.value && "text-muted-foreground"
-                    )}
-                  >
-                    {field.value ? (
-                      format(field.value, "PPP")
-                    ) : (
-                      <span>選擇日期</span>
-                    )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </FormControl>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 " align="start">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={field.onChange}
-                  disabled={(date) =>
-                    date > new Date() || date < new Date("1900-01-01")
-                  }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <FormMessage />
-          </FormItem>
-        );
-      }}
-    />
-  );
-}
-
-function DialogCloseWrapper({
-  wrapped,
-  children,
-}: {
-  wrapped: boolean;
-  children: React.ReactNode;
-}) {
-  return wrapped ? (
-    <DialogClose className="w-full">{children}</DialogClose>
-  ) : (
-    <>{children}</>
-  );
-}
-
-function DocumentReferenceField({
-  name,
-  isHidden = false,
-  isDisabled = false,
-  isRequired = false,
-  textCss,
-  referenceGroup,
-  limit = false,
-}: DocumentPropFieldProps & {
-  limit?: boolean;
-  referenceGroup: DocumentGroupType;
-}) {
-  const { control, ...form } = useFormContext();
-  const useQueryRoute = useDataQueryRoute();
-  const documentOptions = useDocumentReference(referenceGroup);
-
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => {
-        const isBlocking = documentOptions.isFetchingData;
-
-        const selected: DocumentObject[] =
-          documentOptions.documentList?.filter((doc) =>
-            field.value.includes(doc.id)
-          ) ?? [];
-
-        const options =
-          documentOptions.documentList?.filter(
-            (doc) => !field.value.includes(doc.id)
-          ) ?? [];
-        return (
-          <FormItem className="w-full flex flex-row justify-start items-center">
-            <FormControl>
-              <div
-                className={cn(
-                  "w-full flex flex-col justify-start items-start space-x-2 rounded-md py-0.5"
-                  // hoverSettings
-                )}
-              >
-                <Dialog>
-                  <div className="w-full flex flex-row justify-start items-center rounded-md">
-                    <DialogTrigger asChild>
-                      {field.value && field.value.length > 0 ? (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="text-gray-600 gap-2"
-                        >
-                          <LuSearch /> 修改關聯
-                        </Button>
-                      ) : (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="text-gray-500 gap-2"
-                        >
-                          <LuPlus /> 添加關聯
-                        </Button>
-                      )}
-                    </DialogTrigger>
-                  </div>
-
-                  <DialogContent className="">
-                    <DialogHeader>
-                      <DialogTitle>新增關聯</DialogTitle>
-                      <DialogDescription>選擇你要關聯的文檔</DialogDescription>
-                    </DialogHeader>
-                    {documentOptions.isFetchingData ? (
-                      <Skeleton className="w-100">
-                        <LoadingWidget />
-                      </Skeleton>
-                    ) : (
-                      <div className="w-full flex flex-col justify-start items-start space-y-2 max-h-[500px]">
-                        {selected ? (
-                          <div
-                            className={cn(
-                              "w-full flex flex-col justify-start items-start space-y-2"
-                            )}
-                          >
-                            <p className={cn("text-sm")}>已選擇的文檔</p>
-                            {selected.map((data) => {
-                              return (
-                                <DialogCloseWrapper
-                                  wrapped={limit}
-                                  key={data.id}
-                                >
-                                  <DocumentReferencePropertyView
-                                    data={data}
-                                    onClick={() => {
-                                      field.onChange(
-                                        limit
-                                          ? []
-                                          : selected
-                                              .filter(
-                                                (selectedDoc) =>
-                                                  selectedDoc.id !== data.id
-                                              )
-                                              .map((data) => data.id)
-                                      );
-                                    }}
-                                    mode="selected"
-                                  />
-                                </DialogCloseWrapper>
-                              );
-                            })}
-                          </div>
-                        ) : null}
-
-                        <div
-                          className={cn(
-                            "w-full flex flex-col justify-start items-start space-y-2 overflow-auto"
-                          )}
-                        >
-                          <p className="text-sm">選擇其他文檔</p>
-                          {(options ?? [])?.map((document) => {
-                            return (
-                              <DialogCloseWrapper
-                                wrapped={limit}
-                                key={document.id}
-                              >
-                                <DocumentReferencePropertyView
-                                  data={document}
-                                  onClick={() => {
-                                    field.onChange(
-                                      limit
-                                        ? [document.id!]
-                                        : [...field.value, document.id!]
-                                    );
-                                  }}
-                                  mode="candidate"
-                                />
-                              </DialogCloseWrapper>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </DialogContent>
-                </Dialog>
-                {field.value && field.value.length > 0 ? (
-                  !isBlocking ? (
-                    <div className="w-full h-fit grid grid-cols-1">
-                      {selected.map((data) => {
-                        return (
-                          <DocumentReferencePropertyView
-                            key={data.id}
-                            data={data}
-                            onClick={() => {
-                              useQueryRoute.setAssetId(
-                                data.id ?? "",
-                                referenceGroup
-                              );
-                            }}
-                            mode="display"
-                          />
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <Skeleton className="w-100">
-                      <LoadingWidget />
-                    </Skeleton>
-                  )
-                ) : null}
-              </div>
-            </FormControl>
-            {isDisabled ? <LuLock /> : null}
-            <FormMessage />
-          </FormItem>
-        );
-      }}
-    />
-  );
+          />
+        </InfoBlock>
+      );
+    case PropertyType.options:
+      return (
+        <InfoBlock label={property.name}>
+          <DashboardSelectionField
+            isRequired={property.required}
+            name={`properties.${index}.value`}
+            options={(property as OptionsProperty).options.map(
+              (option: string, index) => {
+                return {
+                  key: index,
+                  value: option,
+                  component: <p>{option}</p>,
+                };
+              }
+            )}
+            isDisabled={property.readonly}
+          />
+        </InfoBlock>
+      );
+    case PropertyType.dateTime:
+      return (
+        <InfoBlock label={property.name}>
+          <DateTimePickerField
+            key={index + property.name}
+            isRequired={property.required}
+            name={`properties.${index}.value` as const}
+            isDisabled={property.readonly}
+          />
+        </InfoBlock>
+      );
+    case PropertyType.status:
+      return (
+        <InfoBlock label={property.name}>
+          <DashboardSelectionField
+            isRequired={property.required}
+            name={`properties.${index}.value`}
+            isDisabled={property.readonly}
+            options={Object.keys(Status).map((status: string, index) => {
+              return {
+                key: index,
+                value: status,
+                component: (
+                  <StatusChip status={Status[status as keyof typeof Status]} />
+                ),
+              };
+            })}
+          />
+        </InfoBlock>
+      );
+    default:
+      return null;
+  }
 }

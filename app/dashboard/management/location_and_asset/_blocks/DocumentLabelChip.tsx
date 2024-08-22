@@ -26,7 +26,7 @@ export function DashboardLabelChip({
       >
         <div
           className={cn(
-            "w-[8px] h-[8px] rounded-full",
+            "w-[7px] h-[7px] rounded-full",
             colorVariants[color].leadingColor
           )}
         ></div>

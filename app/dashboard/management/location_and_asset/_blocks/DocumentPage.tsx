@@ -1,19 +1,14 @@
 "use client";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DocumentGroupType,
-  getDocumentGroupTypeFromString,
-} from "@/domain/entities/Document";
+import { DocumentGroupType } from "@/domain/entities/Document";
 import { DocumentDataCardForm } from "../_blocks/DocumentDataCard";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { createContext, useEffect, useState } from "react";
+import { createContext } from "react";
 import { useDocumentData } from "../_hooks/useDocument";
 import { DocumentNavigateMenu } from "../_blocks/DocumentNavigationMenu";
 import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
-import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
-import { getAssetSibling } from "../_actions/DocumentAction";
 
 function SuspenseWidget() {
   return (
@@ -43,7 +38,6 @@ export function DatabasePage({
   selectedDocumentId?: string;
 }) {
   const queryRoute = useDataQueryRoute();
-  const mode = queryRoute.mode;
   const dataId = queryRoute.dataId;
   const isDisplayMode = queryRoute.mode === "display";
   const isCreateMode = queryRoute.mode === "create";

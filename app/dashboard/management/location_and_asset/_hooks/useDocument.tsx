@@ -247,47 +247,6 @@ export function useDocumentData(documentId: string, group: DocumentGroupType) {
   );
 }
 
-export function useDocument(documentId: string, group: DocumentGroupType) {
-  const [isFetchingData, startGetData] = useTransition();
-  const [data, setData] = useState<DocumentObject>();
-
-  useEffect(() => {
-    if (documentId !== "") {
-      getDocument();
-    }
-  }, [documentId]);
-
-  const getDocument = useCallback(async () => {
-    startGetData(async () => {
-      messageLog("fetching data");
-      if (documentId === "") throw new Error("Document Id is empty");
-
-      let isCached = documentSearchPathCache.hasAsset(documentId);
-      let doc: DocumentObject;
-      try {
-        if (!isCached) {
-          console.log("data is not cached");
-          doc = await getDocumentDataWithId(documentId, group);
-          documentSearchPathCache.setAsset(doc.ancestors, group, doc.id!, doc);
-          documentMenuDataCache.setAsset(doc.ancestors, group, doc.id!, doc);
-        }
-        doc = documentSearchPathCache.getAsset(documentId)!;
-        // let data = await getDocumentDataWithId(documentId, group);
-        messageLog("fetchData : data", doc);
-        setData(doc);
-      } catch (e) {
-        console.error("presentation: fetchData error", e);
-      }
-    });
-  }, [documentId, group]);
-
-  return {
-    data,
-    isFetchingData,
-    getDocument,
-  };
-}
-
 export function useDocumentReference(group: DocumentGroupType) {
   const [isFetchingData, startGetData] = useTransition();
   const [documentList, setDocumentList] = useState<DocumentObject[]>();

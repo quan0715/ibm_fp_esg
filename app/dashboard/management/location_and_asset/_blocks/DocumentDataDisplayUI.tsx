@@ -188,7 +188,10 @@ export const DocumentReferencePropertyView = memo(function DashboardColumnMin({
     }
   }
   return (
-    <div className="w-full min-w-[250px] group">
+    <div
+      className="w-full group"
+      onClick={mode === "display" ? onClick : undefined}
+    >
       <DashboardCard
         className={cn(
           "flex flex-row items-center justify-start space-x-6",

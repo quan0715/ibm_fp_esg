@@ -31,10 +31,7 @@ import { Form } from "@/components/ui/form";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 import { useDocumentData } from "../_hooks/useDocument";
 import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
-import {
-  DashboardInputField,
-  PropertyValueField,
-} from "./DocuemntFormPropertyField";
+import { PropertyValueField } from "./DocuemntFormPropertyField";
 import {
   getDocumentChildrenTypeOptions,
   getDocumentLayerRules,
@@ -45,14 +42,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 import { DocumentContext } from "./DocumentPage";
+import { InputPropField } from "./property_field/InputPropField";
 
 type DocumentDataCardProps = {
   data: DocumentObject;
-  // mode?: "display" | "create";
-  // dataId: string;
   groupType: DocumentGroupType;
   className?: string;
-  // childData?: DocumentObject[];
 };
 
 const ThemeContext = createContext(colorVariants["blue"]);
@@ -135,15 +130,15 @@ export function DocumentDataCardForm({
             <DashboardCard className="shadow-sm w-full min-h-screen ">
               <DashboardCardHeader>
                 <DashboardCardHeaderContent>
-                  <DashboardInputField
+                  <InputPropField
                     name="title"
                     isRequired={true}
                     textCss={cn("text-xl font-semibold", colorTheme.textColor)}
-                  ></DashboardInputField>
-                  <DashboardInputField
+                  ></InputPropField>
+                  <InputPropField
                     name="description"
                     textCss={cn("text-md font-semibold")}
-                  ></DashboardInputField>
+                  ></InputPropField>
                   {isCreatingNewData ? null : (
                     <DesktopOnly>
                       <div className="flex flex-row items-center justify-start space-x-2 px-2">
@@ -308,7 +303,28 @@ function MultiChildrenBlock<T extends DocumentObject>({
   );
   return (
     <InfoBlock label={label} className={cn(className)}>
-      <div className="w-full grid  grid-cols-1">
+      {queryPathService.mode === "create"
+        ? null
+        : childrenOptions.map((type) => (
+            <CreateNewDataButton
+              key={type}
+              className={cn(
+                "w-fit rounded-md h-fit",
+                getDocumentTypeColor(type).textColor
+              )}
+              onClick={async () => {
+                let newAncestors =
+                  parent.ancestors.length > 0
+                    ? parent.ancestors + "," + parent.id
+                    : parent.id;
+                if (newAncestors) {
+                  queryPathService.createNewAsset(type, newAncestors);
+                }
+              }}
+              label={getDocumentEntityUIConfig(type).label}
+            />
+          ))}
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0.5">
         {child.map((child, index) => {
           return (
             <DocumentReferencePropertyView
@@ -322,55 +338,8 @@ function MultiChildrenBlock<T extends DocumentObject>({
         {childrenOptions.length === 0 && child.length === 0 ? (
           <p className={"text-sm text-gray-500 font-semibold"}>無下層資料</p>
         ) : null}
-        {queryPathService.mode === "create"
-          ? null
-          : childrenOptions.map((type) => (
-              <CreateNewDataButton
-                key={type}
-                className={cn(
-                  "w-fit rounded-md h-fit",
-                  getDocumentTypeColor(type).textColor
-                )}
-                onClick={async () => {
-                  let newAncestors =
-                    parent.ancestors.length > 0
-                      ? parent.ancestors + "," + parent.id
-                      : parent.id;
-                  if (newAncestors) {
-                    queryPathService.createNewAsset(type, newAncestors);
-                  }
-                }}
-                label={getDocumentEntityUIConfig(type).label}
-              />
-            ))}
       </div>
     </InfoBlock>
-  );
-}
-
-export function DocumentChildrenBlock({
-  className = "",
-  onClick,
-  document,
-}: {
-  className?: string;
-  // href: string;
-  onClick?: () => void;
-  document: DocumentObject;
-}) {
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      onClick={onClick}
-      className={cn(
-        "w-full h-full flex flex-row justify-between items-center",
-        className
-      )}
-    >
-      <p>{document.title}</p>
-      <LuLink />
-    </Button>
   );
 }
 
