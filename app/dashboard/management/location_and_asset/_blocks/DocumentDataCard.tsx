@@ -29,7 +29,10 @@ import { LuLink, LuLoader2, LuLock, LuUnlock } from "react-icons/lu";
 import { useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { useDocumentData } from "../_hooks/useDocument";
+import {
+  useDocumentData,
+  useDocumentWithSearchPath,
+} from "../_hooks/useDocument";
 import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
 import { PropertyValueField } from "./DocuemntFormPropertyField";
 import {
@@ -43,10 +46,19 @@ import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 import { DocumentContext } from "./DocumentPage";
 import { InputPropField } from "./property_field/InputPropField";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { useDocumentTree } from "../_hooks/useDocumentContext";
 
 type DocumentDataCardProps = {
   data: DocumentObject;
-  groupType: DocumentGroupType;
+  // groupType: DocumentGroupType;
   className?: string;
 };
 
@@ -56,12 +68,13 @@ export function DocumentDataCardForm({
   data,
   className,
 }: DocumentDataCardProps) {
-  const dbType = useContext(DocumentContext);
+  const documentTree = useDocumentTree();
+  const dbType = documentTree.type;
   const queryPathService = useDataQueryRoute();
   const isCreatingNewData = queryPathService.mode === "create";
 
-  const dataQueryService = useDocumentData(data.id ?? "", dbType.type);
-
+  const dataQueryService = useDocumentData(data.id ?? "", dbType);
+  // const menu = useDocumentWithSearchPath(data.ancestors, dbType.type);
   const children = dataQueryService.children;
 
   const colorTheme = getDocumentTypeColor(
@@ -88,11 +101,17 @@ export function DocumentDataCardForm({
     if (isCreatingNewData) {
       const newDataId = await dataQueryService.createNewDocument(newData);
       if (newDataId) {
+        documentTree.updateDocument({
+          ...newData,
+          id: newDataId,
+        });
+
         queryPathService.setAssetId(newDataId);
       }
       return;
     } else {
       await dataQueryService.updateDocument(newData);
+      documentTree.updateDocument(newData);
 
       form.reset({
         ...newData,
@@ -104,6 +123,7 @@ export function DocumentDataCardForm({
   async function onDelete() {
     try {
       const returnIndex = await dataQueryService.deleteDocument();
+      documentTree.deleteDocument(data.id ?? "");
       queryPathService.setAssetId(returnIndex);
     } catch (e) {
       console.error("presentation: deleteData error", e);
@@ -130,6 +150,26 @@ export function DocumentDataCardForm({
             <DashboardCard className="shadow-sm w-full min-h-screen ">
               <DashboardCardHeader>
                 <DashboardCardHeaderContent>
+                  {/* <Breadcrumb className="p-2">
+                    <BreadcrumbList>
+                      {menu.ancestors.map((ancestor, index) => (
+                        <BreadcrumbItem key={ancestor.id}>
+                          <BreadcrumbLink
+                            href="#"
+                            onClick={() =>
+                              queryPathService.setAssetId(ancestor.id ?? "")
+                            }
+                          >
+                            {ancestor.title}
+                          </BreadcrumbLink>
+                          {index < menu.ancestors.length - 1 ? (
+                            <BreadcrumbSeparator />
+                          ) : null}
+                        </BreadcrumbItem>
+                      ))}
+                    </BreadcrumbList>
+                  </Breadcrumb> */}
+
                   <InputPropField
                     name="title"
                     isRequired={true}
@@ -193,12 +233,12 @@ export function DocumentDataCardForm({
                     );
                   })}
                 </div>
-                <Separator />
-                <MultiChildrenBlock
+                {/* <Separator /> */}
+                {/* <MultiChildrenBlock
                   label="子資產"
                   child={children}
                   parent={data!}
-                />
+                /> */}
                 <Separator />
                 <div
                   className={"flex flex-row justify-end items-center space-x-2"}

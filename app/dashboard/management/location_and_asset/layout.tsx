@@ -9,7 +9,7 @@ import { useRootData } from "./_hooks/useDocument";
 import { getDocumentGroupTypeFromString } from "@/domain/entities/Document";
 import { getAssetSibling } from "./_actions/DocumentAction";
 
-type TabsString = "Location" | "Asset" | "Meter" | "GHG";
+type TabsString = "Location" | "Asset" | "Meter" | "GHG" | "MeterReading";
 
 interface TabConfig {
   index: string;
@@ -44,6 +44,10 @@ export default function Layout({
     GHG: {
       index: "GHG",
       title: "GHG 主檔",
+    },
+    MeterReading: {
+      index: "MeterReading",
+      title: "Meter Reading 主檔",
     },
   };
 
@@ -115,7 +119,7 @@ function TabListWidget({
           })}
         </TabsList>
         <Separator />
-        <div className="w-full h-full bg-secondary p-4">{children}</div>
+        <div className="w-full h-full bg-secondary">{children}</div>
       </Tabs>
     </div>
   );

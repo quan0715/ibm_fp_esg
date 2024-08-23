@@ -12,6 +12,7 @@ enum DocumentObjectType {
   tool = "tool",
   meter = "meter",
   ghg = "ghg",
+  meterReading = "meterReading",
   unknown = "unknown",
 }
 
@@ -39,6 +40,7 @@ enum DocumentGroupType {
   GHG = "GHG",
   Unknown = "Unknown",
   Root = "Root",
+  MeterReading = "MeterReading",
 }
 
 function getDocumentGroupTypeFromString(type: string): DocumentGroupType {

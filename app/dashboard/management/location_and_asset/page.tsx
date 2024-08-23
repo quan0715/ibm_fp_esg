@@ -5,10 +5,13 @@ import {
   DocumentGroupType,
   getDocumentGroupTypeFromString,
 } from "@/domain/entities/Document";
-import { DatabasePage } from "./_blocks/DocumentPage";
+import { DatabasePage, DocumentContext } from "./_blocks/DocumentPage";
 import { useDataQueryRoute } from "./_hooks/useQueryRoute";
 import { getAssetSibling } from "./_actions/DocumentAction";
 import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
+import { DocumentTreeMenu } from "./_blocks/DocumentNavigationMenu";
+import { Separator } from "@radix-ui/react-separator";
+import { DocumentTreeProvider } from "./_hooks/useDocumentContext";
 
 export default function Page() {
   const queryRoute = useDataQueryRoute();
@@ -31,11 +34,21 @@ export default function Page() {
     }
   }, [queryRoute.dataId, queryRoute.mode, queryRoute.page]);
   const isBlocking = queryRoute.mode === "display" && queryRoute.dataId === "";
+
   return isBlocking ? null : (
-    <DatabasePage
-      key={dbType + queryRoute.dataId}
-      dbType={dbType}
-      selectedDocumentId={queryRoute.dataId}
-    />
+    <DocumentTreeProvider type={dbType}>
+      <div className="w-full max-h-max grid grid-cols-12 gap-2 p-1">
+        <div className="col-span-3">
+          <DocumentTreeMenu path={""} />
+        </div>
+        <div className="col-span-9">
+          <DatabasePage
+            key={dbType + queryRoute.dataId}
+            dbType={dbType}
+            selectedDocumentId={queryRoute.dataId}
+          />
+        </div>
+      </div>
+    </DocumentTreeProvider>
   );
 }

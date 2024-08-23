@@ -60,6 +60,10 @@ const DocumentTypeRule: {
     group: DocumentGroupType.Root,
     parentType: DocumentObjectType.unknown,
   },
+  [DocumentObjectType.meterReading]: {
+    group: DocumentGroupType.MeterReading,
+    parentType: DocumentObjectType.unknown,
+  },
 };
 
 export const getDocumentLayerRules = (type: DocumentObjectType) =>

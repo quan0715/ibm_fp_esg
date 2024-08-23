@@ -225,6 +225,32 @@ export function createNewDocument(
         updateBy: user,
         properties: [
           {
+            name: "目標",
+            type: PropertyType.number,
+            value: 0,
+            isHidden: false,
+            readonly: false,
+          },
+          {
+            name: "排放係數單位",
+            type: PropertyType.text,
+            value: "",
+          },
+        ],
+      } as DocumentObject;
+    case DocumentGroupType.MeterReading:
+      return {
+        id: "",
+        type: type,
+        ancestors: ancestors,
+        title: "",
+        description: "",
+        createAt: new Date(),
+        updateAt: new Date(),
+        createBy: user,
+        updateBy: user,
+        properties: [
+          {
             name: "排放係數值",
             type: PropertyType.number,
             value: 0,

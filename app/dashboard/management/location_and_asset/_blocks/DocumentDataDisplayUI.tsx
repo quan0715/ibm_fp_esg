@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 
-import React, { memo, useState } from "react";
+import React, { memo, useContext, useEffect, useState } from "react";
 import {
   DashboardCard,
   DashboardCardContent,
@@ -20,13 +20,34 @@ import {
   LuMinus,
   LuArrowLeft,
   LuArrowRight,
+  LuExpand,
+  LuChevronDown,
+  LuChevronRight,
+  LuChevronUp,
 } from "react-icons/lu";
+
 import Link from "next/link";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 import { CreateNewDataButton } from "./DataCRUDTrigger";
 import { DashboardLabelChip } from "./DocumentLabelChip";
 import { DocumentObject, DocumentObjectType } from "@/domain/entities/Document";
 import { Button } from "@/components/ui/button";
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+
+import {
+  useDocumentData,
+  useDocumentWithSearchPath,
+} from "../_hooks/useDocument";
+import { DocumentContext } from "./DocumentPage";
+import { ChevronsUpDown } from "lucide-react";
+import { getDocumentChildrenTypeOptions } from "@/domain/entities/DocumentConfig";
+import { get } from "http";
+import { useDocumentTree } from "../_hooks/useDocumentContext";
 
 export function DocumentDataCardListView({
   className,
@@ -131,36 +152,136 @@ export const DocumentCardView = memo(function AssetLocDataListView({
   );
 });
 
-export const DocumentDataAncestorView = memo(function DashboardColumnMin({
+export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
   data,
   onClick,
+  className,
+  depth = 0,
 }: {
   onClick?: () => void;
+  className?: string;
   data: DocumentObject;
+  depth?: number;
 }) {
   const type = data.type;
-  const typeUIConfig = getDocumentEntityUIConfig(type);
+  // const typeUIConfig = getDocumentEntityUIConfig(type);
   const tailwindColorClass = getDocumentTypeColor(type);
+  const documentTree = useDocumentTree();
+  const docType = documentTree.type;
+  const queryPathService = useDataQueryRoute();
+  // const document = useDocumentData(data.id ?? "", docType);
+  const children = documentTree.getChildrenData(
+    data.ancestors ?? "",
+    data.id ?? ""
+  );
+  const targetDocument = documentTree.getDocumentData(queryPathService.dataId);
+  const routePath = useDataQueryRoute();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const isSelected = queryPathService.dataId === data.id;
+
+  useEffect(() => {
+    setIsOpen(targetDocument?.ancestors.includes(data.id ?? "") ?? false);
+    console.log(data);
+    console.log(children);
+  }, [data]);
+
+  const haveChildren = getDocumentChildrenTypeOptions(type, docType).length;
+
   return (
-    <div onClick={onClick} className="w-full">
-      <DashboardCard
-        className={cn(
-          "flex flex-row items-center justify-between",
-          "shadow-sm w-full rounded-md px-2 py-2",
-          "hover:cursor-pointer hover:rounded-xl hover:animate-pulse"
-        )}
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className={cn("w-full rounded-md bg-background", className)}
+    >
+      <div
+        style={{ paddingLeft: `${depth * 1}rem` }}
+        className={cn(tailwindColorClass.hoveringColor)}
       >
-        <DashboardLabelChip
-          title={typeUIConfig.label}
-          color={typeUIConfig.color}
-        />
-        <h1
-          className={cn("font-semibold text-sm", tailwindColorClass.textColor)}
-        >
-          {data.title}
-        </h1>
-      </DashboardCard>
-    </div>
+        <DashboardCard className="bg-transparent w-full flex flex-row items-center py-1 px-1 group">
+          <CollapsibleTrigger className="bg-transparent" asChild>
+            <div
+              className={cn(
+                haveChildren ? "visible" : "invisible",
+                "p-2 rounded-md opacity-0 bg-transparent",
+                isOpen ? "opacity-100" : "opacity-0",
+                "group-hover:cursor-pointer group-hover:opacity-100"
+              )}
+            >
+              {isOpen ? <LuChevronDown /> : <LuChevronRight />}
+            </div>
+          </CollapsibleTrigger>
+          <div
+            className={cn(
+              "flex-1 flex flex-row justify-start items-center space-x-1"
+            )}
+          >
+            <div
+              className={cn(
+                "w-[6px] h-[6px] rounded-full",
+                tailwindColorClass.leadingColor
+              )}
+            />
+            <h1
+              className={cn(
+                "w-full font-semibold text-sm",
+                isSelected ? tailwindColorClass.textColor : ""
+              )}
+            >
+              {data.title}
+            </h1>
+            <Button
+              type="button"
+              className={cn(
+                "w-9 h-9 rounded-md",
+                "invisible group-hover:visible",
+                "hover:bg-background hover:cursor-pointer"
+              )}
+              onClick={onClick}
+              size={"icon"}
+              variant={"outline"}
+            >
+              <LuArrowRight className={tailwindColorClass.textColor} />
+            </Button>
+          </div>
+        </DashboardCard>
+      </div>
+      <Separator className="w-full" />
+      <CollapsibleContent className="w-full ">
+        {children.map((child) => (
+          <DocumentDataTreeEntryView
+            data={child}
+            onClick={() => routePath.setAssetId(child.id!)}
+            key={child.id}
+            depth={depth + 1}
+          />
+        ))}
+        {getDocumentChildrenTypeOptions(type, docType).map((type) => (
+          <div
+            key={type}
+            className={cn(
+              getDocumentTypeColor(type).hoveringColor,
+              getDocumentTypeColor(type).textHoveringColor
+            )}
+          >
+            <div style={{ paddingLeft: `${depth * 1.5}rem` }}>
+              <CreateNewDataButton
+                className={cn("text-gray-500 hover:bg-transparent")}
+                onClick={async () => {
+                  queryPathService.createNewAsset(
+                    type,
+                    data.ancestors.length > 0
+                      ? data.ancestors + "," + data.id
+                      : data.id ?? ""
+                  );
+                }}
+                label={`${getDocumentEntityUIConfig(type).label}`}
+              />
+            </div>
+          </div>
+        ))}
+      </CollapsibleContent>
+    </Collapsible>
   );
 });
 
