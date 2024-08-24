@@ -48,6 +48,8 @@ import { ChevronsUpDown } from "lucide-react";
 import { getDocumentChildrenTypeOptions } from "@/domain/entities/DocumentConfig";
 import { get } from "http";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { DrawerClose } from "@/components/ui/drawer";
 
 export function DocumentDataCardListView({
   className,
@@ -192,7 +194,10 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className={cn("w-full rounded-md bg-background", className)}
+      className={cn(
+        "w-full rounded-md bg-background max-h-[500px] md:max-h-max overflow-y-scroll md:overflow-auto",
+        className
+      )}
     >
       <div
         style={{ paddingLeft: `${depth * 1}rem` }}

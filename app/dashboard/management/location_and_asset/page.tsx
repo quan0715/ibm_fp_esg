@@ -9,9 +9,16 @@ import { DatabasePage, DocumentContext } from "./_blocks/DocumentPage";
 import { useDataQueryRoute } from "./_hooks/useQueryRoute";
 import { getAssetSibling } from "./_actions/DocumentAction";
 import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
-import { DocumentTreeMenu } from "./_blocks/DocumentNavigationMenu";
+import {
+  DocumentMenuListMobile,
+  DocumentNavigateMenuDialog,
+  DocumentTreeMenu,
+} from "./_blocks/DocumentNavigationMenu";
 import { Separator } from "@radix-ui/react-separator";
-import { DocumentTreeProvider } from "./_hooks/useDocumentContext";
+import {
+  DocumentTreeProvider,
+  useDocumentTree,
+} from "./_hooks/useDocumentContext";
 
 export default function Page() {
   const queryRoute = useDataQueryRoute();
@@ -37,10 +44,20 @@ export default function Page() {
 
   return isBlocking ? null : (
     <DocumentTreeProvider type={dbType}>
-      <div className="w-full max-h-max grid grid-cols-12 gap-2 p-1">
+      <div className="hidden md:grid w-full max-h-max grid-cols-12 gap-2 p-1">
         <div className="col-span-3">
           <DocumentTreeMenu path={""} />
         </div>
+        <div className="col-span-9">
+          <DatabasePage
+            key={dbType + queryRoute.dataId}
+            dbType={dbType}
+            selectedDocumentId={queryRoute.dataId}
+          />
+        </div>
+      </div>
+      <div className="md:grid w-full flex flex-col space-y-2">
+        <DocumentMenuListMobile />
         <div className="col-span-9">
           <DatabasePage
             key={dbType + queryRoute.dataId}

@@ -122,7 +122,7 @@ export function DocumentDataCardForm({
 
   async function onDelete() {
     try {
-      const returnIndex = await dataQueryService.deleteDocument();
+      const returnIndex = await dataQueryService.deleteDocument(data.id ?? "");
       documentTree.deleteDocument(data.id ?? "");
       queryPathService.setAssetId(returnIndex);
     } catch (e) {
@@ -150,26 +150,6 @@ export function DocumentDataCardForm({
             <DashboardCard className="shadow-sm w-full min-h-screen ">
               <DashboardCardHeader>
                 <DashboardCardHeaderContent>
-                  {/* <Breadcrumb className="p-2">
-                    <BreadcrumbList>
-                      {menu.ancestors.map((ancestor, index) => (
-                        <BreadcrumbItem key={ancestor.id}>
-                          <BreadcrumbLink
-                            href="#"
-                            onClick={() =>
-                              queryPathService.setAssetId(ancestor.id ?? "")
-                            }
-                          >
-                            {ancestor.title}
-                          </BreadcrumbLink>
-                          {index < menu.ancestors.length - 1 ? (
-                            <BreadcrumbSeparator />
-                          ) : null}
-                        </BreadcrumbItem>
-                      ))}
-                    </BreadcrumbList>
-                  </Breadcrumb> */}
-
                   <InputPropField
                     name="title"
                     isRequired={true}
@@ -211,9 +191,9 @@ export function DocumentDataCardForm({
                       isDeleting={dataQueryService.isDeletingData}
                     />
                   ) : null}
-                  <MobileOnly>
-                    <DocumentNavigateMenuDialog data={data} />
-                  </MobileOnly>
+                  {/* <MobileOnly>
+                    <DocumentNavigateMenuDialog />
+                  </MobileOnly> */}
                 </DashboardCardActionList>
               </DashboardCardHeader>
               <Separator />

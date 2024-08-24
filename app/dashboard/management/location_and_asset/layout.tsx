@@ -96,7 +96,7 @@ function TabListWidget({
   };
 
   return (
-    <div className="w-full h-fit flex flex-col flex-grow justify-start items-center bg-background">
+    <div className="w-full h-fit flex flex-col flex-grow justify-start items-center ">
       <DashboardPageHeader
         title={"基本資料"}
         subTitle={tabConfig[subPage as TabsString].title}
@@ -108,7 +108,7 @@ function TabListWidget({
         className="w-full h-full"
         onValueChange={handleTabChange}
       >
-        <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background">
+        <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background overflow-auto">
           {Object.keys(tabConfig).map((key) => {
             const tab = tabConfig[key as TabsString];
             return (

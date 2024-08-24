@@ -35,7 +35,6 @@ import { LuMenu } from "react-icons/lu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { DocumentContext } from "./DocumentPage";
-import { Separator } from "@radix-ui/react-separator";
 import {
   Collapsible,
   CollapsibleContent,
@@ -51,6 +50,15 @@ import {
 import { ChevronsUpDown } from "lucide-react";
 import { CreateNewDataButton } from "./DataCRUDTrigger";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 
 export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
   const queryRoute = useDataQueryRoute();
@@ -95,7 +103,8 @@ export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
   );
 }
 
-export function DocumentNavigateMenuDialog({ data }: { data: DocumentObject }) {
+export function DocumentNavigateMenuDialog() {
+  // const [open, setOpen] = useState(false);
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -104,19 +113,14 @@ export function DocumentNavigateMenuDialog({ data }: { data: DocumentObject }) {
         </Button>
       </DrawerTrigger>
       <DrawerContent className="p-2 ">
-        <DocumentNavigateMenu data={data} />
+        {/* <DocumentNavigateMenu data={data} /> */}
+        <DocumentTreeMenu path={""} />
       </DrawerContent>
     </Drawer>
   );
 }
 
 export function DocumentTreeMenu({ path }: { path: string }) {
-  // const groupType = useContext(DocumentContext).type;
-  // const { ancestors, sibling, isFetchingData } = useDocumentWithSearchPath(
-  //   path,
-  //   groupType
-  // );
-
   const documentTree = useDocumentTree();
 
   const queryRoute = useDataQueryRoute();
@@ -124,7 +128,7 @@ export function DocumentTreeMenu({ path }: { path: string }) {
   const rootDataList = documentTree.getPathData(path);
 
   return (
-    <div className="w-full max-h-max h-full">
+    <div className="w-full max-h-[500px] md:max-h-max md:h-full">
       {rootDataList.map((doc) => (
         <DocumentDataTreeEntryView
           data={doc}
@@ -141,6 +145,42 @@ export function DocumentTreeMenu({ path }: { path: string }) {
         }}
         label={`${getDocumentEntityUIConfig(getGroupDefaultType(documentTree.type)).label}`}
       />
+    </div>
+  );
+}
+
+export function DocumentMenuListMobile() {
+  const docTree = useDocumentTree();
+  const queryRoute = useDataQueryRoute();
+  return (
+    <div className="flex flex-row items-center justify-center bg-background p-2">
+      <Breadcrumb className="w-full">
+        <BreadcrumbList>
+          {docTree
+            .getAncestorData(
+              docTree.getDocumentData(queryRoute.dataId)?.ancestors ?? ""
+            )
+            .map((ancestor, index) => (
+              <BreadcrumbItem key={ancestor?.id ?? ""}>
+                <BreadcrumbLink
+                  href="#"
+                  onClick={() => queryRoute.setAssetId(ancestor?.id ?? "")}
+                >
+                  {ancestor?.title ?? ""}
+                </BreadcrumbLink>
+                {index <
+                docTree.getAncestorData(
+                  docTree.getDocumentData(queryRoute.dataId)?.ancestors ?? ""
+                ).length -
+                  1 ? (
+                  <BreadcrumbSeparator />
+                ) : null}
+              </BreadcrumbItem>
+            ))}
+        </BreadcrumbList>
+      </Breadcrumb>
+      <Separator orientation="vertical" className="h-8" />
+      <DocumentNavigateMenuDialog />
     </div>
   );
 }

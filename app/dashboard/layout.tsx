@@ -10,7 +10,7 @@ export default async function DashboardLayout({
   return (
     <div
       className={
-        "flex h-screen flex-col flex-grow items-start justify-start self-stretch bg-background"
+        "flex h-screen flex-col flex-grow items-start justify-start self-stretch"
       }
     >
       <AppNavBar />

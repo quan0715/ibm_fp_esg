@@ -81,6 +81,12 @@ export function useDocumentTree() {
     return Array.from(dataPath.values());
   }
 
+  function getAncestorData(ancestorPath: string) {
+    const ancestorPathList = ancestorPath.split(",");
+    // let ancestorData = [];
+    return ancestorPathList.map((ancestorId) => getDocumentData(ancestorId));
+  }
+
   function getChildrenData(parentPath: string, dataIndex: string) {
     const searchPath =
       parentPath === "" ? dataIndex : [parentPath, dataIndex].join(",");
@@ -141,6 +147,7 @@ export function useDocumentTree() {
     getPathData,
     getDocumentData,
     getChildrenData,
+    getAncestorData,
     updatePath,
     updateDocumentTree,
     updateDocument,
