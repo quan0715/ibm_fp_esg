@@ -37,12 +37,16 @@ function SearchButton({ isEmpty = false }: { isEmpty?: boolean }) {
     type: ButtonHTMLAttributes<HTMLButtonElement>["type"];
   };
   return !isEmpty ? (
-    <Button {...buttonProps}>
-      <LuSearch /> 修改關聯
+    <Button {...buttonProps} asChild>
+      <div className="flex flex-row justify-center items-center">
+        <LuSearch /> 修改關聯
+      </div>
     </Button>
   ) : (
-    <Button {...buttonProps}>
-      <LuPlus /> 添加關聯
+    <Button {...buttonProps} asChild>
+      <div className="flex flex-row justify-center items-center">
+        <LuPlus /> 添加關聯
+      </div>
     </Button>
   );
 }

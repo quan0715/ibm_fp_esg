@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from "next-auth/react";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { LuFactory } from "react-icons/lu";
 import {
@@ -31,6 +32,8 @@ import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/auth/_actions/signOutAction";
 import { Separator } from "@radix-ui/react-separator";
 import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
+import { auth } from "@/lib/auth";
+import { User } from "next-auth";
 
 type MenuContentEntryProps = {
   key: string;
@@ -144,6 +147,9 @@ export const Level1Menu: Level1MenuContentEntryProps[] = [
   },
 ];
 export function AppNavBar() {
+  // const { data: session, status } = useSession();
+  // const [user, setUser] = React.useState<User>(session?.user!);
+
   return (
     <div
       className={

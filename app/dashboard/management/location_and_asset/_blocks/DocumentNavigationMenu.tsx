@@ -26,6 +26,8 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
+  DrawerOverlay,
+  DrawerPortal,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
@@ -59,6 +61,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
   const queryRoute = useDataQueryRoute();
@@ -104,17 +107,53 @@ export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
 }
 
 export function DocumentNavigateMenuDialog() {
-  // const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState<boolean | undefined>(undefined);
+  const documentTree = useDocumentTree();
+  const rootDataList = documentTree.getPathData("");
+  const queryRoute = useDataQueryRoute();
+  const [open, setOpen] = useState<boolean | undefined>(undefined);
   return (
-    <Drawer>
+    <Drawer
+      shouldScaleBackground={false}
+      open={open}
+      onClose={() => {
+        setOpen(false);
+      }}
+    >
       <DrawerTrigger asChild>
-        <Button variant={"ghost"}>
+        <Button
+          variant={"ghost"}
+          onClick={() => {
+            setOpen(!open);
+          }}
+        >
           <LuMenu />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="p-2 ">
-        {/* <DocumentNavigateMenu data={data} /> */}
-        <DocumentTreeMenu path={""} />
+      <DrawerContent className="p-2">
+        <div className="w-full max-h-[500px]  h-[500px] md:max-h-max md:h-full">
+          {rootDataList.map((doc) => (
+            <DocumentDataTreeEntryView
+              data={doc}
+              onClick={() => {
+                queryRoute.setAssetId(doc.id!);
+              }}
+              onClose={() => setOpen(false)}
+              key={doc.id}
+            />
+          ))}
+          <CreateNewDataButton
+            // className={cn(getDocumentTypeColor(type).textColor)}
+            onClick={() => {
+              queryRoute.createNewAsset(
+                getGroupDefaultType(documentTree.type),
+                ""
+              );
+              setOpen(false);
+            }}
+            label={`${getDocumentEntityUIConfig(getGroupDefaultType(documentTree.type)).label}`}
+          />
+        </div>
       </DrawerContent>
     </Drawer>
   );
@@ -153,33 +192,35 @@ export function DocumentMenuListMobile() {
   const docTree = useDocumentTree();
   const queryRoute = useDataQueryRoute();
   return (
-    <div className="flex flex-row items-center justify-center bg-background p-2">
-      <Breadcrumb className="w-full">
+    <div className="flex flex-row items-center justify-center bg-background h-13">
+      <Breadcrumb className="w-full p-2">
         <BreadcrumbList>
+          <BreadcrumbItem key={docTree.type}>
+            <BreadcrumbLink href="#">{docTree.type}</BreadcrumbLink>
+          </BreadcrumbItem>
           {docTree
             .getAncestorData(
               docTree.getDocumentData(queryRoute.dataId)?.ancestors ?? ""
             )
             .map((ancestor, index) => (
-              <BreadcrumbItem key={ancestor?.id ?? ""}>
-                <BreadcrumbLink
-                  href="#"
-                  onClick={() => queryRoute.setAssetId(ancestor?.id ?? "")}
-                >
-                  {ancestor?.title ?? ""}
-                </BreadcrumbLink>
-                {index <
-                docTree.getAncestorData(
-                  docTree.getDocumentData(queryRoute.dataId)?.ancestors ?? ""
-                ).length -
-                  1 ? (
-                  <BreadcrumbSeparator />
-                ) : null}
-              </BreadcrumbItem>
+              <div
+                className="flex flex-row justify-center items-center"
+                key={ancestor?.id ?? ""}
+              >
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink
+                    href="#"
+                    onClick={() => queryRoute.setAssetId(ancestor?.id ?? "")}
+                  >
+                    {ancestor?.title ?? ""}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </div>
             ))}
         </BreadcrumbList>
       </Breadcrumb>
-      <Separator orientation="vertical" className="h-8" />
+      <Separator orientation="vertical" className="h-12" />
       <DocumentNavigateMenuDialog />
     </div>
   );

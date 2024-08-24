@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 
-import React, { memo, useContext, useEffect, useState } from "react";
+import React, { memo, use, useContext, useEffect, useState } from "react";
 import {
   DashboardCard,
   DashboardCardContent,
@@ -50,6 +50,15 @@ import { get } from "http";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { DrawerClose } from "@/components/ui/drawer";
+import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useAnimate,
+  usePresence,
+} from "framer-motion";
+import { trace } from "console";
 
 export function DocumentDataCardListView({
   className,
@@ -159,23 +168,24 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
   onClick,
   className,
   depth = 0,
+  onClose,
 }: {
   onClick?: () => void;
+  onClose?: () => void;
   className?: string;
   data: DocumentObject;
   depth?: number;
 }) {
   const type = data.type;
-  // const typeUIConfig = getDocumentEntityUIConfig(type);
   const tailwindColorClass = getDocumentTypeColor(type);
   const documentTree = useDocumentTree();
   const docType = documentTree.type;
   const queryPathService = useDataQueryRoute();
-  // const document = useDocumentData(data.id ?? "", docType);
   const children = documentTree.getChildrenData(
     data.ancestors ?? "",
     data.id ?? ""
   );
+  const childrenTypeOptions = getDocumentChildrenTypeOptions(type, docType);
   const targetDocument = documentTree.getDocumentData(queryPathService.dataId);
   const routePath = useDataQueryRoute();
   const [isOpen, setIsOpen] = useState(false);
@@ -184,11 +194,53 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
 
   useEffect(() => {
     setIsOpen(targetDocument?.ancestors.includes(data.id ?? "") ?? false);
-    console.log(data);
-    console.log(children);
   }, [data]);
 
   const haveChildren = getDocumentChildrenTypeOptions(type, docType).length;
+
+  const paddingStyle = { paddingLeft: `${depth * 1}rem` };
+
+  const getCollapseChildren = () => {
+    return [
+      ...children.map((child, index) => (
+        <DocumentDataTreeEntryView
+          data={child}
+          onClick={() => {
+            routePath.setAssetId(child.id!);
+            onClose?.();
+          }}
+          onClose={onClose}
+          key={child.id}
+          depth={depth + 1}
+        />
+      )),
+      ...childrenTypeOptions.map((type, index) => (
+        <div
+          key={type}
+          className={cn(
+            getDocumentTypeColor(type).hoveringColor,
+            getDocumentTypeColor(type).textHoveringColor
+          )}
+        >
+          <div style={paddingStyle}>
+            <CreateNewDataButton
+              className={cn("text-gray-500 hover:bg-transparent")}
+              onClick={async () => {
+                queryPathService.createNewAsset(
+                  type,
+                  data.ancestors.length > 0
+                    ? data.ancestors + "," + data.id
+                    : data.id ?? ""
+                );
+                onClose?.();
+              }}
+              label={`${getDocumentEntityUIConfig(type).label}`}
+            />
+          </div>
+        </div>
+      )),
+    ];
+  };
 
   return (
     <Collapsible
@@ -200,10 +252,10 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
       )}
     >
       <div
-        style={{ paddingLeft: `${depth * 1}rem` }}
-        className={cn(tailwindColorClass.hoveringColor)}
+        style={paddingStyle}
+        className={cn(tailwindColorClass.hoveringColor, "h-fit")}
       >
-        <DashboardCard className="bg-transparent w-full flex flex-row items-center py-1 px-1 group">
+        <DashboardCard className="h-fit bg-transparent w-full flex flex-row items-center py-1 px-1 group">
           <CollapsibleTrigger className="bg-transparent" asChild>
             <div
               className={cn(
@@ -213,77 +265,47 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
                 "group-hover:cursor-pointer group-hover:opacity-100"
               )}
             >
-              {isOpen ? <LuChevronDown /> : <LuChevronRight />}
+              <motion.div
+                initial={false}
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <LuChevronRight />
+              </motion.div>
+              {/* {isOpen ? <LuChevronDown /> : <LuChevronRight />} */}
             </div>
           </CollapsibleTrigger>
-          <div
-            className={cn(
-              "flex-1 flex flex-row justify-start items-center space-x-1"
-            )}
-          >
-            <div
-              className={cn(
-                "w-[6px] h-[6px] rounded-full",
-                tailwindColorClass.leadingColor
-              )}
-            />
-            <h1
-              className={cn(
-                "w-full font-semibold text-sm",
-                isSelected ? tailwindColorClass.textColor : ""
-              )}
-            >
-              {data.title}
-            </h1>
-            <Button
-              type="button"
-              className={cn(
-                "w-9 h-9 rounded-md",
-                "invisible group-hover:visible",
-                "hover:bg-background hover:cursor-pointer"
-              )}
-              onClick={onClick}
-              size={"icon"}
-              variant={"outline"}
-            >
-              <LuArrowRight className={tailwindColorClass.textColor} />
-            </Button>
-          </div>
+          <DocumentTreeNode
+            data={data}
+            isSelected={isSelected}
+            onClick={() => {
+              routePath.setAssetId(data.id!);
+              onClose?.();
+            }}
+          />
         </DashboardCard>
       </div>
       <Separator className="w-full" />
-      <CollapsibleContent className="w-full ">
-        {children.map((child) => (
-          <DocumentDataTreeEntryView
-            data={child}
-            onClick={() => routePath.setAssetId(child.id!)}
-            key={child.id}
-            depth={depth + 1}
-          />
-        ))}
-        {getDocumentChildrenTypeOptions(type, docType).map((type) => (
-          <div
-            key={type}
-            className={cn(
-              getDocumentTypeColor(type).hoveringColor,
-              getDocumentTypeColor(type).textHoveringColor
-            )}
+      <CollapsibleContent className="w-full">
+        {getCollapseChildren().map((child, index) => (
+          <motion.div
+            key={child.key}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            custom={index}
+            variants={{
+              initial: { opacity: 0, y: -20 },
+              animate: (index) => ({
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.3, delay: index * 0.03 },
+              }),
+              exit: { opacity: 0, y: 20 },
+            }}
           >
-            <div style={{ paddingLeft: `${depth * 1.5}rem` }}>
-              <CreateNewDataButton
-                className={cn("text-gray-500 hover:bg-transparent")}
-                onClick={async () => {
-                  queryPathService.createNewAsset(
-                    type,
-                    data.ancestors.length > 0
-                      ? data.ancestors + "," + data.id
-                      : data.id ?? ""
-                  );
-                }}
-                label={`${getDocumentEntityUIConfig(type).label}`}
-              />
-            </div>
-          </div>
+            {child}
+          </motion.div>
         ))}
       </CollapsibleContent>
     </Collapsible>
@@ -349,6 +371,61 @@ export const DocumentReferencePropertyView = memo(function DashboardColumnMin({
           {getModeIcon()}
         </Button>
       </DashboardCard>
+    </div>
+  );
+});
+
+export const DocumentTreeNode = memo(function DocumentTreeNode({
+  data,
+  isSelected,
+  onClick,
+}: {
+  isSelected: boolean;
+  onClick: () => void;
+  data: DocumentObject;
+}) {
+  const color = getDocumentTypeColor(data.type);
+  const chipRef = React.useRef<HTMLDivElement>(null);
+
+  return (
+    <div
+      onClick={onClick}
+      ref={chipRef}
+      className={cn(
+        "flex-1 flex flex-row justify-start items-center space-x-1",
+        "hover:cursor-pointer"
+      )}
+    >
+      {/* <div className={cn("w-[6px] h-[6px] rounded-full", color.leadingColor)} /> */}
+      <div className="w-full flex flex-row justify-start items-center relative">
+        <DashboardLabelChip
+          title={getDocumentEntityUIConfig(data.type).label}
+          color={getDocumentEntityUIConfig(data.type).color}
+        />
+        <h1
+          className={cn(
+            "pl-2 font-semibold text-sm",
+            isSelected ? color.textColor : ""
+          )}
+        >
+          {data.title}
+        </h1>
+
+        <Button
+          type="button"
+          className={cn(
+            "absolute",
+            "right-1 w-9 h-9 rounded-md",
+            "invisible group-hover:visible",
+            "hover:bg-background hover:cursor-pointer"
+          )}
+          onClick={onClick}
+          size={"icon"}
+          variant={"outline"}
+        >
+          <LuArrowRight className={color.textColor} />
+        </Button>
+      </div>
     </div>
   );
 });

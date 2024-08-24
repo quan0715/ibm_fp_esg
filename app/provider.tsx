@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { ThemeProvider as NextThemeProvider } from "next-themes";
+import { SessionProvider } from "next-auth/react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -10,7 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
+      <SessionProvider>{children}</SessionProvider>
     </NextThemeProvider>
   );
 }

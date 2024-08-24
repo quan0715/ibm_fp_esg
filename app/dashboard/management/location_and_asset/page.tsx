@@ -19,6 +19,7 @@ import {
   DocumentTreeProvider,
   useDocumentTree,
 } from "./_hooks/useDocumentContext";
+import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
 
 export default function Page() {
   const queryRoute = useDataQueryRoute();
@@ -44,28 +45,34 @@ export default function Page() {
 
   return isBlocking ? null : (
     <DocumentTreeProvider type={dbType}>
-      <div className="hidden md:grid w-full max-h-max grid-cols-12 gap-2 p-1">
-        <div className="col-span-3">
-          <DocumentTreeMenu path={""} />
+      <DesktopOnly>
+        <div className="hidden md:grid w-full max-h-max grid-cols-12 gap-2 p-1">
+          <div className="col-span-3">
+            <DocumentTreeMenu path={""} />
+          </div>
+          <div className="col-span-9">
+            <DatabasePage
+              key={dbType + queryRoute.dataId}
+              dbType={dbType}
+              selectedDocumentId={queryRoute.dataId}
+            />
+          </div>
         </div>
-        <div className="col-span-9">
-          <DatabasePage
-            key={dbType + queryRoute.dataId}
-            dbType={dbType}
-            selectedDocumentId={queryRoute.dataId}
-          />
+      </DesktopOnly>
+      <MobileOnly>
+        <div className="w-full flex flex-col space-y-1 ">
+          <DocumentMenuListMobile />
+          <Separator />
+
+          <div className="col-span-9">
+            <DatabasePage
+              key={dbType + queryRoute.dataId}
+              dbType={dbType}
+              selectedDocumentId={queryRoute.dataId}
+            />
+          </div>
         </div>
-      </div>
-      <div className="md:grid w-full flex flex-col space-y-2">
-        <DocumentMenuListMobile />
-        <div className="col-span-9">
-          <DatabasePage
-            key={dbType + queryRoute.dataId}
-            dbType={dbType}
-            selectedDocumentId={queryRoute.dataId}
-          />
-        </div>
-      </div>
+      </MobileOnly>
     </DocumentTreeProvider>
   );
 }

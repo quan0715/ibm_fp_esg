@@ -108,7 +108,7 @@ function TabListWidget({
         className="w-full h-full"
         onValueChange={handleTabChange}
       >
-        <TabsList className="flex w-full py-4 px-6 justify-start items-center bg-background overflow-auto">
+        <TabsList className="flex w-full p-2 justify-start items-center bg-background h-fit overflow-x-auto">
           {Object.keys(tabConfig).map((key) => {
             const tab = tabConfig[key as TabsString];
             return (
