@@ -7,16 +7,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useDataQueryRoute } from "./_hooks/useQueryRoute";
 import { useRootData } from "./_hooks/useDocument";
 import { getDocumentGroupTypeFromString } from "@/domain/entities/Document";
-import { getAssetSibling } from "./_actions/DocumentAction";
-// import {
-//   Menubar,
-//   MenubarContent,
-//   MenubarItem,
-//   MenubarMenu,
-//   MenubarSeparator,
-//   MenubarShortcut,
-//   MenubarTrigger,
-// } from "@/components/ui/menubar"
 
 type TabsString = "Location" | "Asset" | "Meter" | "GHG" | "MeterReading";
 
@@ -26,15 +16,7 @@ interface TabConfig {
   // content: ReactNode;
 }
 
-export default function Layout({
-  children,
-  // asset,
-  // location,
-}: {
-  children: React.ReactNode;
-  // asset: React.ReactNode;
-  // location: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const tabConfig: Record<TabsString, TabConfig> = {
     Location: {
       index: "Location",
@@ -111,7 +93,7 @@ function TabListWidget({
         subTitle={tabConfig[subPage as TabsString].title}
       />
       <Separator />
-      <Tabs
+      {/* <Tabs
         value={subPage}
         defaultValue={subPage}
         className="w-full h-full"
@@ -129,7 +111,8 @@ function TabListWidget({
         </TabsList>
         <Separator />
         <div className="w-full h-full bg-secondary">{children}</div>
-      </Tabs>
+      </Tabs> */}
+      <div className="w-full h-full bg-secondary">{children}</div>
     </div>
   );
 }

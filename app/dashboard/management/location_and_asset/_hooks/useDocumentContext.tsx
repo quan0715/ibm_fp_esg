@@ -12,12 +12,14 @@ type DocumentTree = Map<string, Map<string, DocumentObject>>;
 interface DocumentContextType {
   type: DocumentGroupType;
   documents: DocumentTree;
+  isInit: boolean;
   setDocuments: React.Dispatch<React.SetStateAction<DocumentTree>>;
 }
 
 export const DocumentContext = createContext<DocumentContextType>({
   type: DocumentGroupType.Unknown,
   documents: {} as DocumentTree,
+  isInit: false,
   setDocuments: () => {},
 });
 
@@ -34,13 +36,9 @@ export function DocumentTreeProvider({
 
   const { isFetchingData, documentList } = useDocumentReference(type);
   const initPath = "";
-  //   const { ancestors, sibling, isFetchingData } = useDocumentWithSearchPath(
-  //     initPath,
-  //     type
-  //   );
 
   useEffect(() => {
-    console.log("DocumentTreeProvider init");
+    console.log("DocumentTreeProvider init", type);
     if (isFetchingData) return;
     if (documentList) {
       console.log("DocumentTreeProvider init", documentList);
@@ -55,10 +53,12 @@ export function DocumentTreeProvider({
       console.log("DocumentTreeProvider init", pathMap);
       setDocuments(pathMap);
     }
-  }, [isFetchingData, documentList]);
+  }, [documentList, isFetchingData, type]);
 
   return (
-    <DocumentContext.Provider value={{ type, documents, setDocuments }}>
+    <DocumentContext.Provider
+      value={{ type, documents, setDocuments, isInit: isFetchingData }}
+    >
       {children}
     </DocumentContext.Provider>
   );
@@ -146,6 +146,7 @@ export function useDocumentTree() {
   return {
     type: context.type,
     documents: context.documents,
+    isInit: context.isInit,
     getPathData,
     getDocumentData,
     getChildrenData,

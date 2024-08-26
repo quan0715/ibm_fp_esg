@@ -1,5 +1,4 @@
 "use client";
-import { useSession } from "next-auth/react";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { LuFactory } from "react-icons/lu";
 import {
