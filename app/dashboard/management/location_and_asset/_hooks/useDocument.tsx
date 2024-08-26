@@ -168,7 +168,7 @@ export function useDocumentReference(group: DocumentGroupType) {
     getReferenceDocuments();
   }, [group]);
 
-  const getReferenceDocuments = useCallback(async () => {
+  const getReferenceDocuments = async () => {
     startGetData(async () => {
       // messageLog("fetching data");
       // delay for 1 second
@@ -191,7 +191,7 @@ export function useDocumentReference(group: DocumentGroupType) {
         console.error("presentation: fetchData error", e);
       }
     });
-  }, [group]);
+  };
 
   return {
     documentList,

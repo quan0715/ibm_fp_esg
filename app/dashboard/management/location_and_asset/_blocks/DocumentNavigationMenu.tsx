@@ -168,7 +168,11 @@ export function DocumentTreeMenu({ path }: { path: string }) {
   const defaultType = getGroupDefaultType(documentTree.type);
   const color = getDocumentTypeColor(defaultType);
 
-  return (
+  return documentTree.isInit ? (
+    <Skeleton className="w-full flex flex-col items-center justify-center h-screen bg-background">
+      <LoadingWidget />
+    </Skeleton>
+  ) : (
     <div>
       {rootDataList.map((doc) => (
         <DocumentDataTreeEntryView

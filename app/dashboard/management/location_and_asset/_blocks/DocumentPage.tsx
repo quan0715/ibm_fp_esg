@@ -1,10 +1,10 @@
 "use client";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DocumentGroupType } from "@/domain/entities/Document";
+import { DocumentGroupType, DocumentObject } from "@/domain/entities/Document";
 import { DocumentDataCardForm } from "../_blocks/DocumentDataCard";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
@@ -43,30 +43,36 @@ export function DatabasePage({
 
   // useEffect(() => {
   //   console.log("DatabasePage init", selectedDocumentId, isCreateMode);
+  //   if (documentTree.isInit) {
+  //     return;
+  //   }
   //   if (selectedDocumentId === "" && !isCreateMode) {
   //     let rootData = documentTree.getPathData("");
-  //     if (!documentTree.isInit) {
-  //       if (rootData.length > 0) {
-  //         queryRoute.setAssetId(rootData[0].id!, queryRoute.page);
-  //       } else {
-  //         queryRoute.createNewAsset(getGroupDefaultType(documentTree.type), "");
-  //       }
+  //     if (rootData.length > 0) {
+  //       queryRoute.setAssetId(rootData[0].id!, queryRoute.page);
+  //     } else {
+  //       queryRoute.createNewAsset(getGroupDefaultType(documentTree.type), "");
   //     }
   //     return;
   //   }
+  //   setData(
+  //     isCreateMode
+  //       ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
+  //       : document
+  //   );
   // }, [selectedDocumentId, isCreateMode, documentTree.isInit]);
-
   const data = isCreateMode
     ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
     : document;
-
   return (
     <div className="w-full h-full min-h-screen flex flex-col justify-start items-start space-y-2">
-      {!data ? (
+      {documentTree.isInit ? (
         <SuspenseWidget />
+      ) : !data ? (
+        <ErrorWidget message="找不到資料" />
       ) : (
         <DocumentDataCardForm
-          key={isDisplayMode ? "display data" : "create new data"}
+          key={isDisplayMode ? "display data" : "create new data" + data.id}
           data={data!}
         />
       )}
