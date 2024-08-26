@@ -43,6 +43,8 @@ enum DocumentGroupType {
   MeterReading = "MeterReading",
 }
 
+type DocumentGroupTypeString = keyof typeof DocumentGroupType;
+
 function getDocumentGroupTypeFromString(type: string): DocumentGroupType {
   if (!Object.keys(DocumentGroupType).includes(type)) {
     return DocumentGroupType.Unknown;
@@ -50,7 +52,12 @@ function getDocumentGroupTypeFromString(type: string): DocumentGroupType {
   return DocumentGroupType[type as keyof typeof DocumentGroupType];
 }
 
-export type { DocumentObject, Property, DocumentTypeString };
+export type {
+  DocumentObject,
+  Property,
+  DocumentTypeString,
+  DocumentGroupTypeString,
+};
 
 export {
   DocumentGroupType,

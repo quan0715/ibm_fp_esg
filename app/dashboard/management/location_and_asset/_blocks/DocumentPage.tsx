@@ -41,42 +41,21 @@ export function DatabasePage({
   const isCreateMode = queryRoute.mode === "create";
   const documentTree = useDocumentTree();
   const document = documentTree.getDocumentData(selectedDocumentId);
-  // let dateQueryService = useDocumentData(dataId, documentTree.documents);
-
-  // const isError = dateQueryService.errorMessage !== "";
 
   const data = isCreateMode
     ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
     : document;
 
-  // const isBlocking =
-  //   dateQueryService.isFetchingData ||
-  //   (isDisplayMode && dateQueryService.document === undefined);
-
   return (
-    <div className="w-full h-fit flex flex-col justify-start items-start space-y-2">
-      <div className="w-full min-h-screen grid grid-cols-4 gap-4">
-        {/* <div className="col-span-1 hidden md:block">
-            {isError ? (
-              <ErrorWidget message={dateQueryService.errorMessage} />
-            ) : isBlocking ? (
-              <SuspenseWidget />
-            ) : (
-              <DocumentNavigateMenu data={data!} />
-            )}
-          </div> */}
-        <div className="col-span-4 md:col-span-4">
-          {!data ? (
-            <SuspenseWidget />
-          ) : (
-            <DocumentDataCardForm
-              key={isDisplayMode ? "display data" : "create new data"}
-              // groupType={dbType}
-              data={data!}
-            />
-          )}
-        </div>
-      </div>
+    <div className="w-full h-full min-h-screen flex flex-col justify-start items-start space-y-2">
+      {!data ? (
+        <SuspenseWidget />
+      ) : (
+        <DocumentDataCardForm
+          key={isDisplayMode ? "display data" : "create new data"}
+          data={data!}
+        />
+      )}
     </div>
   );
 }

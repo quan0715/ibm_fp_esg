@@ -153,6 +153,7 @@ export function DocumentDataCardForm({
 
   return (
     <motion.div
+      className="w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1, ease: "easeInOut" }}
