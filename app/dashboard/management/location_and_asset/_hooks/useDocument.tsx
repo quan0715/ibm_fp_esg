@@ -61,90 +61,6 @@ export function useDocumentData(documentId: string, group: DocumentGroupType) {
   const [isDeletingData, setDeletingDataState] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // useEffect(() => {
-  //   messageLog("useDocumentData", documentId, group);
-  //   // setDocumentId(dataId);
-  //   if (documentId !== "") {
-  //     setErrorMessage("");
-  //     messageLog(`fetching data ${documentId ?? "None"}`);
-  //     fetchData();
-  //   }
-  // }, [documentId, group]);
-
-  // useEffect(() => {
-  //   if (document && documentId != "") {
-  //     fetchChildren();
-  //   }
-  // }, [document, documentId]);
-
-  // async function fetchAndCache(docId: string) {
-  //   let data: DocumentObject | null = null;
-  //   try {
-  //     data = await getDocumentDataWithId(docId, group);
-  //   } catch (e) {
-  //     messageLog("fetchAndCache error", e);
-  //   }
-  //   if (data === null) {
-  //     messageLog("fetchAndCache : data is null");
-  //     return Promise.reject("Data not found");
-  //   }
-  //   documentSearchPathCache.setAsset(data.ancestors, group, data.id!, data);
-  // }
-
-  // const fetchData = useCallback(async () => {
-  //   startGetData(async () => {
-  //     setErrorMessage("");
-  //     // messageLog("fetching data");
-  //     messageLog("fetching data", documentId, group);
-  //     let isCached = documentSearchPathCache.hasAsset(documentId);
-  //     let data: DocumentObject;
-  //     try {
-  //       if (!isCached) {
-  //         console.log("data is not cached");
-  //         await fetchAndCache(documentId);
-  //       }
-  //       data = documentSearchPathCache.getAsset(documentId)!;
-  //       // data = await getDocumentDataWithId(documentId, group);
-  //       messageLog("fetchData : data", data);
-  //       setDocument(data);
-  //     } catch (e) {
-  //       messageLog("presentation: fetchData error", e);
-  //       setErrorMessage("Data Fetching Error With Id: " + documentId);
-  //     }
-  //   });
-  // }, [documentId, fetchAndCache, group]);
-
-  // const fetchChildren = useCallback(async () => {
-  //   startFetchChildren(async () => {
-  //     let childrenData: DocumentObject[] = [];
-  //     let ancestor = document?.ancestors ?? "";
-  //     let childrenPath =
-  //       ancestor.length > 0
-  //         ? [document?.ancestors, document?.id].join(",")
-  //         : document?.id ?? "";
-  //     let isCached = documentSearchPathCache.hasPath(childrenPath, group);
-
-  //     if (isCached) {
-  //       messageLog("children data is cached");
-  //       childrenData = Array.from(
-  //         documentSearchPathCache.getPath(childrenPath, group)!
-  //       ).map(([key, value]) => value);
-  //     } else {
-  //       messageLog("children data is not cached");
-  //       childrenData = await getDocumentChildren(ancestor, documentId, group);
-  //       documentSearchPathCache.setPath(
-  //         childrenPath,
-  //         group,
-  //         new Map(childrenData.map((child) => [child.id!, child]))
-  //       );
-  //     }
-  //     // childrenData = await getDocumentChildren(ancestor, documentId, group);
-  //     messageLog("fetching children: data", childrenData);
-
-  //     setChildren(childrenData);
-  //   });
-  // }, [document]);
-
   async function updateDocument(data: DocumentObject) {
     setUpdatingDataState(true);
     try {
@@ -192,15 +108,12 @@ export function useDocumentData(documentId: string, group: DocumentGroupType) {
     setDeletingDataState(true);
     let returnIndex = "";
     try {
-      returnIndex = await deleteData(documentId, group);
-      documentSearchPathCache.deleteAsset(documentId);
-      documentMenuDataCache.deleteAsset(documentId);
+      await deleteData(documentId, group);
       console.log("return result", returnIndex);
     } catch (e) {
       console.error("presentation: deleteData error", e);
     }
     setDeletingDataState(false);
-    return returnIndex;
   }
 
   const getDefaultData = useCallback(async () => {

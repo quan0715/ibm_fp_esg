@@ -75,7 +75,7 @@ export function DocumentDataCardForm({
 
   const dataQueryService = useDocumentData(data.id ?? "", dbType);
   // const menu = useDocumentWithSearchPath(data.ancestors, dbType.type);
-  const children = dataQueryService.children;
+  const children = documentTree.getChildrenData(data.ancestors, data.id ?? "");
 
   const colorTheme = getDocumentTypeColor(
     data.type ?? DocumentObjectType.unknown
@@ -122,9 +122,22 @@ export function DocumentDataCardForm({
 
   async function onDelete() {
     try {
-      const returnIndex = await dataQueryService.deleteDocument(data.id ?? "");
+      await dataQueryService.deleteDocument(data.id ?? "");
+      let path = documentTree.getPathData(data.ancestors);
+      let index = path.findIndex((doc) => doc.id === data.id);
+      if (!index || index === 0) {
+        // backToParent
+        let ancestor: DocumentObject[] =
+          documentTree.getAncestorData(data.ancestors) ?? [];
+        if (ancestor !== undefined && ancestor.length > 0) {
+          queryPathService.setAssetId(ancestor[ancestor.length - 1].id ?? "");
+        } else {
+          queryPathService.moveBack();
+        }
+      } else {
+        queryPathService.setAssetId(path[index - 1].id ?? "");
+      }
       documentTree.deleteDocument(data.id ?? "");
-      queryPathService.setAssetId(returnIndex);
     } catch (e) {
       console.error("presentation: deleteData error", e);
     }

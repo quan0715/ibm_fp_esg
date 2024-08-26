@@ -63,48 +63,48 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { DialogClose } from "@radix-ui/react-dialog";
 
-export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
-  const queryRoute = useDataQueryRoute();
-  const isCreateMode = queryRoute.mode === "create";
-  const dbConfig = useContext(DocumentContext);
-  const { isFetchingData, ancestors, sibling } = useDocumentWithSearchPath(
-    isCreateMode ? queryRoute.ancestors : data.ancestors ?? "",
-    getDocumentGroupTypeFromString(dbConfig.type)
-  );
-  const layerRule = getDocumentLayerRules(data.type);
-  const siblingTypeOptions = getDocumentChildrenTypeOptions(
-    layerRule.parentType,
-    layerRule.group
-  );
+// export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
+//   const queryRoute = useDataQueryRoute();
+//   const isCreateMode = queryRoute.mode === "create";
+//   const dbConfig = useContext(DocumentContext);
+//   const { isFetchingData, ancestors, sibling } = useDocumentWithSearchPath(
+//     isCreateMode ? queryRoute.ancestors : data.ancestors ?? "",
+//     getDocumentGroupTypeFromString(dbConfig.type)
+//   );
+//   const layerRule = getDocumentLayerRules(data.type);
+//   const siblingTypeOptions = getDocumentChildrenTypeOptions(
+//     layerRule.parentType,
+//     layerRule.group
+//   );
 
-  return isFetchingData ? (
-    <Skeleton className="bg-background w-full h-full flex flex-col justify-center items-center space-y-2">
-      <LoadingWidget />
-    </Skeleton>
-  ) : (
-    <div className="md:flex w-full flex-col justify-start items-center space-y-2 overflow-auto">
-      {ancestors.length > 0 ? (
-        <DocumentDataTreeEntryView
-          data={ancestors[0]}
-          onClick={() => queryRoute.setAssetId(ancestors[0].id!)} // adjust this if ancestors should be selectable
-          key={ancestors[0].id}
-        />
-      ) : null}
-      <div className="w-full flex flex-row items-start justify-start space-x-1">
-        <div className="flex-1 flex flex-col items-center justify-center space-y-2">
-          {siblingTypeOptions.map((type) => (
-            <DocumentDataCardListView
-              key={type}
-              type={type}
-              searchPath={data.ancestors ?? ""}
-              documents={sibling.filter((data) => data.type === type)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+//   return isFetchingData ? (
+//     <Skeleton className="bg-background w-full h-full flex flex-col justify-center items-center space-y-2">
+//       <LoadingWidget />
+//     </Skeleton>
+//   ) : (
+//     <div className="md:flex w-full flex-col justify-start items-center space-y-2 overflow-auto">
+//       {ancestors.length > 0 ? (
+//         <DocumentDataTreeEntryView
+//           data={ancestors[0]}
+//           onClick={() => queryRoute.setAssetId(ancestors[0].id!)} // adjust this if ancestors should be selectable
+//           key={ancestors[0].id}
+//         />
+//       ) : null}
+//       <div className="w-full flex flex-row items-start justify-start space-x-1">
+//         <div className="flex-1 flex flex-col items-center justify-center space-y-2">
+//           {siblingTypeOptions.map((type) => (
+//             <DocumentDataCardListView
+//               key={type}
+//               type={type}
+//               searchPath={data.ancestors ?? ""}
+//               documents={sibling.filter((data) => data.type === type)}
+//             />
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 export function DocumentNavigateMenuDialog() {
   // const [open, setOpen] = useState<boolean | undefined>(undefined);
@@ -165,9 +165,11 @@ export function DocumentTreeMenu({ path }: { path: string }) {
   const queryRoute = useDataQueryRoute();
 
   const rootDataList = documentTree.getPathData(path);
+  const defaultType = getGroupDefaultType(documentTree.type);
+  const color = getDocumentTypeColor(defaultType);
 
   return (
-    <div className="w-full max-h-[500px] md:max-h-max md:h-full">
+    <div>
       {rootDataList.map((doc) => (
         <DocumentDataTreeEntryView
           data={doc}
@@ -177,13 +179,21 @@ export function DocumentTreeMenu({ path }: { path: string }) {
           key={doc.id}
         />
       ))}
-      <CreateNewDataButton
-        // className={cn(getDocumentTypeColor(type).textColor)}
-        onClick={async () => {
-          queryRoute.createNewAsset(getGroupDefaultType(documentTree.type), "");
-        }}
-        label={`${getDocumentEntityUIConfig(getGroupDefaultType(documentTree.type)).label}`}
-      />
+      <Separator />
+      <div
+        className={cn(color.hoveringColor, "w-full bg-background rounded-md")}
+      >
+        <CreateNewDataButton
+          className={cn("h-fit", "text-gray-500", "hover:bg-transparent")}
+          onClick={async () => {
+            queryRoute.createNewAsset(
+              getGroupDefaultType(documentTree.type),
+              ""
+            );
+          }}
+          label={`${getDocumentEntityUIConfig(getGroupDefaultType(documentTree.type)).label}`}
+        />
+      </div>
     </div>
   );
 }

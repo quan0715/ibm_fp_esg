@@ -81,10 +81,12 @@ export function useDocumentTree() {
     return Array.from(dataPath.values());
   }
 
-  function getAncestorData(ancestorPath: string) {
+  function getAncestorData(ancestorPath: string): DocumentObject[] {
     const ancestorPathList = ancestorPath.split(",");
     // let ancestorData = [];
-    return ancestorPathList.map((ancestorId) => getDocumentData(ancestorId));
+    return ancestorPathList
+      .map((ancestorId) => getDocumentData(ancestorId))
+      .filter((doc) => doc !== undefined) as DocumentObject[];
   }
 
   function getChildrenData(parentPath: string, dataIndex: string) {

@@ -5,8 +5,6 @@ import { DocumentGroupType } from "@/domain/entities/Document";
 import { DocumentDataCardForm } from "../_blocks/DocumentDataCard";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 import { createContext } from "react";
-import { useDocumentData } from "../_hooks/useDocument";
-import { DocumentNavigateMenu } from "../_blocks/DocumentNavigationMenu";
 import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
@@ -39,7 +37,6 @@ export function DatabasePage({
   selectedDocumentId?: string;
 }) {
   const queryRoute = useDataQueryRoute();
-  const dataId = queryRoute.dataId;
   const isDisplayMode = queryRoute.mode === "display";
   const isCreateMode = queryRoute.mode === "create";
   const documentTree = useDocumentTree();
@@ -51,8 +48,6 @@ export function DatabasePage({
   const data = isCreateMode
     ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
     : document;
-
-  console.log("data", data);
 
   // const isBlocking =
   //   dateQueryService.isFetchingData ||

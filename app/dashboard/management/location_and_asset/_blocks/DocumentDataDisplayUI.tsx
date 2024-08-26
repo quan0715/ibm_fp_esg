@@ -222,7 +222,7 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
             getDocumentTypeColor(type).textHoveringColor
           )}
         >
-          <div style={paddingStyle}>
+          <div style={{ paddingLeft: `${depth + 2.5}rem` }}>
             <CreateNewDataButton
               className={cn("text-gray-500 hover:bg-transparent")}
               onClick={async () => {
@@ -280,6 +280,7 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
             isSelected={isSelected}
             onClick={() => {
               routePath.setAssetId(data.id!);
+              setIsOpen(!isOpen);
               onClose?.();
             }}
           />

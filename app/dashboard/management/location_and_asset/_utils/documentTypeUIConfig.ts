@@ -39,13 +39,13 @@ export function getDocumentEntityUIConfig(
     case DocumentObjectType.tool:
       return { color: "blue", label: "資產" };
     case DocumentObjectType.meter:
-      return { color: "stone", label: "Meter" };
+      return { color: "orange", label: "Meter" };
     case DocumentObjectType.ghg:
       return { color: "green", label: "GHG" };
     case DocumentObjectType.unknown:
       return { color: "stone", label: "Unknown" };
     case DocumentObjectType.meterReading:
-      return { color: "stone", label: "Meter Reading" };
+      return { color: "green", label: "Meter Reading" };
   }
 }
 

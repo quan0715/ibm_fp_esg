@@ -4,6 +4,11 @@ import {
   DocumentTypeString,
 } from "./Document";
 
+type DocumentGroupRule = {
+  group: DocumentGroupType;
+  childGroups: DocumentGroupType[];
+};
+
 type Rule = {
   group: DocumentGroupType;
   parentType: DocumentObjectType;

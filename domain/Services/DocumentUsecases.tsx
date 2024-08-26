@@ -87,7 +87,7 @@ export class DocumentUseCase {
     return remoteData;
   }
 
-  async deleteDocument(id: string): Promise<string> {
+  async deleteDocument(id: string): Promise<void> {
     if (id === "") {
       throw new Error("Asset Id is required");
     }
@@ -101,15 +101,15 @@ export class DocumentUseCase {
 
     await this.repository.deleteDocument(id);
 
-    const siblings = await this.getSibling(data.ancestors);
+    // const siblings = await this.getSibling(data.ancestors);
 
-    if (siblings.length > 0) {
-      return siblings[0].id!;
-    } else if (data.ancestors.split(",").length > 0) {
-      return data.ancestors.split(",")[data.ancestors.split(",").length - 1];
-    } else {
-      return "";
-    }
+    // if (siblings.length > 0) {
+    //   return siblings[0].id!;
+    // } else if (data.ancestors.split(",").length > 0) {
+    //   return data.ancestors.split(",")[data.ancestors.split(",").length - 1];
+    // } else {
+    //   return "";
+    // }
   }
 
   async updateDocument(data: DocumentObject): Promise<string> {

@@ -8,6 +8,15 @@ import { useDataQueryRoute } from "./_hooks/useQueryRoute";
 import { useRootData } from "./_hooks/useDocument";
 import { getDocumentGroupTypeFromString } from "@/domain/entities/Document";
 import { getAssetSibling } from "./_actions/DocumentAction";
+// import {
+//   Menubar,
+//   MenubarContent,
+//   MenubarItem,
+//   MenubarMenu,
+//   MenubarSeparator,
+//   MenubarShortcut,
+//   MenubarTrigger,
+// } from "@/components/ui/menubar"
 
 type TabsString = "Location" | "Asset" | "Meter" | "GHG" | "MeterReading";
 
@@ -84,14 +93,14 @@ function TabListWidget({
     }
   }, [searchParams]);
 
-  const handleTabChange = async (value: string) => {
+  const handleTabChange = (value: string) => {
     if (value === subPage) return;
     const newSearchParams = new URLSearchParams();
     newSearchParams.set("page", value);
     newSearchParams.set("data", "");
     newSearchParams.set("mode", "display");
     console.log("change page", value);
-    // router.prefetch("?" + newSearchParams.toString());
+    router.prefetch("?" + newSearchParams.toString());
     router.push("?" + newSearchParams.toString());
   };
 
