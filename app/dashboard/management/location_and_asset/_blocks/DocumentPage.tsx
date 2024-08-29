@@ -1,14 +1,19 @@
 "use client";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DocumentGroupType, DocumentObject } from "@/domain/entities/Document";
+import {
+  DocumentGroupType,
+  DocumentObject,
+  DocumentObjectTemplate,
+} from "@/domain/entities/Document";
 import { DocumentDataCardForm } from "../_blocks/DocumentDataCard";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { createContext, useEffect, useState } from "react";
+import { createContext, use, useEffect, useState, useTransition } from "react";
 import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
 import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
+import { getDocumentTemplate } from "../_actions/DocumentAction";
 
 function SuspenseWidget() {
   return (
@@ -26,10 +31,6 @@ function ErrorWidget({ message }: { message: string }) {
   );
 }
 
-export const DocumentContext = createContext({
-  type: DocumentGroupType.Asset,
-});
-
 export function DatabasePage({
   selectedDocumentId = "",
 }: {
@@ -39,41 +40,43 @@ export function DatabasePage({
   const isDisplayMode = queryRoute.mode === "display";
   const isCreateMode = queryRoute.mode === "create";
   const documentTree = useDocumentTree();
+  const [isLoadingTemplate, startLoadingTemplate] = useTransition();
   const document = documentTree.getDocumentData(selectedDocumentId);
+  const [documentTemplate, setDocumentTemplate] =
+    useState<DocumentObjectTemplate>();
 
-  // useEffect(() => {
-  //   console.log("DatabasePage init", selectedDocumentId, isCreateMode);
-  //   if (documentTree.isInit) {
-  //     return;
-  //   }
-  //   if (selectedDocumentId === "" && !isCreateMode) {
-  //     let rootData = documentTree.getPathData("");
-  //     if (rootData.length > 0) {
-  //       queryRoute.setAssetId(rootData[0].id!, queryRoute.page);
-  //     } else {
-  //       queryRoute.createNewAsset(getGroupDefaultType(documentTree.type), "");
-  //     }
-  //     return;
-  //   }
-  //   setData(
-  //     isCreateMode
-  //       ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
-  //       : document
-  //   );
-  // }, [selectedDocumentId, isCreateMode, documentTree.isInit]);
-  const data = isCreateMode
-    ? createNewDocument(queryRoute.dataType, queryRoute.ancestors ?? "")
-    : document;
+  useEffect(() => {
+    startLoadingTemplate(async () => {
+      const documentTemplate = await getDocumentTemplate(documentTree.type);
+      console.log("documentTemplate", documentTemplate);
+      setDocumentTemplate(documentTemplate);
+    });
+  }, [documentTree.type]);
+
   return (
     <div className="w-full h-full min-h-screen flex flex-col justify-start items-start space-y-2">
-      {documentTree.isInit ? (
+      {documentTree.isInit || (isCreateMode && isLoadingTemplate) ? (
         <SuspenseWidget />
-      ) : !data ? (
-        <ErrorWidget message="找不到資料" />
+      ) : (isDisplayMode && !document) ||
+        (isCreateMode && !documentTemplate) ? (
+        <ErrorWidget message="DataNotFound" />
       ) : (
         <DocumentDataCardForm
-          key={isDisplayMode ? "display data" : "create new data" + data.id}
-          data={data!}
+          key={
+            queryRoute.mode +
+            queryRoute.dataId +
+            queryRoute.dataType +
+            queryRoute.ancestors
+          }
+          data={
+            isCreateMode
+              ? createNewDocument(
+                  documentTemplate!,
+                  queryRoute.dataType,
+                  queryRoute.ancestors
+                )
+              : (document as DocumentObject)
+          }
         />
       )}
     </div>

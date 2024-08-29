@@ -16,6 +16,16 @@ enum DocumentObjectType {
   unknown = "unknown",
 }
 
+enum DocumentGroupType {
+  Location = "Location",
+  Asset = "Asset",
+  Meter = "Meter",
+  GHG = "GHG",
+  Unknown = "Unknown",
+  Root = "Root",
+  MeterReading = "MeterReading",
+}
+
 interface DocumentObject {
   id: string | undefined;
   type: DocumentObjectType;
@@ -29,20 +39,12 @@ interface DocumentObject {
   properties: Property[];
 }
 
-// example of a document
-
-type DocumentTypeString = keyof typeof DocumentObjectType;
-
-enum DocumentGroupType {
-  Location = "Location",
-  Asset = "Asset",
-  Meter = "Meter",
-  GHG = "GHG",
-  Unknown = "Unknown",
-  Root = "Root",
-  MeterReading = "MeterReading",
+interface DocumentObjectTemplate {
+  group: DocumentGroupType;
+  properties: Property[];
 }
 
+type DocumentTypeString = keyof typeof DocumentObjectType;
 type DocumentGroupTypeString = keyof typeof DocumentGroupType;
 
 function getDocumentGroupTypeFromString(type: string): DocumentGroupType {
@@ -52,8 +54,16 @@ function getDocumentGroupTypeFromString(type: string): DocumentGroupType {
   return DocumentGroupType[type as keyof typeof DocumentGroupType];
 }
 
+function getDocumentObjectType(typeString: string): DocumentObjectType {
+  if (!Object.keys(DocumentObjectType).includes(typeString)) {
+    return DocumentObjectType.unknown;
+  }
+  return DocumentObjectType[typeString as DocumentTypeString];
+}
+
 export type {
   DocumentObject,
+  DocumentObjectTemplate,
   Property,
   DocumentTypeString,
   DocumentGroupTypeString,
@@ -63,4 +73,5 @@ export {
   DocumentGroupType,
   DocumentObjectType,
   getDocumentGroupTypeFromString,
+  getDocumentObjectType,
 };

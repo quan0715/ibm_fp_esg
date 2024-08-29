@@ -1,6 +1,8 @@
 "use server";
 import { MongoDocumentRepository } from "@/data/repositories/mongo/DocumentRepository";
+import { MongoDocumentTemplateRepository } from "@/data/repositories/mongo/DocumentTemplateRepository";
 import { DocumentGroupType, DocumentObject } from "@/domain/entities/Document";
+import { DocumentTemplateUseCase } from "@/domain/Services/DocumentTemplateUseCase";
 import { DocumentUseCase } from "@/domain/Services/DocumentUsecases";
 import { ObjectId } from "mongodb";
 
@@ -77,5 +79,12 @@ export async function getAssetSibling(
   // console.log("getAssetSibling", searchPathString, groupType);
   const data = await useCase.getSibling(searchPathString);
   // console.log("getAssetSibling", data);
+  return data;
+}
+
+export async function getDocumentTemplate(groupType: DocumentGroupType) {
+  const repo = new MongoDocumentTemplateRepository();
+  const useCase = new DocumentTemplateUseCase(repo, groupType);
+  const data = await useCase.getDocumentTemplate();
   return data;
 }

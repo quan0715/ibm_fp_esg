@@ -1,4 +1,8 @@
-import { DocumentGroupType, DocumentObject } from "@/domain/entities/Document";
+import {
+  DocumentGroupType,
+  DocumentObject,
+  DocumentObjectTemplate,
+} from "@/domain/entities/Document";
 
 interface DocumentRepository {
   // asset loc data CRUD

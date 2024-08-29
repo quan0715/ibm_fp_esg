@@ -98,7 +98,9 @@ export function useDocumentTree() {
       return [];
     }
 
-    return Array.from(childrenMap.values());
+    return Array.from(childrenMap.values()).sort((a, b) => {
+      return a.type < b.type ? -1 : a.type > b.type ? 1 : 0;
+    });
   }
 
   function getDocumentData(docId: string) {

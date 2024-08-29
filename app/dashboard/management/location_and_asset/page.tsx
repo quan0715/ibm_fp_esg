@@ -5,103 +5,97 @@ import {
   DocumentGroupType,
   getDocumentGroupTypeFromString,
 } from "@/domain/entities/Document";
-import { DatabasePage, DocumentContext } from "./_blocks/DocumentPage";
+import { DatabasePage } from "./_blocks/DocumentPage";
 import { useDataQueryRoute } from "./_hooks/useQueryRoute";
 import { getAssetSibling } from "./_actions/DocumentAction";
-import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
+import {
+  DocumentLayer,
+  getGroupDefaultType,
+} from "@/domain/entities/DocumentConfig";
 import {
   DocumentMenuListMobile,
-  DocumentNavigateMenuDialog,
   DocumentTreeMenu,
 } from "./_blocks/DocumentNavigationMenu";
-import {
-  DocumentTreeProvider,
-  useDocumentTree,
-} from "./_hooks/useDocumentContext";
+import { DocumentTreeProvider } from "./_hooks/useDocumentContext";
 import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { DashboardPageHeader } from "@/app/dashboard/_components/DashboardPageHeader";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useRootData } from "./_hooks/useDocument";
+import { documentConfig } from "@/domain/entities/DocumentConfig";
 
-type TabsString = "Location" | "Asset" | "Meter" | "GHG" | "MeterReading";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-interface TabConfig {
-  index: string;
-  title: string;
-  // content: ReactNode;
-}
-
-const tabConfig: Record<TabsString, TabConfig> = {
-  Location: {
-    index: "Location",
-    title: "位置主檔",
-    // content: location,
-  },
-  Asset: {
-    index: "Asset",
-    title: "資產主檔",
-    // content: asset,
-  },
-  Meter: {
-    index: "Meter",
-    title: "Meter 主檔",
-  },
-  GHG: {
-    index: "GHG",
-    title: "GHG 主檔",
-  },
-  MeterReading: {
-    index: "MeterReading",
-    title: "Meter Reading 主檔",
-  },
-};
-
-function TabListWidget({
-  tabConfig,
-  children,
-}: {
-  children?: React.ReactNode;
-  tabConfig: Record<TabsString, TabConfig>;
-}) {
-  const defaultPage = tabConfig["Location"];
-  const searchParams = useSearchParams();
+function TabListWidget() {
+  const defaultViews = documentConfig[0].views[0].group;
   const queryPath = useDataQueryRoute();
-  const subPage = searchParams.get("page") || defaultPage.index;
-  const router = useRouter();
-  const rootData = useRootData(getDocumentGroupTypeFromString(queryPath.page));
-
+  const subPage = queryPath.page || defaultViews;
   const handleTabChange = (value: string) => {
     if (value === subPage) return;
-    const newSearchParams = new URLSearchParams();
-    newSearchParams.set("page", value);
-    newSearchParams.set("data", "");
-    newSearchParams.set("mode", "display");
     console.log("change page", value);
-    // router.prefetch("?" + newSearchParams.toString());
-    router.push("?" + newSearchParams.toString());
+    queryPath.setAssetId("", value);
   };
 
+  function isSelectedDirectory(config: DocumentLayer) {
+    return config.views.some((view) => view.group === subPage);
+  }
+  function getTriggerLabel(config: DocumentLayer) {
+    let isSelectedDir = config.views.some((view) => view.group === subPage);
+    if (!isSelectedDir) {
+      return config.dirName;
+    }
+    return config.views.find((view) => view.group === subPage)?.viewName;
+  }
+
   return (
-    <Tabs
-      value={subPage}
-      defaultValue={subPage}
-      // className="w-full h-full"
-      onValueChange={handleTabChange}
-    >
-      <TabsList className="flex w-full p-2 justify-start items-center bg-background h-fit overflow-x-auto">
-        {Object.keys(tabConfig).map((key) => {
-          const tab = tabConfig[key as TabsString];
+    <div className="bg-background h-fit overflow-x-auto px-4">
+      <div className="flex flex-row justify-start items-center">
+        {documentConfig.map((config) => {
           return (
-            <TabsTrigger key={tab.index + "trigger"} value={tab.index}>
-              {tab.title}
-            </TabsTrigger>
+            <DropdownMenu key={config.dirName}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  className={cn(
+                    !isSelectedDirectory(config) ? "text-gray-500" : "",
+                    "flex flex-row justify-center items-center space-x-1"
+                  )}
+                >
+                  {getTriggerLabel(config)}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>{config.dirName}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={subPage}
+                  onValueChange={handleTabChange}
+                >
+                  {config.views.map((view) => {
+                    return (
+                      <DropdownMenuRadioItem
+                        value={view.group}
+                        key={view.group}
+                      >
+                        {view.viewName}
+                      </DropdownMenuRadioItem>
+                    );
+                  })}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           );
         })}
-      </TabsList>
-      <Separator />
-    </Tabs>
+      </div>
+    </div>
   );
 }
 
@@ -134,7 +128,8 @@ export default function Page() {
 
   return (
     <>
-      <TabListWidget tabConfig={tabConfig} />
+      <TabListWidget />
+      <Separator />
       <DocumentTreePage />
     </>
   );
@@ -148,11 +143,12 @@ function DocumentTreePage() {
   return (
     <DocumentTreeProvider type={dbType}>
       <DesktopOnly>
-        <div className="hidden md:grid w-full max-h-max grid-cols-12 gap-2 p-1">
-          <div className="col-span-3">
+        <div className="w-full max-h-max flex flex-row grid-cols-12">
+          <div className="flex-initial w-96">
             <DocumentTreeMenu path={""} />
           </div>
-          <div className="col-span-9">
+          <Separator className="max-h-max h-full" orientation="vertical" />
+          <div className="w-full shadow-lg p-2">
             <DatabasePage
               key={dbType + queryRoute.dataId}
               selectedDocumentId={queryRoute.dataId}
@@ -161,7 +157,7 @@ function DocumentTreePage() {
         </div>
       </DesktopOnly>
       <MobileOnly>
-        <div className="w-full flex flex-col space-y-1 ">
+        <div className="w-full flex flex-col">
           <DocumentMenuListMobile />
           <Separator />
           <div className="col-span-9">

@@ -1,55 +1,18 @@
-import {
-  DocumentGroupType,
-  DocumentObject,
-  DocumentObjectType,
-  getDocumentGroupTypeFromString,
-} from "@/domain/entities/Document";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
+import { DocumentDataTreeEntryView } from "./DocumentDataDisplayUI";
 import {
-  DocumentDataTreeEntryView,
-  DocumentDataCardListView,
-} from "./DocumentDataDisplayUI";
-import {
-  getDocumentChildrenTypeOptions,
-  getDocumentLayerRules,
+  getDocumentTypeLayer,
   getGroupDefaultType,
 } from "@/domain/entities/DocumentConfig";
-import {
-  useDocumentData,
-  useDocumentWithSearchPath,
-} from "../_hooks/useDocument";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerPortal,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { MobileOnly } from "@/components/layouts/layoutWidget";
-import { LuMenu } from "react-icons/lu";
+import { LuMenu, LuSearch, LuSearchCode, LuSearchX } from "react-icons/lu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
-import { DocumentContext } from "./DocumentPage";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
-import { DashboardLabelChip } from "./DocumentLabelChip";
-import {
-  getDocumentEntityUIConfig,
-  getDocumentTypeColor,
-} from "../_utils/documentTypeUIConfig";
-import { ChevronsUpDown } from "lucide-react";
+import { getDocumentTypeColor } from "../_utils/documentTypeUIConfig";
 import { CreateNewDataButton } from "./DataCRUDTrigger";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
 
@@ -62,49 +25,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { DialogClose } from "@radix-ui/react-dialog";
-
-// export function DocumentNavigateMenu({ data }: { data: DocumentObject }) {
-//   const queryRoute = useDataQueryRoute();
-//   const isCreateMode = queryRoute.mode === "create";
-//   const dbConfig = useContext(DocumentContext);
-//   const { isFetchingData, ancestors, sibling } = useDocumentWithSearchPath(
-//     isCreateMode ? queryRoute.ancestors : data.ancestors ?? "",
-//     getDocumentGroupTypeFromString(dbConfig.type)
-//   );
-//   const layerRule = getDocumentLayerRules(data.type);
-//   const siblingTypeOptions = getDocumentChildrenTypeOptions(
-//     layerRule.parentType,
-//     layerRule.group
-//   );
-
-//   return isFetchingData ? (
-//     <Skeleton className="bg-background w-full h-full flex flex-col justify-center items-center space-y-2">
-//       <LoadingWidget />
-//     </Skeleton>
-//   ) : (
-//     <div className="md:flex w-full flex-col justify-start items-center space-y-2 overflow-auto">
-//       {ancestors.length > 0 ? (
-//         <DocumentDataTreeEntryView
-//           data={ancestors[0]}
-//           onClick={() => queryRoute.setAssetId(ancestors[0].id!)} // adjust this if ancestors should be selectable
-//           key={ancestors[0].id}
-//         />
-//       ) : null}
-//       <div className="w-full flex flex-row items-start justify-start space-x-1">
-//         <div className="flex-1 flex flex-col items-center justify-center space-y-2">
-//           {siblingTypeOptions.map((type) => (
-//             <DocumentDataCardListView
-//               key={type}
-//               type={type}
-//               searchPath={data.ancestors ?? ""}
-//               documents={sibling.filter((data) => data.type === type)}
-//             />
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export function DocumentNavigateMenuDialog() {
   // const [open, setOpen] = useState<boolean | undefined>(undefined);
@@ -151,7 +73,7 @@ export function DocumentNavigateMenuDialog() {
               );
               setOpen(false);
             }}
-            label={`${getDocumentEntityUIConfig(getGroupDefaultType(documentTree.type)).label}`}
+            label={`${getDocumentTypeLayer(getGroupDefaultType(documentTree.type)).name}`}
           />
         </div>
       </DrawerContent>
@@ -173,7 +95,18 @@ export function DocumentTreeMenu({ path }: { path: string }) {
       <LoadingWidget />
     </Skeleton>
   ) : (
-    <div>
+    <div className="max-h-max h-full bg-background">
+      <div className="flex flex-row items-center justify-center bg-background h-13">
+        <div className="w-full flex flex-row items-center justify-center space-x-2 px-2">
+          <Input
+            className={cn("border-0", "w-full h-12 bg-background rounded-md")}
+            placeholder="搜尋..."
+          />
+          <LuSearch className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </div>
+      <Separator />
+
       {rootDataList.map((doc) => (
         <DocumentDataTreeEntryView
           data={doc}
@@ -195,7 +128,7 @@ export function DocumentTreeMenu({ path }: { path: string }) {
               ""
             );
           }}
-          label={`${getDocumentEntityUIConfig(getGroupDefaultType(documentTree.type)).label}`}
+          label={`${getDocumentTypeLayer(getGroupDefaultType(documentTree.type)).name}`}
         />
       </div>
     </div>
@@ -207,7 +140,7 @@ export function DocumentMenuListMobile() {
   const queryRoute = useDataQueryRoute();
   return (
     <div className="flex flex-row items-center justify-center bg-background h-13">
-      <Breadcrumb className="w-full p-2">
+      <Breadcrumb className="w-full pl-5">
         <BreadcrumbList>
           <BreadcrumbItem key={docTree.type}>
             <BreadcrumbLink href="#">{docTree.type}</BreadcrumbLink>

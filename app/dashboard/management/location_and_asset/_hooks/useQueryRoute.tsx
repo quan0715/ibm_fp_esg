@@ -1,6 +1,5 @@
 "use client";
-import { DocumentObjectType } from "@/domain/entities/Document";
-import { getDocumentObjectType } from "@/domain/entities/DocumentConfig";
+import { getDocumentObjectType } from "@/domain/entities/Document";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 interface QueryParams {
   selected?: string;
@@ -39,7 +38,9 @@ export function useDataQueryRoute() {
     router.refresh();
   }
   function moveBack(): void {
+    console.log("moveBack");
     router.back();
+    router.refresh();
   }
 
   const createURL = getPath(

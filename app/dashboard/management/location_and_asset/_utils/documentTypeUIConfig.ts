@@ -1,4 +1,5 @@
 import { DocumentObjectType } from "@/domain/entities/Document";
+import { getDocumentTypeLayerDepth } from "@/domain/entities/DocumentConfig";
 import { text } from "stream/consumers";
 
 type DocumentTypeColor =
@@ -11,46 +12,20 @@ type DocumentTypeColor =
   | "stone"
   | "gray";
 
-type ObjectUIConfig = {
-  color: DocumentTypeColor; //hex color code
-  label: string; //the label to be displayed
-};
-
-export function getDocumentEntityUIConfig(
-  type: DocumentObjectType
-): ObjectUIConfig {
-  switch (type) {
-    case DocumentObjectType.organization:
-      return { color: "red", label: "組織" };
-    case DocumentObjectType.site:
-      return { color: "blue", label: "廠區" };
-    case DocumentObjectType.department:
-      return { color: "purple", label: "部門" };
-    case DocumentObjectType.system:
-      return { color: "green", label: "系統" };
-    case DocumentObjectType.subSystem:
-      return { color: "green", label: "子系統" };
-    case DocumentObjectType.route:
-      return { color: "yellow", label: "Route" };
-    case DocumentObjectType.operation:
-      return { color: "yellow", label: "Operation" };
-    case DocumentObjectType.component:
-      return { color: "green", label: "元件" };
-    case DocumentObjectType.tool:
-      return { color: "blue", label: "資產" };
-    case DocumentObjectType.meter:
-      return { color: "orange", label: "Meter" };
-    case DocumentObjectType.ghg:
-      return { color: "green", label: "GHG" };
-    case DocumentObjectType.unknown:
-      return { color: "stone", label: "Unknown" };
-    case DocumentObjectType.meterReading:
-      return { color: "green", label: "Meter Reading" };
-  }
-}
+const colorSchema: DocumentTypeColor[] = [
+  "blue",
+  "green",
+  "purple",
+  "orange",
+  "red",
+  "yellow",
+  "stone",
+];
 
 export function getDocumentTypeColor(type: DocumentObjectType) {
-  return colorVariants[getDocumentEntityUIConfig(type).color];
+  let depth = getDocumentTypeLayerDepth(type);
+  let color = colorSchema[(depth - 1) % colorSchema.length];
+  return colorVariants[color];
 }
 
 const colorVariants = {

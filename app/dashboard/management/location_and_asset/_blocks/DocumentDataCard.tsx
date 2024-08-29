@@ -20,7 +20,6 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import {
   colorVariants,
-  getDocumentEntityUIConfig,
   getDocumentTypeColor,
 } from "../_utils/documentTypeUIConfig";
 import { useContext, createContext, useState, use, useEffect } from "react";
@@ -37,14 +36,13 @@ import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
 import { PropertyValueField } from "./DocuemntFormPropertyField";
 import {
   getDocumentChildrenTypeOptions,
-  getDocumentLayerRules,
+  getDocumentTypeLayer,
 } from "@/domain/entities/DocumentConfig";
 import { DocumentNavigateMenuDialog } from "./DocumentNavigationMenu";
 import { DocumentReferencePropertyView } from "./DocumentDataDisplayUI";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
-import { DocumentContext } from "./DocumentPage";
 import { InputPropField } from "./property_field/InputPropField";
 import {
   Breadcrumb,
@@ -166,6 +164,7 @@ export function DocumentDataCardForm({
                 <DashboardCardHeaderContent>
                   <InputPropField
                     name="title"
+                    placeholder={`${getDocumentTypeLayer(data.type).name} 名稱`}
                     isRequired={true}
                     textCss={cn("text-xl font-semibold", colorTheme.textColor)}
                   ></InputPropField>
@@ -317,65 +316,65 @@ export function InfoBlock({
   );
 }
 
-function MultiChildrenBlock<T extends DocumentObject>({
-  label,
-  child,
-  parent,
-  className,
-}: {
-  parent: DocumentObject;
-  label: string;
-  child: T[];
-  labelColor?: string;
-  className?: string;
-}) {
-  const queryPathService = useDataQueryRoute();
-  const layerRule = getDocumentLayerRules(parent.type);
-  const childrenOptions = getDocumentChildrenTypeOptions(
-    parent.type,
-    layerRule.group
-  );
-  return (
-    <InfoBlock label={label} className={cn(className)}>
-      {queryPathService.mode === "create"
-        ? null
-        : childrenOptions.map((type) => (
-            <CreateNewDataButton
-              key={type}
-              className={cn(
-                "w-fit rounded-md h-fit",
-                getDocumentTypeColor(type).textColor
-              )}
-              onClick={async () => {
-                let newAncestors =
-                  parent.ancestors.length > 0
-                    ? parent.ancestors + "," + parent.id
-                    : parent.id;
-                if (newAncestors) {
-                  queryPathService.createNewAsset(type, newAncestors);
-                }
-              }}
-              label={getDocumentEntityUIConfig(type).label}
-            />
-          ))}
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0.5">
-        {child.map((child, index) => {
-          return (
-            <DocumentReferencePropertyView
-              key={child.id}
-              data={child}
-              onClick={() => queryPathService.setAssetId(child.id ?? "")}
-              mode={"display"}
-            />
-          );
-        })}
-        {childrenOptions.length === 0 && child.length === 0 ? (
-          <p className={"text-sm text-gray-500 font-semibold"}>無下層資料</p>
-        ) : null}
-      </div>
-    </InfoBlock>
-  );
-}
+// function MultiChildrenBlock<T extends DocumentObject>({
+//   label,
+//   child,
+//   parent,
+//   className,
+// }: {
+//   parent: DocumentObject;
+//   label: string;
+//   child: T[];
+//   labelColor?: string;
+//   className?: string;
+// }) {
+//   const queryPathService = useDataQueryRoute();
+//   const layerRule = getDocumentTypeLayer(parent.type);
+//   const childrenOptions = getDocumentChildrenTypeOptions(
+//     parent.type,
+//     layerRule.group
+//   );
+//   return (
+//     <InfoBlock label={label} className={cn(className)}>
+//       {queryPathService.mode === "create"
+//         ? null
+//         : childrenOptions.map((type) => (
+//             <CreateNewDataButton
+//               key={type}
+//               className={cn(
+//                 "w-fit rounded-md h-fit",
+//                 getDocumentTypeColor(type).textColor
+//               )}
+//               onClick={async () => {
+//                 let newAncestors =
+//                   parent.ancestors.length > 0
+//                     ? parent.ancestors + "," + parent.id
+//                     : parent.id;
+//                 if (newAncestors) {
+//                   queryPathService.createNewAsset(type, newAncestors);
+//                 }
+//               }}
+//               label={getDocumentEntityUIConfig(type).label}
+//             />
+//           ))}
+//       <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0.5">
+//         {child.map((child, index) => {
+//           return (
+//             <DocumentReferencePropertyView
+//               key={child.id}
+//               data={child}
+//               onClick={() => queryPathService.setAssetId(child.id ?? "")}
+//               mode={"display"}
+//             />
+//           );
+//         })}
+//         {childrenOptions.length === 0 && child.length === 0 ? (
+//           <p className={"text-sm text-gray-500 font-semibold"}>無下層資料</p>
+//         ) : null}
+//       </div>
+//     </InfoBlock>
+//   );
+// }
 
 export function StaticAttrChip({
   label,
@@ -384,8 +383,6 @@ export function StaticAttrChip({
   label: string;
   value: string;
 }) {
-  const colorTheme = useContext(ThemeContext);
-
   return (
     <div
       className={cn(

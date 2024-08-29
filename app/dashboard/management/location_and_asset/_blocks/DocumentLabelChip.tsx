@@ -5,35 +5,40 @@ import React from "react";
 import {
   colorVariants,
   DocumentTypeColor,
+  getDocumentTypeColor,
 } from "../_utils/documentTypeUIConfig";
+import { DocumentObjectType } from "@/domain/entities/Document";
+import { getDocumentTypeLayer } from "@/domain/entities/DocumentConfig";
 
 export function DashboardLabelChip({
-  title,
-  color,
+  type,
   length = undefined,
 }: {
-  title: string;
-  color: DocumentTypeColor;
+  type: DocumentObjectType;
   length?: number;
 }) {
+  const docUIConfig = {
+    ...getDocumentTypeLayer(type),
+    color: getDocumentTypeColor(type),
+  };
   return (
     <>
       <div
         className={cn(
-          "w-fit flex flex-rol justify-center items-center space-x-2 px-2 py-0.5 rounded-lg",
-          colorVariants[color].bgColor
+          "w-fit flex flex-rol justify-center items-center space-x-1 px-2 py-0.5 rounded-lg",
+          docUIConfig.color.bgColor
         )}
       >
         <div
           className={cn(
-            "w-[7px] h-[7px] rounded-full",
-            colorVariants[color].leadingColor
+            "w-[6px] h-[6px] rounded-full",
+            docUIConfig.color.leadingColor
           )}
         ></div>
-        <p className={"text-sm font-semibold"}>{title}</p>
+        <p className={"text-sm font-semibold"}>{docUIConfig.name}</p>
       </div>
       {length != undefined ? (
-        <p className={cn("pl-4 text-md", colorVariants[color].textColor)}>
+        <p className={cn("pl-4 text-md", docUIConfig.color.textColor)}>
           {length}
         </p>
       ) : null}
