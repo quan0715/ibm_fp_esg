@@ -25,6 +25,7 @@ export function InputPropField({
   isRequired = false,
   inputType = "text",
   textCss,
+  view = "page",
 }: InputFieldProps) {
   const { control } = useFormContext();
   return (
@@ -32,7 +33,14 @@ export function InputPropField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="w-full flex flex-row justify-start items-center">
+        <FormItem
+          className={cn(
+            "w-full flex",
+            view === "page"
+              ? "flex-row  justify-start items-center"
+              : "flex-col justify-start items-start"
+          )}
+        >
           <FormControl>
             <Input
               type={inputType}

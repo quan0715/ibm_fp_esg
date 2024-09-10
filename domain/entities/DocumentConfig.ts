@@ -227,4 +227,21 @@ export const documentConfig = [
       },
     ],
   },
+  {
+    dirName: "test",
+    views: [
+      {
+        group: DocumentGroupType.testGroup,
+        isDefault: false,
+        viewName: "test",
+        layers: [
+          {
+            name: "test",
+            type: DocumentObjectType.testObject,
+            parent: DocumentObjectType.unknown,
+          },
+        ],
+      },
+    ],
+  },
 ] as DocumentLayer[];

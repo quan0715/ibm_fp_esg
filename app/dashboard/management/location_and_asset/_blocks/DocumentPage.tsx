@@ -6,7 +6,7 @@ import {
   DocumentObject,
   DocumentObjectTemplate,
 } from "@/domain/entities/Document";
-import { DocumentDataCardForm } from "../_blocks/DocumentDataCard";
+import { DocumentDataPageForm } from "../_blocks/DocumentDataCard";
 import { useDataQueryRoute } from "../_hooks/useQueryRoute";
 import { createContext, use, useEffect, useState, useTransition } from "react";
 import { DashboardCard } from "@/app/dashboard/_components/DashboardCard";
@@ -14,6 +14,7 @@ import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
 import { getGroupDefaultType } from "@/domain/entities/DocumentConfig";
 import { getDocumentTemplate } from "../_actions/DocumentAction";
+import { useDocumentTemplate } from "../_hooks/useDocumentTemplate";
 
 function SuspenseWidget() {
   return (
@@ -40,28 +41,19 @@ export function DatabasePage({
   const isDisplayMode = queryRoute.mode === "display";
   const isCreateMode = queryRoute.mode === "create";
   const documentTree = useDocumentTree();
-  const [isLoadingTemplate, startLoadingTemplate] = useTransition();
   const document = documentTree.getDocumentData(selectedDocumentId);
-  const [documentTemplate, setDocumentTemplate] =
-    useState<DocumentObjectTemplate>();
-
-  useEffect(() => {
-    startLoadingTemplate(async () => {
-      const documentTemplate = await getDocumentTemplate(documentTree.type);
-      console.log("documentTemplate", documentTemplate);
-      setDocumentTemplate(documentTemplate);
-    });
-  }, [documentTree.type]);
+  const { group, isLoadingTemplate, template } = useDocumentTemplate(
+    documentTree.type
+  );
 
   return (
     <div className="w-full h-full min-h-screen flex flex-col justify-start items-start space-y-2">
       {documentTree.isInit || (isCreateMode && isLoadingTemplate) ? (
         <SuspenseWidget />
-      ) : (isDisplayMode && !document) ||
-        (isCreateMode && !documentTemplate) ? (
+      ) : (isDisplayMode && !document) || (isCreateMode && !template) ? (
         <ErrorWidget message="DataNotFound" />
       ) : (
-        <DocumentDataCardForm
+        <DocumentDataPageForm
           key={
             queryRoute.mode +
             queryRoute.dataId +
@@ -71,7 +63,7 @@ export function DatabasePage({
           data={
             isCreateMode
               ? createNewDocument(
-                  documentTemplate!,
+                  template!,
                   queryRoute.dataType,
                   queryRoute.ancestors
                 )

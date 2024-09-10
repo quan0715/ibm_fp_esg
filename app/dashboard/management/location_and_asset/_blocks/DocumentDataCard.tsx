@@ -44,25 +44,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { createNewDocument } from "@/domain/entities/DocumentTemplate";
 import { InputPropField } from "./property_field/InputPropField";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
+// import { InfoBlock } from "./DocumentDataCard";
 
 type DocumentDataCardProps = {
   data: DocumentObject;
-  // groupType: DocumentGroupType;
   className?: string;
 };
 
 const ThemeContext = createContext(colorVariants["blue"]);
 
-export function DocumentDataCardForm({
+export function DocumentDataPageForm({
   data,
   className,
 }: DocumentDataCardProps) {
@@ -204,9 +196,6 @@ export function DocumentDataCardForm({
                       isDeleting={dataQueryService.isDeletingData}
                     />
                   ) : null}
-                  {/* <MobileOnly>
-                    <DocumentNavigateMenuDialog />
-                  </MobileOnly> */}
                 </DashboardCardActionList>
               </DashboardCardHeader>
               <Separator />
@@ -218,20 +207,16 @@ export function DocumentDataCardForm({
                         className="w-full flex flex-row flex-1"
                         key={field.id}
                       >
-                        <PropertyValueField
-                          property={form.watch().properties[index]}
-                          index={index}
-                        />
+                        <InfoBlock label={field.name}>
+                          <PropertyValueField
+                            property={form.watch().properties[index]}
+                            index={index}
+                          />
+                        </InfoBlock>
                       </div>
                     );
                   })}
                 </div>
-                {/* <Separator /> */}
-                {/* <MultiChildrenBlock
-                  label="子資產"
-                  child={children}
-                  parent={data!}
-                /> */}
                 <Separator />
                 <div
                   className={"flex flex-row justify-end items-center space-x-2"}
@@ -288,8 +273,13 @@ export function InfoBlock({
 }) {
   const colorTheme = useContext(ThemeContext);
   return orientation === "horizontal" ? (
-    <div className={cn("flex flex-col justify-start items-start", className)}>
-      <p className={cn(colorTheme.textColor, "text-sm font-normal")}>{label}</p>
+    <div
+      className={cn(
+        "w-48 h-fit flex flex-col justify-start items-center",
+        className
+      )}
+    >
+      {/* <p className={cn(colorTheme.textColor, "text-sm font-normal")}>{label}</p> */}
       {children}
     </div>
   ) : (

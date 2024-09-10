@@ -28,6 +28,9 @@ import {
 } from "@/domain/entities/DocumentConfig";
 import { useDocumentTree } from "../_hooks/useDocumentContext";
 import { motion } from "framer-motion";
+import { date } from "zod";
+import { PropertyValueField } from "./DocuemntFormPropertyField";
+import { DocumentFormTableColumn } from "./document_view/TableView";
 
 export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
   data,
@@ -43,7 +46,6 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
   depth?: number;
 }) {
   const type = data.type;
-
   const documentTree = useDocumentTree();
   const docType = documentTree.type;
   const queryPathService = useDataQueryRoute();
@@ -68,6 +70,9 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
   }, [data]);
 
   const paddingStyle = { paddingLeft: `${depth * 1}rem` };
+  const headerWidth = {
+    width: `${60 - depth * 1}rem)`,
+  };
 
   const getCollapseChildren = () => {
     return [
@@ -152,7 +157,9 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
               setIsOpen(!isOpen);
               onClose?.();
             }}
+            style={headerWidth}
           />
+          {/* <DocumentFormTableView data={data} /> */}
         </DashboardCard>
       </div>
       <Separator className="w-full" />
@@ -249,10 +256,12 @@ export const DocumentTreeNode = memo(function DocumentTreeNode({
   data,
   isSelected,
   onClick,
+  style,
 }: {
   isSelected: boolean;
   onClick: () => void;
   data: DocumentObject;
+  style?: React.CSSProperties;
 }) {
   const color = getDocumentTypeColor(data.type);
   const chipRef = React.useRef<HTMLDivElement>(null);
@@ -266,9 +275,10 @@ export const DocumentTreeNode = memo(function DocumentTreeNode({
       onClick={onClick}
       ref={chipRef}
       className={cn(
-        "flex-1 flex flex-row justify-start items-center space-x-1",
+        "flex-1 flex flex-row justify-start items-center",
         "hover:cursor-pointer"
       )}
+      style={style}
     >
       {/* <div className={cn("w-[6px] h-[6px] rounded-full", color.leadingColor)} /> */}
       <div className="w-full flex flex-row justify-start items-center relative">
@@ -296,6 +306,9 @@ export const DocumentTreeNode = memo(function DocumentTreeNode({
           <LuArrowRight className={color.textColor} />
         </Button>
       </div>
+      {/* {data.properties?.map((property, index) => (
+        <PropertyValueField property={property} index={index} />
+      ))} */}
     </div>
   );
 });

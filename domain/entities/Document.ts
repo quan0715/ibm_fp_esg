@@ -13,6 +13,7 @@ enum DocumentObjectType {
   meter = "meter",
   ghg = "ghg",
   meterReading = "meterReading",
+  testObject = "testObject",
   unknown = "unknown",
 }
 
@@ -23,6 +24,7 @@ enum DocumentGroupType {
   GHG = "GHG",
   Unknown = "Unknown",
   Root = "Root",
+  testGroup = "testGroup",
   MeterReading = "MeterReading",
 }
 

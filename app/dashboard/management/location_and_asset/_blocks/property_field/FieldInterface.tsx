@@ -7,6 +7,7 @@ interface BasicPropFieldProps {
   isDisabled?: boolean;
   isRequired?: boolean;
   textCss?: string;
+  view?: "table" | "page";
 }
 
 interface InputFieldProps extends BasicPropFieldProps {

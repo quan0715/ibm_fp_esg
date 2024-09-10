@@ -18,9 +18,7 @@ export default auth(async (req) => {
   if (session?.user) {
     // console.log('User', session.user)
     if (req.nextUrl.pathname.startsWith(authBaseRoute)) {
-      return NextResponse.redirect(
-        new URL("/dashboard/management/location_and_asset/", req.url)
-      );
+      return NextResponse.redirect(new URL("/dashboard/", req.url));
     }
     if (req.nextUrl.pathname.startsWith(apiBaseRoute)) {
       // console.log('API')

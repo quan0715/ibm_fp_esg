@@ -6,14 +6,17 @@ import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 export function DashboardCard({
   children,
   isSuspense = false,
+  style,
   className,
 }: {
   children: React.ReactNode;
   isSuspense?: boolean;
+  style?: React.CSSProperties;
   className?: string;
 }) {
   return !isSuspense ? (
     <div
+      style={style}
       className={cn("w-full bg-background rounded-md flex flex-col", className)}
     >
       {children}

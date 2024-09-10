@@ -13,12 +13,16 @@ export enum PropertyType {
 
 interface BaseProperty {
   name: string;
-  isHidden: boolean;
-  readonly: boolean;
+  isHidden?: boolean;
+  readonly?: boolean;
   required?: boolean;
 }
-
-interface TextProperty extends BaseProperty {
+export interface TitleProperty extends BaseProperty {
+  value: string;
+  type: PropertyType.text;
+}
+export interface TextProperty extends BaseProperty {
+  name: "標題";
   type: PropertyType.text;
   value: string;
 }
@@ -57,6 +61,7 @@ export interface DocumentReferenceProperty extends BaseProperty {
 }
 
 export type Property =
+  | TitleProperty
   | TextProperty
   | NumberProperty
   | DateTimeProperty

@@ -33,6 +33,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { DocumentFormTableView } from "./_blocks/document_view/TableView";
+import { CollapsibleDataTableTreeView } from "./_blocks/document_view/CollapsibleView";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 function TabListWidget() {
   const defaultViews = documentConfig[0].views[0].group;
@@ -121,9 +131,9 @@ export default function Page() {
       }
     }
     console.log("page", queryRoute.dataId, queryRoute.mode);
-    if (queryRoute.dataId === "" && queryRoute.mode === "display") {
-      handleEmptyData();
-    }
+    // if (queryRoute.dataId === "" && queryRoute.mode === "display") {
+    //   handleEmptyData();
+    // }
   }, [queryRoute.dataId, queryRoute.mode]);
 
   return (
@@ -144,16 +154,34 @@ function DocumentTreePage() {
     <DocumentTreeProvider type={dbType}>
       <DesktopOnly>
         <div className="w-full max-h-max flex flex-row grid-cols-12">
-          <div className="flex-initial w-96">
+          {/* <div className="flex-initial w-96">
             <DocumentTreeMenu path={""} />
           </div>
-          <Separator className="max-h-max h-full" orientation="vertical" />
+          <Separator className="max-h-max h-100" orientation="vertical" />
           <div className="w-full shadow-lg p-2">
             <DatabasePage
               key={dbType + queryRoute.dataId}
               selectedDocumentId={queryRoute.dataId}
             />
-          </div>
+          </div> */}
+          {/* <DocumentFormTableView /> */}
+
+          <CollapsibleDataTableTreeView />
+          <Sheet
+            open={queryRoute.dataId !== "" || queryRoute.mode === "create"}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) {
+                queryRoute.setAssetId("", queryRoute.page);
+              }
+            }}
+          >
+            <SheetContent side={"right"} className="w-full md:w-1/2">
+              <DatabasePage
+                key={dbType + queryRoute.dataId}
+                selectedDocumentId={queryRoute.dataId}
+              />
+            </SheetContent>
+          </Sheet>
         </div>
       </DesktopOnly>
       <MobileOnly>

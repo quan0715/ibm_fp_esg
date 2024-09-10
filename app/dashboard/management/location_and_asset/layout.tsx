@@ -28,13 +28,13 @@ function HeaderField({ children }: { children: ReactNode }) {
     .find((view) => view.group === subPage);
   return (
     // <Suspense>
-    <div className="w-full h-fit flex flex-col flex-grow justify-start items-center ">
+    <div className="max-w-max h-fit flex flex-col flex-grow justify-start items-center ">
       <DashboardPageHeader
         title={"基本資料"}
         subTitle={views?.viewName ?? ""}
       />
       <Separator />
-      <div className="w-full h-full bg-secondary">{children}</div>
+      <div className="h-full bg-secondary">{children}</div>
     </div>
     // </Suspense>
   );
