@@ -32,6 +32,9 @@ import { useDocumentTemplate } from "../../_hooks/useDocumentTemplate";
 import { LoadingWidget } from "@/components/blocks/LoadingWidget";
 import { PropertyType } from "@/domain/entities/DocumentProperty";
 import { CreateNewDataButton } from "../DataCRUDTrigger";
+import { AnimationListContent } from "@/components/motion/AnimationListContent";
+import { AnimationChevron } from "@/components/motion/AnimationChevron";
+import { CollapsibleProps } from "@radix-ui/react-collapsible";
 
 const LayerContext = createContext<number>(0);
 
@@ -44,8 +47,9 @@ type CollapsibleDataTableTreeViewProps = {
 export function CollapsibleDataTableTreeEntryView({
   document,
   className,
-  expanded = true,
+  expanded,
 }: CollapsibleDataTableTreeViewProps) {
+  console.log("document", document.id, "reload");
   const [isOpen, setIsOpen] = useState(expanded);
   const documentTree = useDocumentTree();
   const documentGroupType = documentTree.type;
@@ -58,8 +62,9 @@ export function CollapsibleDataTableTreeEntryView({
     document.ancestors ?? "",
     document.id ?? ""
   );
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
+
+  const handleToggle = (open: boolean) => {
+    setIsOpen(open);
   };
 
   const depth = useContext(LayerContext) ?? 0;
@@ -74,20 +79,21 @@ export function CollapsibleDataTableTreeEntryView({
   );
 
   const getCollapseChildren = () => {
-    return [
-      ...children.map((doc) => {
-        return (
-          <LayerContext.Provider value={depth + 1} key={doc.id}>
-            <CollapsibleDataTableTreeEntryView
-              document={doc}
-              expanded={true}
-              key={doc.id}
-            />
-          </LayerContext.Provider>
-        );
-      }),
-
-      ...childrenTypeOptions.map((type, index) => (
+    const array = childrenTypeOptions.map((type, index) => {
+      return [
+        ...children
+          .filter((document) => document.type == type)
+          .map((doc) => {
+            return (
+              <LayerContext.Provider value={depth + 1} key={doc.id}>
+                <CollapsibleDataTableTreeEntryView
+                  document={doc}
+                  // expanded={false}
+                  key={doc.id}
+                />
+              </LayerContext.Provider>
+            );
+          }),
         <div
           key={type}
           className={cn(
@@ -95,7 +101,7 @@ export function CollapsibleDataTableTreeEntryView({
             getDocumentTypeColor(type).textHoveringColor
           )}
         >
-          <div style={{ paddingLeft: `${depth + 2.5}rem` }}>
+          <div style={{ paddingLeft: `${depth + 1.5}rem` }}>
             <CreateNewDataButton
               className={cn("text-gray-500 hover:bg-transparent")}
               onClick={async () => {
@@ -109,18 +115,37 @@ export function CollapsibleDataTableTreeEntryView({
               label={`${getDocumentTypeLayer(type).name}`}
             />
           </div>
-        </div>
-      )),
-    ];
+          <Separator className="w-full" />
+        </div>,
+      ];
+    });
+    return array.flat();
   };
+
+  // useEffect(() => {
+  //   let targetDocument = documentTree.getDocumentData(queryPathService.dataId);
+  //   if (queryPathService.dataId !== "") {
+  //     setIsOpen(queryPathService.dataId === document.id);
+  //     // setIsOpen(targetDocument?.ancestors.includes(document.id ?? "") ?? false);
+  //   }
+  // }, [document.id, queryPathService.dataId]);
+
+  function onDocumentSelect(docId: string) {
+    queryPathService.setAssetId(docId);
+    // setIsOpen(true);
+  }
+
+  const ref = React.createRef<HTMLObjectElement>();
+  console.log(ref.current);
   return (
     <Collapsible
-      open={isOpen}
-      onOpenChange={setIsOpen}
+      // open={isOpen}
+      onOpenChange={handleToggle}
       className={cn(
         "rounded-md bg-background max-h-[500px] md:max-h-max",
         className
       )}
+      ref={ref}
     >
       <div className="w-full flex flex-row">
         <DashboardCard
@@ -134,60 +159,32 @@ export function CollapsibleDataTableTreeEntryView({
               "h-fit flex flex-row items-center py-1 group"
             )}
           >
-            <CollapsibleTrigger className="bg-transparent" asChild>
-              <div
+            <CollapsibleTrigger className="bg-transparent">
+              <AnimationChevron
                 className={cn(
-                  //   haveChildren ? "visible" : "invisible",
-                  "p-2 rounded-md opacity-100 bg-transparent",
-                  // isOpen ? "opacity-100" : "opacity-100 md:opacity-0",
+                  // haveChildren ? "visible" : "invisible",
+                  "p-2 rounded-md opacity-0 bg-transparent",
+                  isOpen ? "opacity-100" : "opacity-100 md:opacity-0",
                   "group-hover:cursor-pointer group-hover:opacity-100"
                 )}
-              >
-                <motion.div
-                  initial={false}
-                  animate={{ rotate: isOpen ? 90 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <LuChevronRight />
-                </motion.div>
-              </div>
+                isExpanded={isOpen ? true : false}
+              />
             </CollapsibleTrigger>
             <DocumentTreeNode
               data={document}
               isSelected={true}
-              onClick={() => {
-                queryPathService.setAssetId(document.id!);
-                //   setIsOpen(!isOpen);
-                //   onClose?.();
-              }}
-              // style={headerWidth}
+              onClick={() => onDocumentSelect(document.id!)}
             />
           </div>
-          {/* <DocumentFormTableColumn data={document} /> */}
         </DashboardCard>
         <DocumentFormTableColumn data={document} />
       </div>
       <Separator className="w-full" />
       <CollapsibleContent className="w-full">
         {getCollapseChildren().map((child, index) => (
-          <motion.div
-            key={child.key}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            custom={index}
-            variants={{
-              initial: { opacity: 0, y: -20 },
-              animate: (index) => ({
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.3, delay: index * 0.03 },
-              }),
-              exit: { opacity: 0, y: 20 },
-            }}
-          >
+          <AnimationListContent key={child.key} index={index}>
             {child}
-          </motion.div>
+          </AnimationListContent>
         ))}
       </CollapsibleContent>
     </Collapsible>
@@ -198,6 +195,7 @@ type TableConfig = {
   width: string;
 };
 export const TableContext = createContext<TableConfig[]>([]);
+
 export function CollapsibleDataTableTreeView() {
   // make sure uit wrapped in document Tree Provider
   const documentTree = useDocumentTree();
@@ -274,7 +272,7 @@ export function CollapsibleDataTableTreeView() {
             <LayerContext.Provider value={0} key={doc.id}>
               <CollapsibleDataTableTreeEntryView
                 document={doc}
-                expanded={true}
+                // expanded={true}
                 key={doc.id}
               />
             </LayerContext.Provider>

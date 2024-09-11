@@ -67,7 +67,7 @@ export const DocumentDataTreeEntryView = memo(function DashboardColumnMin({
 
   useEffect(() => {
     setIsOpen(targetDocument?.ancestors.includes(data.id ?? "") ?? false);
-  }, [data]);
+  }, [data.id, targetDocument]);
 
   const paddingStyle = { paddingLeft: `${depth * 1}rem` };
   const headerWidth = {
