@@ -64,6 +64,7 @@ export function DocumentReferenceField({
   isDisabled = false,
   referenceGroup,
   limit = false,
+  view = "page",
 }: ReferenceFieldProps) {
   const { control, ...form } = useFormContext();
   const useQueryRoute = useDataQueryRoute();
@@ -109,7 +110,7 @@ export function DocumentReferenceField({
                 )}
               >
                 <Dialog>
-                  <DialogTrigger className="w-full flex flex-row justify-start items-center rounded-md">
+                  <DialogTrigger className="w-full flex flex-row justify-start items-start rounded-md">
                     <SearchButton isEmpty={isReferenceEmpty} />
                   </DialogTrigger>
                   <DialogContent className="">

@@ -206,8 +206,9 @@ export function DocumentFormTableColumn({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <ThemeContext.Provider value={colorTheme}>
-          <DashboardCard className="shadow-sm flex flex-row justify-start items-center ">
-            {/* <InfoBlock label={""} orientation={"horizontal"}>
+          <div className="flex flex-col">
+            <DashboardCard className="shadow-sm flex flex-row justify-start items-center ">
+              {/* <InfoBlock label={""} orientation={"horizontal"}>
                 <InputPropField
                   name="title"
                   placeholder={`${getDocumentTypeLayer(data.type).name} 名稱`}
@@ -215,33 +216,71 @@ export function DocumentFormTableColumn({
                   textCss={cn("font-semibold", colorTheme.textColor)}
                 ></InputPropField>
               </InfoBlock> */}
-            <InfoBlock label={""} orientation={"horizontal"}>
-              <InputPropField
-                name="description"
-                textCss={cn(" font-semibold")}
-              ></InputPropField>
-            </InfoBlock>
-            {propsField.fields.map((field, index) => {
-              return (
-                <InfoBlock
-                  key={field.id}
-                  orientation="horizontal"
-                  label={field.name}
-                  className={
-                    config.find((config) => config.name === field.name)
-                      ?.width ?? "w-48"
-                  }
-                >
-                  <PropertyValueField
+              <InfoBlock label={""} orientation={"horizontal"}>
+                <InputPropField
+                  name="description"
+                  textCss={cn(" font-semibold")}
+                ></InputPropField>
+              </InfoBlock>
+              {propsField.fields.map((field, index) => {
+                return (
+                  <InfoBlock
                     key={field.id}
-                    property={form.watch().properties[index]}
-                    index={index}
-                    view="table"
-                  />
-                </InfoBlock>
-              );
-            })}
-          </DashboardCard>
+                    orientation="horizontal"
+                    label={field.name}
+                    className={
+                      config.find((config) => config.name === field.name)
+                        ?.width ?? "w-48"
+                    }
+                  >
+                    <PropertyValueField
+                      key={field.id}
+                      property={form.watch().properties[index]}
+                      index={index}
+                      view="table"
+                    />
+                  </InfoBlock>
+                );
+              })}
+            </DashboardCard>
+            {form.formState.isDirty && (
+              <div
+                className={
+                  "w-full flex flex-row justify-start items-center space-x-2 py-1"
+                }
+              >
+                <Button
+                  disabled={
+                    isCreatingNewData
+                      ? false
+                      : form.formState.isSubmitting || !form.formState.isDirty
+                  }
+                  type="button"
+                  size="sm"
+                  variant={"outline"}
+                  onClick={reset}
+                >
+                  {isCreatingNewData ? "取消" : "重設"}
+                </Button>
+                <Button
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isDirty
+                  }
+                  type="submit"
+                  variant={"outline"}
+                  className={cn(colorTheme.textColor)}
+                  size="sm"
+                >
+                  <>
+                    {!isCreatingNewData ? "更新" : "新增"}
+                    {form.formState.isSubmitting ? (
+                      <LuLoader2 className="animate-spin" />
+                    ) : null}
+                  </>
+                </Button>
+              </div>
+            )}
+          </div>
         </ThemeContext.Provider>
       </form>
     </Form>

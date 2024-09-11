@@ -67,7 +67,7 @@ function TabListWidget() {
 
   return (
     <div className="bg-background h-fit overflow-x-auto px-4">
-      <div className="flex flex-row justify-start items-center">
+      <div className="w-full flex flex-row justify-start items-center">
         {documentConfig.map((config) => {
           return (
             <DropdownMenu key={config.dirName}>
@@ -118,30 +118,30 @@ export default function Page() {
       queryRoute.setAssetId("", "Location");
       return;
     }
-  }, [queryRoute.page]);
+  }, [queryRoute]);
 
-  useEffect(() => {
-    async function handleEmptyData() {
-      let data = await getAssetSibling("", dbType);
-      if (data.length > 0) {
-        queryRoute.setAssetId(data[0].id!, queryRoute.page);
-      } else {
-        const rootType = getGroupDefaultType(dbType);
-        queryRoute.createNewAsset(rootType, "");
-      }
-    }
-    console.log("page", queryRoute.dataId, queryRoute.mode);
-    // if (queryRoute.dataId === "" && queryRoute.mode === "display") {
-    //   handleEmptyData();
-    // }
-  }, [queryRoute.dataId, queryRoute.mode]);
+  // useEffect(() => {
+  // async function handleEmptyData() {
+  //   let data = await getAssetSibling("", dbType);
+  //   if (data.length > 0) {
+  //     queryRoute.setAssetId(data[0].id!, queryRoute.page);
+  //   } else {
+  //     const rootType = getGroupDefaultType(dbType);
+  //     queryRoute.createNewAsset(rootType, "");
+  //   }
+  // }
+  // console.log("page", queryRoute.dataId, queryRoute.mode);
+  // if (queryRoute.dataId === "" && queryRoute.mode === "display") {
+  //   handleEmptyData();
+  // }
+  // }, [queryRoute.dataId, queryRoute.mode]);
 
   return (
-    <>
+    <div className="max-w-max w-full flex flex-col">
       <TabListWidget />
       <Separator />
       <DocumentTreePage />
-    </>
+    </div>
   );
 }
 
@@ -153,19 +153,7 @@ function DocumentTreePage() {
   return (
     <DocumentTreeProvider type={dbType}>
       <DesktopOnly>
-        <div className="w-full max-h-max flex flex-row grid-cols-12">
-          {/* <div className="flex-initial w-96">
-            <DocumentTreeMenu path={""} />
-          </div>
-          <Separator className="max-h-max h-100" orientation="vertical" />
-          <div className="w-full shadow-lg p-2">
-            <DatabasePage
-              key={dbType + queryRoute.dataId}
-              selectedDocumentId={queryRoute.dataId}
-            />
-          </div> */}
-          {/* <DocumentFormTableView /> */}
-
+        <div className="w-full max-h-max flex flex-row overflow-scroll">
           <CollapsibleDataTableTreeView />
           <Sheet
             open={queryRoute.dataId !== "" || queryRoute.mode === "create"}

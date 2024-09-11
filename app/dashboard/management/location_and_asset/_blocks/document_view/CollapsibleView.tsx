@@ -35,6 +35,7 @@ import { CreateNewDataButton } from "../DataCRUDTrigger";
 import { AnimationListContent } from "@/components/motion/AnimationListContent";
 import { AnimationChevron } from "@/components/motion/AnimationChevron";
 import { CollapsibleProps } from "@radix-ui/react-collapsible";
+import { Skeleton } from "@nextui-org/react";
 
 const LayerContext = createContext<number>(0);
 
@@ -170,11 +171,13 @@ export function CollapsibleDataTableTreeEntryView({
                 isExpanded={isOpen ? true : false}
               />
             </CollapsibleTrigger>
-            <DocumentTreeNode
-              data={document}
-              isSelected={true}
-              onClick={() => onDocumentSelect(document.id!)}
-            />
+            <CollapsibleTrigger className="bg-transparent" asChild>
+              <DocumentTreeNode
+                data={document}
+                isSelected={true}
+                onClick={() => onDocumentSelect(document.id!)}
+              />
+            </CollapsibleTrigger>
           </div>
         </DashboardCard>
         <DocumentFormTableColumn data={document} />
@@ -207,15 +210,7 @@ export function CollapsibleDataTableTreeView() {
     documentTree.type
   );
 
-  if (isLoadingTemplate || !template) {
-    return <LoadingWidget />;
-  }
-
   const properties = [
-    // {
-    //   name: "名稱",
-    //   value: "",
-    // } as Property,
     {
       name: "敘述",
       value: "",
@@ -242,29 +237,44 @@ export function CollapsibleDataTableTreeView() {
     }),
   ];
 
-  return (
+  return isLoadingTemplate || !template ? (
+    <div className="w-[100px] max-w-max flex flex-col justify-start items-center space-y-">
+      {Array.from({ length: 5 }).map((_, index) => {
+        return (
+          <Skeleton
+            key={index}
+            className="w-full h-16 rounded-md bg-background"
+          />
+        );
+      })}
+    </div>
+  ) : (
     <TableContext.Provider value={tableColConfig}>
       <div className="max-w-max p-2 bg-background">
-        <div className="w-full flex flex-row justify-start items-center p-2">
-          <div
-            style={{ width: tableColConfig[0].width }}
-            className="text-sm font-semibold text-gray-500"
-          >
-            <p>主檔名稱</p>
+        <div className="w-full bg-gray-50">
+          <div className="w-full flex flex-row justify-start items-center p-2">
+            <div
+              style={{ width: tableColConfig[0].width }}
+              className="text-sm font-semibold text-gray-500"
+            >
+              <p>主檔名稱</p>
+            </div>
+            {properties.map((prop) => {
+              return (
+                <div
+                  key={prop.name}
+                  className={cn(
+                    tableColConfig.find((config) => config.name === prop.name)
+                      ?.width ?? "w-48",
+                    "text-sm font-semibold text-gray-500"
+                  )}
+                >
+                  <div className="w-full flex flex-row">{prop.name}</div>
+                  {/* <p className="w-full">{prop.name}</p> */}
+                </div>
+              );
+            })}
           </div>
-          {properties.map((prop) => {
-            return (
-              <div
-                key={prop.name}
-                className={cn(
-                  tableColConfig.find((config) => config.name === prop.name)
-                    ?.width ?? "w-48"
-                )}
-              >
-                <p>{prop.name}</p>
-              </div>
-            );
-          })}
         </div>
         <Separator />
         {root.map((doc) => {
