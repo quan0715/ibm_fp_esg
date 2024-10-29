@@ -203,7 +203,10 @@ export function AppNavBar() {
                 type="button"
                 variant={"destructive"}
                 onClick={async () => {
-                  await signOutAction();
+                  const res = await signOutAction();
+                  if (res?.success) {
+                    location.reload();
+                  }
                 }}
               >
                 登出

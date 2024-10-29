@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerAction } from "@/app/auth/_actions/registerAction";
+import { redirect } from "next/navigation";
 
 export function useToggleVisibility(
   initialState: boolean = false
@@ -57,6 +58,11 @@ export function useUserLoginForm() {
 
     if (res?.error) {
       setLoginError(res.error);
+    }
+
+    if (res?.success) {
+      console.log("Login successful");
+      location.reload();
     }
   }
 

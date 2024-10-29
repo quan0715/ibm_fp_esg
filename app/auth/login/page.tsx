@@ -25,9 +25,9 @@ export default function Page() {
 
   return (
     <AuthCard
-      title={"IBM 綠色製造平台 - 登入"}
+      title={"智慧永續ESG平台 - 登入"}
       description={
-        "歡迎使用IBM 綠色製造平台，輸入帳號密碼以登入平台進行後續操作"
+        "歡迎使用智慧永續ESG平台，輸入帳號密碼以登入平台進行後續操作"
       }
     >
       <form onSubmit={onLogin}>

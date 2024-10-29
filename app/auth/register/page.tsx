@@ -25,8 +25,8 @@ export default function Page() {
 
   return (
     <AuthCard
-      title={"IBM 綠色製造平台 - 註冊"}
-      description={"歡迎使用IBM 綠色製造平台，請註冊帳號，登入後啟用完整功能"}
+      title={"智慧永續ESG平台 - 註冊"}
+      description={"歡迎使用智慧永續ESG平台，請註冊帳號，登入後啟用完整功能"}
     >
       <form onSubmit={onRegistration}>
         <div className="flex flex-col self-stretch space-y-2">
