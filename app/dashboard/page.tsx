@@ -43,9 +43,10 @@ export default memo(function Page() {
     const logo = "/IBM_logo_white.png";
 
 
-    return <main className="block relative min-h-screen overflow-auto p-4">
-        <div className="z-0 flex flex-col justify-center items-center gap-10 p-10">
-            <div className="flex flex-col justify-center items-center gap-[5px];">
+    return <main className="flex relative min-h-screen w-screen h-screen overflow-auto p-4"
+        style={{ justifyContent: "safe center", alignItems: "safe center" }}>
+        <div className="z-0 flex flex-col justify-center items-center gap-10 p-10 m-auto">
+            <div className="flex flex-col justify-center items-center gap-[5px]">
                 <Image height={90} width={200} style={{ height: "90px", width: "auto" }} src={logo} alt="IBM"></Image>
             </div>
             <div className="flex justify-center items-center gap-10 self-stretch p-10">
@@ -53,7 +54,7 @@ export default memo(function Page() {
                 <Card img_src="/dashboard_img2.png" title="環境安全 ESG 儀表板" tags={["異常管理", "空污", "溫室氣體", "水污", "廢棄物", "毒化物", "海污"]} link={{ label: "環境安全儀表板", path: "" }} theme="#11AE3D"></Card>
             </div>
         </div>
-        <div className="opacity-50 z-[-1] absolute top-0 left-0 w-full h-full bg-green-100/50">
+        <div className="opacity-50 z-[-1] fixed top-0 left-0 w-full h-full bg-green-100/50">
             <Image fill src={bgImage} alt="background image" quality={50} />
         </div>
     </main>
