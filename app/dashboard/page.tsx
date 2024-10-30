@@ -9,12 +9,13 @@ type cardProps = {
     link: { label: string, path: string };
     theme: string;
 }
+
 const Card = ({ img_src, title, tags, link, theme }: cardProps) => (
     <div
-        className="bg-white overflow-hidden flex flex-col items-start w-[400px] max-w-[50%] rounded-[10px_10px_30px_10px]"
+        className="bg-white overflow-hidden flex flex-col items-start w-[400px] max-w-full rounded-[10px_10px_30px_10px]"
         style={{ fontFamily: "Noto Sans JP", color: theme }}
     >
-        <Image width={1000} height={1000} style={{ width: "100%", height: "174px" }} src={img_src} alt="pic not display"></Image>
+        <Image className="undraggable" width={1000} height={1000} style={{ width: "100%", height: "174px" }} src={img_src} alt="pic not display"></Image>
         <div className="flex flex-col justify-center items-start gap-[15px] self-stretch p-5">
             <span className="self-stretch text-lg not-italic font-bold leading-[normal]">{title}</span>
             <div className="flex items-start content-start gap-2.5 self-stretch flex-wrap">
@@ -46,11 +47,11 @@ export default function Page() {
 
     return <main className="flex relative min-h-screen w-screen h-screen overflow-auto p-4"
         style={{ justifyContent: "safe center", alignItems: "safe center" }}>
-        <div className="z-0 flex flex-col justify-center items-center gap-10 p-10 m-auto">
+        <div className="z-0 flex max-w-full flex-col justify-center items-center gap-10 p-10 m-auto">
             <div className="flex flex-col justify-center items-center gap-[5px]">
-                <Image height={90} width={200} style={{ height: "90px", width: "auto" }} src={logo} alt="IBM"></Image>
+                <Image className="undraggable" height={90} width={200} style={{ height: "90px", width: "auto" }} src={logo} alt="IBM"></Image>
             </div>
-            <div className="flex justify-center items-center gap-10 self-stretch p-10">
+            <div className="flex flex-wrap max-w-full justify-center items-center gap-10 self-stretch p-10">
                 <Card img_src="/dashboard_img1.png" title="工作安全 ESG 儀表板" tags={["罰單", "事故", "工商", "施工", "稽核", "設備", "其他"]} link={{ label: "工安儀表板", path: "/dashboard/management/location_and_asset?mode=display&page=Location" }} theme="#397EFF"></Card>
                 <Card img_src="/dashboard_img2.png" title="環境安全 ESG 儀表板" tags={["異常管理", "空污", "溫室氣體", "水污", "廢棄物", "毒化物", "海污"]} link={{ label: "環境安全儀表板", path: "" }} theme="#11AE3D"></Card>
             </div>
