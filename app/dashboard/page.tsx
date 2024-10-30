@@ -1,4 +1,3 @@
-import { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HiArrowRight } from "react-icons/hi2";
@@ -38,7 +37,9 @@ const Card = ({ img_src, title, tags, link, theme }: cardProps) => (
     </div>
 )
 
-export default memo(function Page() {
+export async function getServerStaticProps() { return {} }
+
+export default function Page() {
     const bgImage = "/dashboard_bg.png";
     const logo = "/IBM_logo_white.png";
 
@@ -58,4 +59,4 @@ export default memo(function Page() {
             <Image fill src={bgImage} alt="background image" quality={50} />
         </div>
     </main>
-})
+}
