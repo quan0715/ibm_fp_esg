@@ -1,21 +1,27 @@
+"use client";
 import React from "react";
 import { AppNavBar } from "@/app/dashboard/_components/AppNavBar";
 import { Separator } from "@/components/ui/separator";
+import SideBar from "../_components/AppSideBar";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [showSidebar, setShowSidebar] = React.useState(false);
   return (
     <div
       className={
         "flex h-screen flex-col flex-grow items-start justify-start self-stretch"
       }
     >
-      <AppNavBar />
+      <AppNavBar onSidebarHandleClick={() => setShowSidebar(!showSidebar)} />
       <Separator />
-      {children}
+      <div className="h-full w-full flex flex-row">
+        {showSidebar && <SideBar className="h-full w-[465px]" />}
+        {children}
+      </div>
     </div>
   );
 }

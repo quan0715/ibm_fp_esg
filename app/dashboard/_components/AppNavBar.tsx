@@ -145,7 +145,7 @@ export const Level1Menu: Level1MenuContentEntryProps[] = [
     ],
   },
 ];
-export function AppNavBar() {
+export function AppNavBar({ onSidebarHandleClick }: { onSidebarHandleClick: () => void }) {
   // const { data: session, status } = useSession();
   // const [user, setUser] = React.useState<User>(session?.user!);
 
@@ -156,7 +156,7 @@ export function AppNavBar() {
       }
     >
       <div className={"flex flex-row items-center h-14"}>
-        <Button size={"icon"} type={"button"} variant={"ghost"}>
+        <Button size={"icon"} type={"button"} variant={"ghost"} onClick={onSidebarHandleClick}>
           <MenuIcon className="h-4 w-4" />
         </Button>
         <p className="text-lg px-4">IBM ESG PLATFORM</p>
