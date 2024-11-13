@@ -5,7 +5,10 @@ import NavBar from './_component/NavBar';
 import { TabNames } from './_route';
 
 const Content = ({ children }: { children: React.ReactNode }) => (
-    <NavBar currentTab={usePathname().split('/')[-1] as TabNames}></NavBar>
+    <div className="h-full w-full flex flex-start flex-row">
+        <NavBar className="h-[52px] w-full" currentRoute={usePathname().split('/')[-1] as TabNames}></NavBar>
+        {children}
+    </div>
 )
 
 export default function Layout({ children }: { children: React.ReactNode }) {

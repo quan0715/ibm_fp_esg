@@ -9,11 +9,11 @@ routes.forEach(({ name, route }) => {
     nrm[name] = route;
 });
 
-export default function NavBar({ currentRoute }: { currentRoute: string }) {
+export default function NavBar({ currentRoute, className }: { currentRoute: string; className?: string }) {
     const routeName = rnm[currentRoute] ?? "環保KPI";
     const basePath = '/dashboard/env_safety';
     return (
-        <div className="flex w-full justify-start items-center gap-[15px] self-stretch px-[15px] py-0">
+        <div className={`flex justify-start items-center gap-[15px] self-stretch px-[15px] py-0 ${className}`}>
             <span className="text-4xl shrink-0 not-italic font-bold leading-[normal]">{routeName}</span>
             <div className="flex flex-0 w-full h-12 justify-start items-center gap-[5px] overflow-auto">
                 {routes.map(({ name, route }, index) => (
