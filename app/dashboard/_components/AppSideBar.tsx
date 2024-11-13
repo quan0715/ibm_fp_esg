@@ -1,7 +1,6 @@
 "use client";
-import { SeparatorVertical } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { FaAngleRight, FaAngleDown } from "react-icons/fa";
 
 const sideBarData = [
@@ -91,21 +90,21 @@ const sideBarData = [
     },
 ]
 
-const SideBar = ({ className }: { className?: string }) => {
-
+const SideBar = memo(({ className }: { className?: string }) => {
     const menuData = sideBarData.map((item) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [isOpen, setIsOpen] = useState(false);
         return {
             ...item,
             isOpen,
             setIsOpen
         }
-    })
+    });
 
     return (<div className={className}>
         <div className="flex w-full flex-col items-start gap-6 pt-[20px] pl-[90px]">
-            {menuData.map(({ title, setIsOpen, isOpen, link, children }) => (
-                <div className="unselectable flex gap-0 flex-col">
+            {menuData.map(({ title, setIsOpen, isOpen, link, children }, index) => (
+                <div key={index} className="unselectable flex gap-0 flex-col">
                     <div className="flex flex-row w-full h-[30px] gap-1">
                         <div className="hover:opacity-90 h-full w-5 flex justify-center items-center">
                             {isOpen ?
@@ -117,7 +116,7 @@ const SideBar = ({ className }: { className?: string }) => {
                         </Link>
                     </div>
                     {isOpen && <div className="flex flex-col border-l-2 ml-[10px] items-start gap-[14px] pt-[10px] pl-[20px] py-0">
-                        {children.map(({ text, link }) => (<Link href={link}>
+                        {children.map(({ text, link }, childIndex) => (<Link key={childIndex} href={link}>
                             <span className="text-[15px] hover:font-bold leading-[normal]">{text}</span>
                         </Link>))}
                     </div>}
@@ -126,6 +125,8 @@ const SideBar = ({ className }: { className?: string }) => {
         </div>
     </div>
     )
-}
+})
+
+SideBar.displayName = "SideBar";
 
 export default SideBar;

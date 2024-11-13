@@ -53,7 +53,7 @@ export default function Page() {
             </div>
             <div className="flex flex-wrap max-w-full justify-center items-center gap-10 self-stretch p-10">
                 <Card img_src="/dashboard_img1.png" title="工作安全 ESG 儀表板" tags={["罰單", "事故", "工商", "施工", "稽核", "設備", "其他"]} link={{ label: "工安儀表板", path: "/dashboard/management/location_and_asset?mode=display&page=Location" }} theme="#397EFF"></Card>
-                <Card img_src="/dashboard_img2.png" title="環境安全 ESG 儀表板" tags={["異常管理", "空污", "溫室氣體", "水污", "廢棄物", "毒化物", "海污"]} link={{ label: "環境安全儀表板", path: "" }} theme="#11AE3D"></Card>
+                <Card img_src="/dashboard_img2.png" title="環境安全 ESG 儀表板" tags={["異常管理", "空污", "溫室氣體", "水污", "廢棄物", "毒化物", "海污"]} link={{ label: "環境安全儀表板", path: "/dashboard/env_safety" }} theme="#11AE3D"></Card>
             </div>
         </div>
         <div className="opacity-50 z-[-1] fixed top-0 left-0 w-full h-full bg-green-100/50">
