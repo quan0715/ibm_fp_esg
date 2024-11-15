@@ -12,6 +12,7 @@ export type TabNames =
   | "環保KPI";
 
 const routes: { name: TabNames; route: string }[] = [
+  { name: "環保KPI", route: "/" },
   { name: "主管機關罰單", route: "/authority" },
   { name: "異常管理", route: "/abnormal" },
   { name: "空汙", route: "/air-pollution" },
@@ -22,7 +23,9 @@ const routes: { name: TabNames; route: string }[] = [
   { name: "海汙", route: "/marine-pollution" },
   { name: "證照管理", route: "/license-management" },
   { name: "節水節能", route: "/water-energy-saving" },
-  { name: "環保KPI", route: "/environmental-kpi" },
 ];
+
+export const name_route_map = new Map(routes.map((r) => [r.name, r.route]));
+export const route_name_map = new Map(routes.map((r) => [r.route, r.name]));
 
 export default routes;

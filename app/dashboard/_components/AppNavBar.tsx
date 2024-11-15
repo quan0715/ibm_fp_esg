@@ -12,8 +12,37 @@ import {
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
+import env_routes, { route_name_map as env_rnm } from "../env_safety/_route";
+import management_routes, {
+  route_name_map as management_rnm,
+} from "../management/_route";
+
 import Link from "next/link";
-import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
+import { IoIosLogOut } from "react-icons/io";
+import React, { memo } from "react";
 import { BiTachometer } from "react-icons/bi";
 import { GrSystem } from "react-icons/gr";
 import { MdAir } from "react-icons/md";
@@ -21,7 +50,14 @@ import { MdOutlineWaterDrop } from "react-icons/md";
 import { MdOutlinePrecisionManufacturing } from "react-icons/md";
 import { ThemeSwitcher } from "@/components/blocks/ThemeSwitcher";
 import { Button } from "@/components/ui/button";
-import { MenuIcon } from "lucide-react";
+import {
+  Car,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  MenuIcon,
+  SeparatorVertical,
+  Sidebar,
+} from "lucide-react";
 import { TbDatabaseShare } from "react-icons/tb";
 
 import { FaDatabase } from "react-icons/fa6";
@@ -33,188 +69,213 @@ import { Separator } from "@radix-ui/react-separator";
 import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
 import { auth } from "@/lib/auth";
 import { User } from "next-auth";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { usePathname } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 
-type MenuContentEntryProps = {
-  key: string;
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-};
-
-type Level1MenuContentEntryProps = {
-  key: string;
-  label: string;
-  content: MenuContentEntryProps[];
-};
-
-function MenuContentEntry({
-  label,
-  description,
-  href,
-  icon,
-}: {
-  label: string;
-  description: string;
-  href: string;
-  icon: React.ReactNode;
-}) {
+function SideBar() {
+  const [showSideBar, setShowSideBar] = React.useState(false);
   return (
-    <Link href={href} legacyBehavior passHref>
-      <NavigationMenuLink
-        className={cn(
-          navigationMenuTriggerStyle(),
-          "w-full h-fit flex flex-row space-x-2 items-center justify-start"
-        )}
-      >
-        {icon ? icon : null}
-        <div className={"flex flex-col justify-center items-start"}>
-          <p className={"text-sm"}>{label}</p>
-          <p className={"text-[12px] text-gray-500"}>{description}</p>
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          size={"icon"}
+          type={"button"}
+          variant={"ghost"}
+          onClick={() => setShowSideBar(!showSideBar)}
+        >
+          <MenuIcon className="h-4 w-4" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side={"left"}>
+        <div className="w-full flex flex-row justify-between">
+          <div className="flex flex-col w-full gap-4 p-4 border-l-[3px]">
+            {env_routes.map(({ name, route }) => (
+              <Link href={`/env_safety${route}`} key={route}>
+                {name}
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-col w-full gap-4 p-4 border-l-[3px]">
+            {management_routes.map(({ name, route }) => (
+              <Link href={`/env_safety${route}`} key={route}>
+                {name}
+              </Link>
+            ))}
+          </div>
         </div>
-      </NavigationMenuLink>
-    </Link>
+      </SheetContent>
+    </Sheet>
   );
 }
 
-export const Level1Menu: Level1MenuContentEntryProps[] = [
-  {
-    key: "management",
-    label: "主檔管理",
-    content: [
-      {
-        key: "location_and_asset",
-        label: "位置&資產",
-        description: "組織、廠區、Phase、課別",
-        icon: <LuFactory size={24} />,
-      },
-
-      // {
-      //   key: "asset",
-      //   label: "資產",
-      //   description: "資產基本資料/分類/監控點管理",
-      //   icon: <MdOutlinePrecisionManufacturing size={24} />,
-      // },
-    ],
-  },
-  {
-    key: "data",
-    label: "數據追蹤",
-    content: [
-      {
-        key: "ghg",
-        label: "GHG Data 管理",
-        description: "GHG 年度大盤/歷史資歷/資料管理",
-        icon: <MdAir size={24} />,
-      },
-      {
-        key: "emission",
-        label: "排放",
-        description: "排放基本資料/對應資產/tool/溫室氣體",
-        icon: <MdAir size={24} />,
-      },
-      {
-        key: "water",
-        label: "廢水",
-        description: "廢水基本資料/對應資產/tool",
-        icon: <MdOutlineWaterDrop size={24} />,
-      },
-      {
-        key: "waste",
-        label: "廢棄物管理",
-        description: "廢棄物基本資料/對應資產/tool",
-        icon: <MdAir size={24} />,
-      },
-    ],
-  },
-  {
-    key: "setting_and_authority",
-    label: "設定與權限",
-    content: [
-      {
-        key: "authority",
-        label: "權限管理",
-        description: "權限群組基本資料",
-        icon: <MdOutlineSettingsApplications size={24} />,
-      },
-      {
-        key: "integration",
-        label: "資料整合",
-        description: "權限群組的功能權限設定",
-        icon: <TbDatabaseShare size={24} />,
-      },
-    ],
-  },
-];
-export function AppNavBar({ onSidebarHandleClick }: { onSidebarHandleClick: () => void }) {
-  // const { data: session, status } = useSession();
-  // const [user, setUser] = React.useState<User>(session?.user!);
-
+const SubMenu = memo(function SubMenu({
+  base_route,
+  current_route,
+}: {
+  base_route: "env_safety" | "management";
+  current_route: string;
+}) {
+  base_route = base_route == "env_safety" ? "env_safety" : "management";
+  const routes = base_route == "env_safety" ? env_routes : management_routes;
   return (
-    <div
-      className={
-        "w-full flex flex-row justify-between items-center px-6 py-2 h-14"
-      }
-    >
-      <div className={"flex flex-row items-center h-14"}>
-        <Button size={"icon"} type={"button"} variant={"ghost"} onClick={onSidebarHandleClick}>
-          <MenuIcon className="h-4 w-4" />
-        </Button>
-        <p className="text-lg px-4">IBM ESG PLATFORM</p>
-      </div>
-      <NavigationMenu>
-        <NavigationMenuList>
-          {Level1Menu.map((menu, index) => {
-            const RootPath = "/dashboard";
-            let level1Path = `${RootPath}/${menu.key}`;
-            const menuLabel = menu.label;
-            const menuContent = menu.content;
-            return (
-              <DesktopOnly key={menuLabel + index}>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>{menuLabel}</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div
-                      className={
-                        "p-2 w-96 h-fit rounded-xl flex flex-col space-y-2 shadow-md"
-                      }
-                    >
-                      {menuContent.map((content) => {
-                        let level2Path = `${level1Path}/${content.key}`;
-                        return (
-                          <MenuContentEntry
-                            {...content}
-                            href={level2Path}
-                            key={content.label}
-                          />
-                        );
-                      })}
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </DesktopOnly>
-            );
-          })}
-          <NavigationMenuItem asChild>
-            <ThemeSwitcher />
-          </NavigationMenuItem>
-          <NavigationMenuItem asChild>
-            <DesktopOnly>
-              <Button
-                type="button"
-                variant={"destructive"}
-                onClick={async () => {
-                  const res = await signOutAction();
-                  if (res?.success) {
-                    location.reload();
-                  }
-                }}
-              >
-                登出
-              </Button>
-            </DesktopOnly>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+    <div className="w-full flex flex-row gap-2 px-2 py-1 justify-center">
+      {routes.map(({ name, route }) => (
+        <Badge
+          variant={current_route == route ? "default" : "secondary"}
+          className="rounded-[5px]"
+          key={route}
+        >
+          <Link href={`/${base_route}${route}`}>{name}</Link>
+        </Badge>
+      ))}
     </div>
+  );
+});
+
+const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
+  return (
+    <Breadcrumb>
+      <BreadcrumbList className="px-4">
+        <DesktopOnly>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/">
+                <p className="text-lg">IBM ESG PLATFORM</p>
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </DesktopOnly>
+        <DesktopOnly>
+          <BreadcrumbSeparator>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1">
+                <ChevronRightIcon />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {((name, link) => (
+                  <DropdownMenuItem>
+                    <Link href={link}>{name}</Link>
+                  </DropdownMenuItem>
+                ))(
+                  pathArray[1] != "env_safety"
+                    ? "環境安全 ESG 儀表板"
+                    : "工作安全 ESG 儀表板",
+                  pathArray[1] != "env_safety" ? "/env_safety" : "/management"
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </BreadcrumbSeparator>
+        </DesktopOnly>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            {((name, link) => (
+              <Link href={link}>
+                <p className="text-m">{name}</p>
+              </Link>
+            ))(
+              pathArray[1] == "env_safety" ? "環境安全" : "工作安全",
+              pathArray[1] == "env_safety"
+                ? "/dashboard/env_safety"
+                : "/dashboard/management"
+            )}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <MobileOnly>
+          <BreadcrumbSeparator>/</BreadcrumbSeparator>
+        </MobileOnly>
+        <BreadcrumbItem>
+          <BreadcrumbPage>
+            {pathArray[1] == "env_safety"
+              ? env_rnm.get("/" + pathArray[2] ?? env_rnm.get("/"))
+              : management_rnm.get(
+                  "/" + pathArray[2] ?? management_rnm.get("/")
+                )}
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+});
+
+export function AppNavBar() {
+  const path = usePathname().slice(1);
+  const pathArray = path.split("/");
+  console.log(pathArray);
+  return (
+    <>
+      <div
+        className={
+          "w-full flex flex-row justify-between items-center px-6 py-2 h-14"
+        }
+      >
+        <div className={"flex flex-row items-center h-14"}>
+          <MobileOnly>
+            <SideBar />
+          </MobileOnly>
+          <PathBar pathArray={pathArray} />
+        </div>
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem asChild>
+              <ThemeSwitcher />
+            </NavigationMenuItem>
+            <DesktopOnly>
+              <NavigationMenuItem asChild>
+                <Button
+                  type="button"
+                  variant={"destructive"}
+                  onClick={async () => {
+                    const res = await signOutAction();
+                    if (res?.success) {
+                      location.reload();
+                    }
+                  }}
+                >
+                  登出
+                </Button>
+              </NavigationMenuItem>
+            </DesktopOnly>
+            <MobileOnly>
+              <NavigationMenuItem asChild>
+                <Button
+                  type="button"
+                  variant={"destructive"}
+                  onClick={async () => {
+                    const res = await signOutAction();
+                    if (res?.success) {
+                      location.reload();
+                    }
+                  }}
+                >
+                  <IoIosLogOut />
+                </Button>
+              </NavigationMenuItem>
+            </MobileOnly>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+      <DesktopOnly className="w-full">
+        <SubMenu
+          base_route={pathArray[1] as "env_safety" | "management"}
+          current_route={pathArray[2]}
+        />
+      </DesktopOnly>
+    </>
   );
 }
