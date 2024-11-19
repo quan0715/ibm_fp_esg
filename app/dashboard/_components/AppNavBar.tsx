@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import { IoIosLogOut } from "react-icons/io";
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { BiTachometer } from "react-icons/bi";
 import { GrSystem } from "react-icons/gr";
 import { MdAir } from "react-icons/md";
@@ -89,31 +89,36 @@ import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 
 function SideBar() {
-  const [showSideBar, setShowSideBar] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   return (
-    <Sheet>
+    <Sheet open={open}>
       <SheetTrigger asChild>
         <Button
           size={"icon"}
           type={"button"}
           variant={"ghost"}
-          onClick={() => setShowSideBar(!showSideBar)}
+          onClick={() => { setOpen(!open); }}
         >
           <MenuIcon className="h-4 w-4" />
         </Button>
       </SheetTrigger>
       <SheetContent side={"left"}>
+        <SheetHeader>
+          <SheetTitle>IBM ESG PLATFORM</SheetTitle>
+          <SheetDescription>
+          </SheetDescription>
+        </SheetHeader>
         <div className="w-full flex flex-row justify-between">
           <div className="flex flex-col w-full gap-4 p-4 border-l-[3px]">
             {env_routes.map(({ name, route }) => (
-              <Link href={`/env_safety${route}`} key={route}>
+              <Link href={`/dashboard/env_safety/${route}`} key={route} onClick={() => setOpen(false)}>
                 {name}
               </Link>
             ))}
           </div>
-          <div className="flex flex-col w-full gap-4 p-4 border-l-[3px]">
+          <div className="flex flex-col h-fit w-full gap-4 p-4 border-l-[3px]">
             {management_routes.map(({ name, route }) => (
-              <Link href={`/env_safety${route}`} key={route}>
+              <Link href={`/dashboard/management/${route}`} key={route} onClick={() => setOpen(false)}>
                 {name}
               </Link>
             ))}
@@ -124,7 +129,7 @@ function SideBar() {
   );
 }
 
-const SubMenu = memo(function SubMenu({
+const SubMenu = function SubMenu({
   base_route,
   current_route,
 }: {
@@ -132,21 +137,22 @@ const SubMenu = memo(function SubMenu({
   current_route: string;
 }) {
   base_route = base_route == "env_safety" ? "env_safety" : "management";
+  current_route = current_route ?? "";
   const routes = base_route == "env_safety" ? env_routes : management_routes;
   return (
     <div className="w-full flex flex-row gap-2 px-2 py-1 justify-center">
       {routes.map(({ name, route }) => (
         <Badge
           variant={current_route == route ? "default" : "secondary"}
-          className="rounded-[5px]"
+          className="rounded-[5px] px-[0.4rem]"
           key={route}
         >
-          <Link href={`/${base_route}${route}`}>{name}</Link>
+          <Link href={`/dashboard/${base_route}/${route}`} prefetch>{name}</Link>
         </Badge>
       ))}
     </div>
   );
-});
+};
 
 const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
   return (
@@ -164,7 +170,7 @@ const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
         <DesktopOnly>
           <BreadcrumbSeparator>
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1">
+              <DropdownMenuTrigger aria-hidden={false} className="flex items-center gap-1">
                 <ChevronRightIcon />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
@@ -176,7 +182,7 @@ const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
                   pathArray[1] != "env_safety"
                     ? "環境安全 ESG 儀表板"
                     : "工作安全 ESG 儀表板",
-                  pathArray[1] != "env_safety" ? "/env_safety" : "/management"
+                  pathArray[1] != "env_safety" ? "/dashboard/env_safety" : "/dashboard/management"
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -196,16 +202,12 @@ const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
             )}
           </BreadcrumbLink>
         </BreadcrumbItem>
-        <MobileOnly>
-          <BreadcrumbSeparator>/</BreadcrumbSeparator>
-        </MobileOnly>
+        <BreadcrumbSeparator>/</BreadcrumbSeparator>
         <BreadcrumbItem>
           <BreadcrumbPage>
             {pathArray[1] == "env_safety"
-              ? env_rnm.get("/" + pathArray[2] ?? env_rnm.get("/"))
-              : management_rnm.get(
-                  "/" + pathArray[2] ?? management_rnm.get("/")
-                )}
+              ? env_rnm.get(pathArray[2]) ?? env_rnm.get("")
+              : management_rnm.get(pathArray[2]) ?? management_rnm.get("")}
           </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
@@ -216,7 +218,6 @@ const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
 export function AppNavBar() {
   const path = usePathname().slice(1);
   const pathArray = path.split("/");
-  console.log(pathArray);
   return (
     <>
       <div
