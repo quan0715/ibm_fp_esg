@@ -3,6 +3,9 @@
 import * as React from "react"
 
 import { Label, Pie, PieChart } from "recharts"
+
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+
 import {
     Card,
     CardContent,
@@ -22,7 +25,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
+const pieChartData = [
     { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
     { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
     { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
@@ -30,7 +33,7 @@ const chartData = [
     { browser: "other", visitors: 190, fill: "var(--color-other)" },
 ]
 
-const chartConfig = {
+const pieChartConfig = {
     visitors: {
         label: "Visitors",
     },
@@ -56,22 +59,43 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
+
+const BarChartData = [
+    { month: "January", desktop: 186, mobile: 80 },
+    { month: "February", desktop: 305, mobile: 200 },
+    { month: "March", desktop: 237, mobile: 120 },
+    { month: "April", desktop: 73, mobile: 190 },
+    { month: "May", desktop: 209, mobile: 130 },
+    { month: "June", desktop: 214, mobile: 140 },
+]
+const barChartConfig = {
+    desktop: {
+        label: "Desktop",
+        color: "hsl(var(--chart-1))",
+    },
+    mobile: {
+        label: "Mobile",
+        color: "hsl(var(--chart-2))",
+    },
+} satisfies ChartConfig
+
+
 export default function Component({ data, className }: { data: Root, className?: string }) {
     const totalVisitors = React.useMemo(() => {
-        return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+        return pieChartData.reduce((acc, curr) => acc + curr.visitors, 0)
     }, [])
 
     return (
-        <Card className={cn(["flex flex-col h-fit @container", className])}>
+        <Card className={cn(["flex flex-col h-fit", className])}>
             <CardHeader className="space-y-0 border-b p-0">
                 <div className="gap-1 px-6 py-5">
-                    <CardTitle>今年度罰單資訊資料統計</CardTitle>
+                    <CardTitle className="text-xl">今年度罰單資訊資料統計</CardTitle>
                     <CardDescription></CardDescription>
                 </div>
             </CardHeader>
-            <CardContent className="flex-1 pb-0 shrink">
+            <CardContent className="@container flex-1 pb-0">
                 <ChartContainer
-                    config={chartConfig}
+                    config={pieChartConfig}
                     className="mx-auto aspect-square max-h-[250px] @sm:hidden"
                 >
                     <PieChart className="flex flex-row">
@@ -81,7 +105,7 @@ export default function Component({ data, className }: { data: Root, className?:
                         />
 
                         <Pie
-                            data={chartData}
+                            data={pieChartData}
                             dataKey="visitors"
                             nameKey="browser"
                             innerRadius={60}
@@ -120,12 +144,12 @@ export default function Component({ data, className }: { data: Root, className?:
                     </PieChart>
                 </ChartContainer>
                 <ChartContainer
-                    config={chartConfig}
+                    config={pieChartConfig}
                     className="mx-auto aspect-square max-h-[350px] hidden @sm:flex"
                 >
                     <PieChart className="flex flex-row">
                         <Pie
-                            data={chartData}
+                            data={pieChartData}
                             dataKey="visitors"
                             nameKey="browser"
                             innerRadius={70}

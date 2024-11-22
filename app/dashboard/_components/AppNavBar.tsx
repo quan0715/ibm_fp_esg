@@ -97,6 +97,7 @@ function SideBar() {
           size={"icon"}
           type={"button"}
           variant={"ghost"}
+          className="px-0"
           onClick={() => { setOpen(!open); }}
         >
           <MenuIcon className="h-4 w-4" />
@@ -157,7 +158,7 @@ const SubMenu = function SubMenu({
 const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
   return (
     <Breadcrumb>
-      <BreadcrumbList className="px-4">
+      <BreadcrumbList className="px-4 max-md:px-2">
         <DesktopOnly>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
@@ -222,7 +223,7 @@ export function AppNavBar() {
     <>
       <div
         className={
-          "w-full flex flex-row justify-between items-center px-6 py-2 h-14"
+          "w-full flex flex-row justify-between items-center px-6 py-2 h-14 max-md:px-3"
         }
       >
         <div className={"flex flex-row items-center h-14"}>
@@ -257,6 +258,7 @@ export function AppNavBar() {
                 <Button
                   type="button"
                   variant={"destructive"}
+                  className="px-2"
                   onClick={async () => {
                     const res = await signOutAction();
                     if (res?.success) {

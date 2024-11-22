@@ -27,7 +27,7 @@ export default function Component({ data, className }: { data: Root, className?:
         <Card className={cn(["flex flex-col h-fit", className])}>
             <CardHeader className="space-y-0 border-b p-0">
                 <div className="gap-1 px-6 py-5">
-                    <CardTitle>今年度罰單資訊資料統計</CardTitle>
+                    <CardTitle className="text-xl">今年度罰單資訊資料統計</CardTitle>
                     <CardDescription></CardDescription>
                 </div>
             </CardHeader>
