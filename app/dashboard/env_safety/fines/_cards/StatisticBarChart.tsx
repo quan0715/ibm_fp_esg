@@ -25,6 +25,24 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+const labelStyle = "p-1 h-5 border py-0.5 text-xs font-semibold transition-colors focus:outline-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-primary/80 rounded-[10px]"
+
+const GroupBy = ({ values, value, onChange }: { values: string[], value: string, onChange: React.Dispatch<React.SetStateAction<string>> }) => {
+    return (
+        <div className="flex flex-row justify-start items-center px-3" data-active>
+            <ToggleGroup type="single" className="px-4 gap-2 flex justify-start flex-row flex-wrap grow" value={value} onValueChange={onChange}>
+                {values.map((f) => (
+                    <ToggleGroupItem variant={"outline"} className={labelStyle} key={f} value={f} aria-label={`Toggle ${f}`}>
+                        <span className="text-xs">{f}</span>
+                    </ToggleGroupItem>
+                ))}
+            </ToggleGroup>
+        </div>
+    )
+}
+
 const pieChartData = [
     { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
     { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
@@ -81,16 +99,15 @@ const barChartConfig = {
 
 
 export default function Component({ data, className }: { data: Root, className?: string }) {
-    const totalVisitors = React.useMemo(() => {
-        return pieChartData.reduce((acc, curr) => acc + curr.visitors, 0)
-    }, [])
-
+    const [groupBy, setGroupBy] = React.useState("依場處")
     return (
         <Card className={cn(["flex flex-col h-fit", className])}>
             <CardHeader className="space-y-0 border-b p-0">
                 <div className="gap-1 px-6 py-5">
-                    <CardTitle className="text-xl">今年度罰單資訊資料統計</CardTitle>
-                    <CardDescription></CardDescription>
+                    <CardTitle className="flex w-full justify-between items-center">
+                        <span className="text-xl">今年度罰單資訊資料統計</span>
+                        <GroupBy value={groupBy} onChange={setGroupBy} values={["依場處", "依汙染物種類"]} />
+                    </CardTitle>
                 </div>
             </CardHeader>
             <CardContent className="@container flex-1 flex-row justify-between items-end">
