@@ -1,7 +1,5 @@
 "use client"
 
-// need rwd
-
 import * as React from "react"
 import { LuDownload } from "react-icons/lu";
 import { IoIosInformation } from "react-icons/io";
