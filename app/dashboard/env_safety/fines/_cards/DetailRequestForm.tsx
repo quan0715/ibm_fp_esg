@@ -4,7 +4,7 @@
 
 import * as React from "react"
 import { LuDownload } from "react-icons/lu";
-import { FaInfo } from "react-icons/fa6";
+import { IoIosInformation } from "react-icons/io";
 
 import {
     Card,
@@ -33,13 +33,14 @@ import { GeneratedType, Root } from "../_fake_data_type"
 import { cn } from "@nextui-org/react"
 
 import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const labelStyle = "p-1 h-5 border py-0.5 text-xs font-semibold transition-colors focus:outline-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-primary/80 rounded-[10px]"
 
 const Filter = ({ title, values, value, onChange }: { title: string, values: string[], value: string[], onChange: React.Dispatch<React.SetStateAction<string[]>> }) => {
 
     return (
-        <div className="w-full flex flex-row justify-start items-center px-3 py-2 border" data-active>
+        <div className="w-full flex flex-row justify-start items-center px-3 py-2 border rounded-md" data-active>
             <span className="text-s text-nowrap">{title}</span>
             <ToggleGroup type="multiple" className="px-4 gap-2 flex justify-start flex-row flex-wrap grow" value={value} onValueChange={onChange}>
                 {values.map((f) => (
@@ -50,6 +51,35 @@ const Filter = ({ title, values, value, onChange }: { title: string, values: str
             </ToggleGroup>
         </div>
     )
+}
+
+function InfoSheet({ data }: { data: GeneratedType }) {
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button
+                    variant="secondary"
+                    color="primary"
+                    size="icon"
+                    className="rounded-full h-5 w-5 p-0">
+                    <IoIosInformation />
+                </Button>
+            </SheetTrigger>
+            <SheetContent >
+                <SheetHeader>
+                    <SheetTitle>詳細資料</SheetTitle>
+                </SheetHeader>
+                <div className="h-full flex flex-col gap-4 pt-4">
+                    {Object.entries(data).map(([key, value], i) => (
+                        <div key={i} className="flex flex-row justify-between items-start border-b gap-3 p-2">
+                            <span className="text-start text-xs text-nowrap font-semibold">{key}</span>
+                            <span className="text-xs">{value}</span>
+                        </div>
+                    ))}
+                </div>
+            </SheetContent>
+        </Sheet>
+    );
 }
 
 export default function Component({ data, className }: { data: Root, className?: string }) {
@@ -90,10 +120,8 @@ export default function Component({ data, className }: { data: Root, className?:
                     <TableBody>
                         {filteredData.map((d, i) => (
                             <TableRow key={i}>
-                                <TableCell className="text-nowrap">
-                                    <Button variant="secondary" color="primary" size="icon" className="rounded-sm col-span-full">
-                                        <FaInfo size={2} />
-                                    </Button>
+                                <TableCell className="text-nowrap flex justify-center items-center pr-0">
+                                    <InfoSheet data={d} />
                                 </TableCell>
                                 {dataColumns.map((col) => <TableCell className="text-nowrap" key={col}>{d[col]}</TableCell>)}
                             </TableRow>
