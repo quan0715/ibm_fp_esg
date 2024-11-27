@@ -2,13 +2,8 @@
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
 import Link from "next/link";
@@ -166,7 +161,7 @@ const PathBar = forwardRef<{ currentRoutes: Route[] }, { routeArray: string[], s
   return (
     <Breadcrumb>
       <BreadcrumbList className="px-4 max-md:px-2">
-        <BreadcrumbItem className="max-md:hidden" onMouseEnter={() => { console.log('test'); setSubMenuRoute?.(route) }}>
+        <BreadcrumbItem className="max-md:hidden" onMouseEnter={() => { console.log('test'); setSubMenuRoute?.(routes) }}>
           <BreadcrumbLink asChild>
             <Link href="/">
               <p className="text-lg">IBM ESG PLATFORM</p>
