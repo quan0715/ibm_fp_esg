@@ -1,9 +1,6 @@
 "use server";
 
-export const getServerStaticProps = async () => ({})
-
-async function Page({ tmp }: { tmp: Promise<string[]> }) {
-    console.log(tmp)
+async function Page() {
     return <div>
 
     </div>
