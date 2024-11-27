@@ -1,27 +1,20 @@
-export type TabNames =
-  | "主管機關罰單"
-  | "事故"
-  | "空汙"
-  | "工傷"
-  | "施工"
-  | "稽核"
-  | "設備"
-  | "其他"
-  | "工安KPI";
+import { Route } from "../_route_type";
 
-const routes: { name: TabNames; route: string }[] = [
-  { name: "工安KPI", route: "" },
-  { name: "主管機關罰單", route: "fines" },
-  { name: "事故", route: "abnormal" },
-  { name: "空汙", route: "pollution" },
-  { name: "工傷", route: "injury" },
-  { name: "施工", route: "construction" },
-  { name: "稽核", route: "audit" },
-  { name: "設備", route: "equipment" },
-  { name: "其他", route: "others" },
+const base_route = "/dashboard/management";
+const routes: Route[] = [
+  { name: "工安KPI", route: "", subroute: [] },
+  {
+    name: "主管機關罰單",
+    route: "/fines",
+    subroute: [{ name: "主管機關罰單", route: "/fines", subroute: [] }],
+  },
+  { name: "事故", route: base_route + "/abnormal", subroute: [] },
+  { name: "空汙", route: base_route + "/pollution", subroute: [] },
+  { name: "工傷", route: base_route + "/injury", subroute: [] },
+  { name: "施工", route: base_route + "/construction", subroute: [] },
+  { name: "稽核", route: base_route + "/audit", subroute: [] },
+  { name: "設備", route: base_route + "/equipment", subroute: [] },
+  { name: "其他", route: base_route + "/others", subroute: [] },
 ];
-
-export const name_route_map = new Map(routes.map((r) => [r.name, r.route]));
-export const route_name_map = new Map(routes.map((r) => [r.route, r.name]));
 
 export default routes;
