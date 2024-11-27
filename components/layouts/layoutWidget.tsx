@@ -1,12 +1,28 @@
-function MobileOnly({ children }: { children?: React.ReactNode }) {
+function MobileOnly({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="block md:hidden">{children ?? "mobile only block"}</div>
+    <div className={`block md:hidden ${className}`}>
+      {children ?? "mobile only block"}
+    </div>
   );
 }
 
-function DesktopOnly({ children }: { children?: React.ReactNode }) {
+function DesktopOnly({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="hidden md:block">{children ?? "desktop only block"}</div>
+    <div className={`hidden md:block ${className}`}>
+      {children ?? "desktop only block"}
+    </div>
   );
 }
 
