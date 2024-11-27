@@ -58,10 +58,6 @@ const Card = ({ img_src, title, tags, link, theme }: cardProps) => (
   </div>
 );
 
-export async function getServerStaticProps() {
-  return {};
-}
-
 export default function Page() {
   const bgImage = "/dashboard_bg.png";
   const logo = "/IBM_logo_white.png";

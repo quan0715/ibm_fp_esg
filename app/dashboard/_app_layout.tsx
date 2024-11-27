@@ -11,12 +11,12 @@ export default async function DashboardLayout({
   return (
     <div
       className={
-        "flex h-screen flex-col flex-grow items-start justify-start self-stretch"
+        "flex h-screen w-screen flex-col flex-grow items-start justify-start self-stretch"
       }
     >
       <AppNavBar />
       <Separator />
-      <div className="h-full w-full flex flex-row">{children}</div>
+      <div className="h-full w-full overflow-x-hidden flex flex-row">{children}</div>
     </div>
   );
 }

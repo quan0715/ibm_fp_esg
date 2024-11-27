@@ -94,28 +94,13 @@ export default function Component({ data, className }: { data: Root, className?:
         return d["罰單"].filter((d) => pollutionFilterArr.includes(d["汙染類別"]))
     }), [data, factoryFilterArr, pollutionFilterArr])
 
-    const downloadCurrentDataCsv = React.useCallback(() => {
-        const csv = dataColumns.join(",") + "\n" + filteredData.map((d) => {
-            return dataColumns.map((col) => d[col]).join(",")
-        }).join("\n")
-
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'data.csv';
-        a.click();
-        window.URL.revokeObjectURL(url);
-    }, [filteredData, dataColumns])
-
     return (
         <Card className={cn(["flex flex-col h-fit", className])}>
             <CardHeader className="space-y-0 border-b p-0">
                 <div className="gap-1 px-6 py-5">
                     <CardTitle className="w-full flex justify-between items-center">
                         <span className="text-xl">今年度違反法令事項統計</span>
-                        <Button variant="secondary" color="primary" size={"sm"}
-                            onClick={() => downloadCurrentDataCsv()}><LuDownload />Excel 下載</Button>
+                        <Button variant="secondary" color="primary" size={"sm"}><LuDownload />Excel 下載</Button>
                     </CardTitle>
                     <CardDescription></CardDescription>
                 </div>
