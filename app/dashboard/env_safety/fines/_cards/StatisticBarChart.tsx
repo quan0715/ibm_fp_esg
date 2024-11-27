@@ -43,56 +43,21 @@ const GroupBy = ({ values, value, onChange }: { values: string[], value: string,
     )
 }
 
-const pieChartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-    { browser: "other", visitors: 190, fill: "var(--color-other)" },
-]
-
-const pieChartConfig = {
-    visitors: {
-        label: "Visitors",
-    },
-    chrome: {
-        label: "Chrome",
-        color: "hsl(var(--chart-1))",
-    },
-    safari: {
-        label: "Safari",
-        color: "hsl(var(--chart-2))",
-    },
-    firefox: {
-        label: "Firefox",
-        color: "hsl(var(--chart-3))",
-    },
-    edge: {
-        label: "Edge",
-        color: "hsl(var(--chart-4))",
-    },
-    other: {
-        label: "Other",
-        color: "hsl(var(--chart-5))",
-    },
-} satisfies ChartConfig
-
-
 const BarChartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    { month: "烯烴部", desktop: 186, mobile: 80 },
+    { month: "保養中心", desktop: 305, mobile: 200 },
+    { month: "碼槽處", desktop: 237, mobile: 120 },
+    { month: "公用部", desktop: 73, mobile: 190 },
+    { month: "公務部", desktop: 209, mobile: 130 },
+    { month: "煉油部", desktop: 214, mobile: 140 },
 ]
 const barChartConfig = {
     desktop: {
-        label: "Desktop",
+        label: "罰單金額",
         color: "hsl(var(--chart-1))",
     },
     mobile: {
-        label: "Mobile",
+        label: "罰單數量",
         color: "hsl(var(--chart-2))",
     },
 } satisfies ChartConfig

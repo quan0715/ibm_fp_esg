@@ -26,55 +26,60 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 const pieChartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-    { browser: "other", visitors: 190, fill: "var(--color-other)" },
+    { browser: "烯烴部", visitors: 275, fill: "var(--color-烯烴部)" },
+    { browser: "保養中心", visitors: 200, fill: "var(--color-保養中心)" },
+    { browser: "碼槽處", visitors: 287, fill: "var(--color-碼槽處)" },
+    { browser: "公用部", visitors: 173, fill: "var(--color-公用部)" },
+    { browser: "公務部", visitors: 190, fill: "var(--color-公務部)" },
+    { browser: "煉油部", visitors: 190, fill: "var(--color-煉油部)" },
 ]
 
 const pieChartConfig = {
     visitors: {
         label: "Visitors",
     },
-    chrome: {
-        label: "Chrome",
+    "烯烴部": {
+        label: "烯烴部",
         color: "hsl(var(--chart-1))",
     },
-    safari: {
-        label: "Safari",
+    "保養中心": {
+        label: "保養中心",
         color: "hsl(var(--chart-2))",
     },
-    firefox: {
-        label: "Firefox",
+    "碼槽處": {
+        label: "碼槽處",
         color: "hsl(var(--chart-3))",
     },
-    edge: {
-        label: "Edge",
+    "公用部": {
+        label: "公用部",
         color: "hsl(var(--chart-4))",
     },
-    other: {
-        label: "Other",
+    "公務部": {
+        label: "公務部",
         color: "hsl(var(--chart-5))",
+    },
+    "煉油部": {
+        label: "煉油部",
+        color: "hsl(var(--primary))",
     },
 } satisfies ChartConfig
 
 
 const BarChartData = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 },
+    { month: "烯烴部", desktop: 186, mobile: 80 },
+    { month: "保養中心", desktop: 305, mobile: 200 },
+    { month: "碼槽處", desktop: 237, mobile: 120 },
+    { month: "公用部", desktop: 73, mobile: 190 },
+    { month: "公務部", desktop: 209, mobile: 130 },
+    { month: "煉油部", desktop: 214, mobile: 140 },
 ]
 const barChartConfig = {
     desktop: {
-        label: "Desktop",
+        label: "罰單金額",
         color: "hsl(var(--chart-1))",
     },
     mobile: {
-        label: "Mobile",
+        label: "罰單數量",
         color: "hsl(var(--chart-2))",
     },
 } satisfies ChartConfig
@@ -149,6 +154,10 @@ export default function Component({ data, className }: { data: Root, className?:
                         className="mx-auto aspect-square max-h-[350px] hidden @sm:flex"
                     >
                         <PieChart className="flex flex-row">
+                            <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
+                            />
                             <Pie
                                 data={pieChartData}
                                 dataKey="visitors"
