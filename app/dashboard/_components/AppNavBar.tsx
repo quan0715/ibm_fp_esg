@@ -1,6 +1,5 @@
 "use client";
-import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-import { LuFactory } from "react-icons/lu";
+import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,11 +10,6 @@ import {
   NavigationMenuTrigger,
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
-
-import env_routes, { route_name_map as env_rnm } from "../env_safety/_route";
-import management_routes, {
-  route_name_map as management_rnm,
-} from "../management/_route";
 
 import Link from "next/link";
 import {
@@ -42,56 +36,58 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import { IoIosLogOut } from "react-icons/io";
-import React, { memo, useEffect } from "react";
-import { BiTachometer } from "react-icons/bi";
-import { GrSystem } from "react-icons/gr";
-import { MdAir } from "react-icons/md";
-import { MdOutlineWaterDrop } from "react-icons/md";
-import { MdOutlinePrecisionManufacturing } from "react-icons/md";
+import React, { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { ThemeSwitcher } from "@/components/blocks/ThemeSwitcher";
 import { Button } from "@/components/ui/button";
 import {
-  Car,
-  ChevronDownIcon,
-  ChevronRightIcon,
   MenuIcon,
-  SeparatorVertical,
-  Sidebar,
 } from "lucide-react";
-import { TbDatabaseShare } from "react-icons/tb";
-
-import { FaDatabase } from "react-icons/fa6";
-import { MdOutlineSettingsApplications } from "react-icons/md";
-import { SiWebauthn } from "react-icons/si";
-import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/auth/_actions/signOutAction";
-import { Separator } from "@radix-ui/react-separator";
 import { DesktopOnly, MobileOnly } from "@/components/layouts/layoutWidget";
-import { auth } from "@/lib/auth";
-import { User } from "next-auth";
+
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import routes from "../_route";
+import { Route } from "../_route_type";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
+const RecursiveMenu = ({ routes, setOpen }: { routes: Route[], setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+  const [collapsed, setCollapsed] = React.useState(true);
+  return <div className="flex gap-0 mb-2 flex-col h-fit w-full ml-1 my-1 max-sm:gap-1 pl-2 border-l-[2px]">{routes.map(({ name, route, subroute }) =>
+    <>{subroute.length == 0 ?
+      <Link className="pb-3 last:pb-0" href={route} key={route} onClick={() => setOpen(false)}>
+        {name}
+      </Link> :
+      <>
+        <div className="w-full pb-3 last:pb-0 flex flex-row justify-between items-center">
+          <Link href={route} key={route} onClick={() => setOpen(false)}>
+            {name}
+          </Link>
+          {collapsed ? <FaChevronRight className="h-[60%] aspect-square" onClick={() => setCollapsed(false)} /> : <FaChevronDown className="h-[60%] aspect-square" onClick={() => setCollapsed(true)} />}
+        </div>
+        <Collapsible open={!collapsed} onOpenChange={(open) => setCollapsed(!open)} className="group/collapsible">
+          <CollapsibleContent>
+            <RecursiveMenu routes={subroute} setOpen={setOpen} />
+          </CollapsibleContent>
+        </Collapsible>
+      </>
+
+    }</>)}
+  </div>;
+}
 
 function SideBar() {
   const [open, setOpen] = React.useState(false);
   return (
-    <Sheet open={open}>
+    <Sheet open={open} onOpenChange={open => setOpen(open)}>
       <SheetTrigger asChild>
         <Button
           size={"icon"}
@@ -103,43 +99,32 @@ function SideBar() {
           <MenuIcon className="h-4 w-4" />
         </Button>
       </SheetTrigger>
-      <SheetContent side={"left"}>
+      <SheetContent side={"left"} className="max-h-full flex flex-col justify-start gap-0">
         <SheetHeader>
           <SheetTitle>IBM ESG PLATFORM</SheetTitle>
           <SheetDescription>
           </SheetDescription>
         </SheetHeader>
-        <div className="w-full flex flex-row justify-between">
-          <div className="flex flex-col w-full gap-4 p-4 border-l-[3px]">
-            {env_routes.map(({ name, route }) => (
-              <Link href={`/dashboard/env_safety/${route}`} key={route} onClick={() => setOpen(false)}>
-                {name}
-              </Link>
-            ))}
+        <div className="w-full h-full shrink overflow-y-auto flex flex-row justify-between max-sm:[&_a]:text-[10px] max-sm:[&_a]:leading-[10px]">
+          <div className="flex flex-col w-[50%] gap-0 p-2 max-sm:p-1">
+            <Link className="" href={routes[0].route} onClick={() => setOpen(false)}>
+              {routes[0].name}
+            </Link>
+            <RecursiveMenu routes={routes[0].subroute} setOpen={setOpen} />
           </div>
-          <div className="flex flex-col h-fit w-full gap-4 p-4 border-l-[3px]">
-            {management_routes.map(({ name, route }) => (
-              <Link href={`/dashboard/management/${route}`} key={route} onClick={() => setOpen(false)}>
-                {name}
-              </Link>
-            ))}
+          <div className="flex flex-col w-[50%] gap-0 p-2 max-sm:p-1">
+            <Link href={routes[1].route} onClick={() => setOpen(false)}>
+              {routes[1].name}
+            </Link>
+            <RecursiveMenu routes={routes[1].subroute} setOpen={setOpen} />
           </div>
         </div>
       </SheetContent>
-    </Sheet>
+    </Sheet >
   );
 }
 
-const SubMenu = function SubMenu({
-  base_route,
-  current_route,
-}: {
-  base_route: "env_safety" | "management";
-  current_route: string;
-}) {
-  base_route = base_route == "env_safety" ? "env_safety" : "management";
-  current_route = current_route ?? "";
-  const routes = base_route == "env_safety" ? env_routes : management_routes;
+const SubMenu = function SubMenu({ routes, current_route }: { routes: Route[], current_route: string }) {
   return (
     <div className="w-full flex flex-row gap-2 px-2 py-1 justify-center">
       {routes.map(({ name, route }) => (
@@ -148,111 +133,108 @@ const SubMenu = function SubMenu({
           className="rounded-[5px] px-[0.4rem]"
           key={route}
         >
-          <Link href={`/dashboard/${base_route}/${route}`} prefetch>{name}</Link>
+          <Link href={route} prefetch>{name}</Link>
         </Badge>
       ))}
     </div>
   );
 };
 
-const PathBar = memo(function PathBar({ pathArray }: { pathArray: string[] }) {
+const PathBar = forwardRef<{ currentRoutes: Route[] }, { routeArray: string[], setSubMenuRoute?: (e: Route[]) => void }>(function PathBar({ routeArray, setSubMenuRoute }, ref) {
+  const barData = useMemo(() => {
+    let cur = routes;
+    const data: Route[] = [];
+    routeArray.forEach((route) => {
+      const next = cur.find((r) => r.route == route);
+      if (!next) return;
+      data.push({
+        ...next,
+        subroute: next.subroute.length ? next.subroute : cur
+      });
+      cur = next.subroute;
+    })
+    return data;
+  }, [routeArray]);
+
+  useImperativeHandle(ref, () => ({
+    currentRoutes: barData[barData.length - 1].subroute ?? []
+  }));
+
+  useEffect(() => {
+    setSubMenuRoute?.(barData[barData.length - 1].subroute);
+  }, [barData]);
   return (
     <Breadcrumb>
       <BreadcrumbList className="px-4 max-md:px-2">
-        <DesktopOnly>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/">
-                <p className="text-lg">IBM ESG PLATFORM</p>
-              </Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </DesktopOnly>
-        <DesktopOnly>
-          <BreadcrumbSeparator>
-            <DropdownMenu>
-              <DropdownMenuTrigger aria-hidden={false} className="flex items-center gap-1">
-                <ChevronRightIcon />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                {((name, link) => (
-                  <DropdownMenuItem>
-                    <Link href={link}>{name}</Link>
-                  </DropdownMenuItem>
-                ))(
-                  pathArray[1] != "env_safety"
-                    ? "環境安全 ESG 儀表板"
-                    : "工作安全 ESG 儀表板",
-                  pathArray[1] != "env_safety" ? "/dashboard/env_safety" : "/dashboard/management"
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </BreadcrumbSeparator>
-        </DesktopOnly>
-        <BreadcrumbItem>
+        <BreadcrumbItem className="max-md:hidden" onMouseEnter={() => { console.log('test'); setSubMenuRoute?.(route) }}>
           <BreadcrumbLink asChild>
-            {((name, link) => (
-              <Link href={link}>
-                <p className="text-m">{name}</p>
-              </Link>
-            ))(
-              pathArray[1] == "env_safety" ? "環境安全" : "工作安全",
-              pathArray[1] == "env_safety"
-                ? "/dashboard/env_safety"
-                : "/dashboard/management"
-            )}
+            <Link href="/">
+              <p className="text-lg">IBM ESG PLATFORM</p>
+            </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator>/</BreadcrumbSeparator>
-        <BreadcrumbItem>
-          <BreadcrumbPage>
-            {pathArray[1] == "env_safety"
-              ? env_rnm.get(pathArray[2]) ?? env_rnm.get("")
-              : management_rnm.get(pathArray[2]) ?? management_rnm.get("")}
-          </BreadcrumbPage>
-        </BreadcrumbItem>
+        <BreadcrumbSeparator className="max-md:hidden">/</BreadcrumbSeparator>
+        {barData.map(({ route, name, subroute }, i) => (
+          <React.Fragment key={route}>
+            <BreadcrumbItem key={route} onMouseEnter={() => setSubMenuRoute?.(subroute)}>
+              <BreadcrumbLink asChild>
+                <Link href={route}>
+                  <p className="text-m">{name}</p>
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {i != barData.length - 1 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
+          </React.Fragment>
+        ))}
       </BreadcrumbList>
-    </Breadcrumb>
+    </Breadcrumb >
   );
-});
+})
 
 export function AppNavBar() {
-  const path = usePathname().slice(1);
-  const pathArray = path.split("/");
+  const path = usePathname();
+  const pathBarRef = useRef<{
+    currentRoutes: Route[];
+  }>({ currentRoutes: [] });
+  const routeArray = useMemo(() => {
+    const pathArray = path.slice(1).split("/");
+    return pathArray.map((_, i) => "/" + pathArray.slice(0, i + 1).join("/")).slice(1);
+  }, [path])
+
+  const [subMenuRoute, setSubMenuRoute] = React.useState<Route[]>([]);
   return (
-    <>
+    <div className="w-full"
+      onMouseLeave={() => setSubMenuRoute(pathBarRef?.current?.currentRoutes ?? [])}
+    >
       <div
         className={
           "w-full flex flex-row justify-between items-center px-6 py-2 h-14 max-md:px-3"
-        }
-      >
+        }>
         <div className={"flex flex-row items-center h-14"}>
           <MobileOnly>
             <SideBar />
           </MobileOnly>
-          <PathBar pathArray={pathArray} />
+          <PathBar routeArray={routeArray} setSubMenuRoute={setSubMenuRoute} ref={pathBarRef} />
         </div>
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem asChild>
               <ThemeSwitcher />
             </NavigationMenuItem>
-            <DesktopOnly>
-              <NavigationMenuItem asChild>
-                <Button
-                  type="button"
-                  variant={"destructive"}
-                  onClick={async () => {
-                    const res = await signOutAction();
-                    if (res?.success) {
-                      location.reload();
-                    }
-                  }}
-                >
-                  登出
-                </Button>
-              </NavigationMenuItem>
-            </DesktopOnly>
+            <NavigationMenuItem className="max-md:hidden" asChild>
+              <Button
+                type="button"
+                variant={"destructive"}
+                onClick={async () => {
+                  const res = await signOutAction();
+                  if (res?.success) {
+                    location.reload();
+                  }
+                }}
+              >
+                登出
+              </Button>
+            </NavigationMenuItem>
             <MobileOnly>
               <NavigationMenuItem asChild>
                 <Button
@@ -275,10 +257,10 @@ export function AppNavBar() {
       </div>
       <DesktopOnly className="w-full">
         <SubMenu
-          base_route={pathArray[1] as "env_safety" | "management"}
-          current_route={pathArray[2]}
+          routes={subMenuRoute}
+          current_route={path}
         />
       </DesktopOnly>
-    </>
+    </div>
   );
 }
