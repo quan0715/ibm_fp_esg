@@ -28,7 +28,17 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 // get pollution type list
 export default function Component({
   pollutionData,
@@ -60,19 +70,17 @@ export default function Component({
   const [dataTargetFilter, setDataTargetFilter] = useState<string>(
     dataTargetList[0],
   );
-  const [startTime, setStartTime] = useState<string>(availableTime[0]);
-  const [endYear, setEndTime] = useState<string>(
-    availableTime[availableTime.length - 1],
-  );
+  const [startTime, setStartTime] = useState<string>("2024/1");
+  const [endTime, setEndTime] = useState<string>("2024/6");
 
   function getLineChartData() {
     const filteredData = pollutionData.filter((data) => {
       let time = `${data.year}/${data.month}`;
       return (
         parseInt(time.split("/")[0]) >= parseInt(startTime.split("/")[0]) &&
-        parseInt(time.split("/")[0]) <= parseInt(endYear.split("/")[0]) &&
+        parseInt(time.split("/")[0]) <= parseInt(endTime.split("/")[0]) &&
         parseInt(time.split("/")[1]) >= parseInt(startTime.split("/")[1]) &&
-        parseInt(time.split("/")[1]) <= parseInt(endYear.split("/")[1])
+        parseInt(time.split("/")[1]) <= parseInt(endTime.split("/")[1])
       );
     });
     // convert data to table format
@@ -94,7 +102,6 @@ export default function Component({
     });
     return Object.values(tableData);
   }
-  console.log(getLineChartData());
 
   const editPollutionFilter = (pollution: PollutionType) => {
     if (pollutionFilterList.includes(pollution)) {
@@ -170,6 +177,7 @@ export default function Component({
               onValueChange={(value) => {
                 setStartTime(value as string);
               }}
+              defaultValue={startTime}
             >
               <SelectTrigger className={"max-w-52"}>
                 <Label>起始年月</Label>
@@ -194,6 +202,7 @@ export default function Component({
               onValueChange={(value) => {
                 setEndTime(value as string);
               }}
+              defaultValue={endTime}
             >
               <SelectTrigger className={"max-w-52"}>
                 <Label>結束年月</Label>
@@ -215,11 +224,11 @@ export default function Component({
             </Select>
           </div>
         </div>
-        <div className={"w-full flex flex-row items-center justify-center"}>
-          <div className={"flex-1 "}>
+        <div className={"flex flex-row"}>
+          <div className={"flex-1"}>
             <Label>污染物折線圖數據</Label>
             <ChartContainer
-              className={"w-full h-[400px] p-4"}
+              className={"w-full h-[400px] p-2"}
               config={{
                 TSP: {
                   label: "TSP",
@@ -244,12 +253,18 @@ export default function Component({
               }}
             >
               <LineChart data={getLineChartData()}>
-                <CartesianGrid vertical={true} />
+                <CartesianGrid vertical={true} horizontal={true} />
                 <XAxis
                   dataKey="time"
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  allowDecimals={false}
                 />
                 {pollutionFilterList.map((pollutionType) => {
                   return (
@@ -269,13 +284,76 @@ export default function Component({
               </LineChart>
             </ChartContainer>
           </div>
-        </div>
-        <div
-          className={
-            "w-full flex border-2 h-[400px] justify-center items-center"
-          }
-        >
-          表格預留位置
+          <div className={"w-full flex flex-col justify-center items-start"}>
+            <Label>數據圖表</Label>
+            <Table>
+              <TableCaption>
+                {startTime} ~ {endTime} {dataTargetFilter} 變化
+              </TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[90px]">汙染物類別</TableHead>
+                  <TableHead className="w-[90px]">單位</TableHead>
+                  <TableHead className="w-[90px]">基準線</TableHead>
+                  {getLineChartData().map((data: any) => {
+                    return <TableHead key={data.time}>{data.time}</TableHead>;
+                  })}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pollutionFilterList.map((pollutionType) => {
+                  const baseline = baseLine.find(
+                    (baseLineValue) =>
+                      baseLineValue.pollution === pollutionType,
+                  );
+                  const data = getLineChartData();
+                  return (
+                    <TableRow key={pollutionType}>
+                      <TableCell className="font-medium">
+                        {pollutionType}
+                      </TableCell>
+                      <TableCell>{baseline?.unit ?? ""}</TableCell>
+                      <TableCell>{baseline?.baseLineValue ?? 0}</TableCell>
+                      {data.map((data: any) => {
+                        const acc = pollutionFilterList.reduce((acc, cur) => {
+                          return acc + data[cur];
+                        }, 0);
+                        return (
+                          <TableCell
+                            key={data.time}
+                            className={cn(
+                              baseline &&
+                                data[pollutionType] > baseline.baseLineValue
+                                ? "text-red-500"
+                                : "",
+                            )}
+                          >
+                            {dataTargetFilter === "單位產品排放量"
+                              ? (data[pollutionType] / acc).toFixed(2)
+                              : data[pollutionType]}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+                <TableRow>
+                  <TableCell className="font-medium">總計</TableCell>
+                  <TableCell>tons</TableCell>
+                  <TableCell>-</TableCell>
+                  {getLineChartData().map((data: any) => {
+                    return (
+                      <TableCell key={data.time}>
+                        {pollutionFilterList.reduce((acc, cur) => {
+                          return acc + data[cur];
+                        }, 0)}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -10,27 +10,27 @@ const routes: Route[] = [
     route: base_route + "/air-pollution",
     subroute: [
       {
-        name: "固定污染源排放管道檢測管理",
+        name: "固定污染源排放管道檢測",
         route: base_route + "/unknown",
         subroute: [],
       },
       {
-        name: "廢氣燃燒塔使用管理",
+        name: "廢氣燃燒塔使用",
         route: base_route + "/unknown",
         subroute: [],
       },
       {
-        name: "設備元件VOC檢測管理",
+        name: "設備元件VOC檢測",
         route: base_route + "/unknown",
         subroute: [],
       },
       {
-        name: "生煤、石油焦或其他易致空氣污染物申報管理",
+        name: "生煤、石油焦或其他易致空氣污染物申報",
         route: base_route + "/unknown",
         subroute: [],
       },
       {
-        name: "CEMS連續自動監測管理",
+        name: "CEMS連續自動監測",
         route: base_route + "/unknown",
         subroute: [],
       },
@@ -40,12 +40,12 @@ const routes: Route[] = [
         subroute: [],
       },
       {
-        name: "冷卻水塔水質定期檢測管理",
+        name: "冷卻水塔水質定期檢測",
         route: base_route + "/unknown",
         subroute: [],
       },
       {
-        name: "固定污染源排放管道檢測管理",
+        name: "固定污染源排放管道檢測",
         route: base_route + "/unknown",
         subroute: [],
       },
