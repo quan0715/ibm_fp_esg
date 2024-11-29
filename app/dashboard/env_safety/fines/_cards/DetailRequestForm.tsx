@@ -91,7 +91,7 @@ export default function Component({ data, className }: { data: Root, className?:
     const filteredData = React.useMemo(() => data.data.flatMap((d) => {
         if (factoryFilterArr.length > 0 && !factoryFilterArr.includes(d["廠處"])) return []
         if (pollutionFilterArr.length == 0) return d["罰單"]
-        return d["罰單"].filter((d) => pollutionFilterArr.includes(d["汙染類別"]))
+        return d["罰單"].filter((d) => pollutionFilterArr.filter((p) => d["汙染類別"].includes(p)).length > 0)
     }), [data, factoryFilterArr, pollutionFilterArr])
 
     const downloadCurrentDataCsv = React.useCallback(() => {
