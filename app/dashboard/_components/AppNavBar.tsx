@@ -121,14 +121,14 @@ function SideBar() {
 
 const SubMenu = function SubMenu({ routes, current_route }: { routes: Route[], current_route: string }) {
   return (
-    <div className="w-full flex flex-row gap-2 px-2 py-1 justify-center">
+    <div className="w-full flex flex-row gap-2 px-2 py-1 justify-center flex-wrap">
       {routes.map(({ name, route }) => (
         <Badge
           variant={current_route == route ? "default" : "secondary"}
           className="rounded-[5px] px-[0.4rem]"
           key={route}
         >
-          <Link href={route} prefetch>{name}</Link>
+          <Link href={route} prefetch className="text-nowrap">{name}</Link>
         </Badge>
       ))}
     </div>
