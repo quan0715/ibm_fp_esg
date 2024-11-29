@@ -157,7 +157,7 @@ const PathBar = forwardRef<{ currentRoutes: Route[] }, { routeArray: string[], s
 
   useEffect(() => {
     setSubMenuRoute?.(barData[barData.length - 1].subroute);
-  }, [barData]);
+  }, [barData, setSubMenuRoute]);
   return (
     <Breadcrumb>
       <BreadcrumbList className="px-4 max-md:px-2">
