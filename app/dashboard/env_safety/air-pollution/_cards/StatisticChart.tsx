@@ -38,6 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 // get pollution type list
 export default function Component({
@@ -224,8 +225,8 @@ export default function Component({
             </Select>
           </div>
         </div>
-        <div className={"flex flex-row"}>
-          <div className={"flex-1"}>
+        <div className={"w-full flex flex-row"}>
+          <div className={"flex-1 grow"}>
             <Label>污染物折線圖數據</Label>
             <ChartContainer
               className={"w-full h-[400px] p-2"}
@@ -284,7 +285,9 @@ export default function Component({
               </LineChart>
             </ChartContainer>
           </div>
-          <div className={"w-full flex flex-col justify-center items-start"}>
+          <ScrollArea
+            className={"flex-1 grow flex flex-col justify-center items-start"}
+          >
             <Label>數據圖表</Label>
             <Table>
               <TableCaption>
@@ -292,9 +295,9 @@ export default function Component({
               </TableCaption>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[90px]">汙染物類別</TableHead>
-                  <TableHead className="w-[90px]">單位</TableHead>
-                  <TableHead className="w-[90px]">基準線</TableHead>
+                  <TableHead className="min-w-[100px]">汙染物類別</TableHead>
+                  <TableHead className="min-w-[100px]">單位</TableHead>
+                  <TableHead className="min-w-[100px]">基準線</TableHead>
                   {getLineChartData().map((data: any) => {
                     return <TableHead key={data.time}>{data.time}</TableHead>;
                   })}
@@ -353,7 +356,8 @@ export default function Component({
                 </TableRow>
               </TableBody>
             </Table>
-          </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
       </CardContent>
     </Card>
