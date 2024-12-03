@@ -16,22 +16,22 @@ const Card = ({ img_src, title, tags, link, theme }: cardProps) => (
     style={{ fontFamily: "Noto Sans JP", color: theme }}
   >
     <Image
-      className="undraggable"
-      width={1000}
-      height={1000}
-      style={{ width: "100%", height: "174px" }}
+      className="undraggable object-cover"
       src={img_src}
+      width={400}
+      height={174}
+      style={{ height: "174px", width: "100%" }}
       alt="pic not display"
     ></Image>
     <div className="flex flex-col justify-center items-start gap-[15px] self-stretch p-5">
-      <span className="self-stretch text-lg not-italic font-bold leading-[normal]">
+      <span className="self-stretch sm:text-lg not-italic font-bold leading-[normal]">
         {title}
       </span>
-      <div className="flex items-start content-start gap-2.5 self-stretch flex-wrap">
+      <div className="flex items-start content-start md:gap-2.5 gap-2 self-stretch flex-wrap">
         {tags.map((tag, index) => (
           <div
             key={index}
-            className="text-sm not-italic font-bold leading-[normal] flex justify-center items-center gap-[5px] px-2.5 py-1"
+            className="sm:text-sm text-xs not-italic font-bold leading-[normal] flex justify-center items-center gap-[5px] sm:px-2.5 px-1.5 py-1 rounded-sm"
             style={{
               background: `linear-gradient(0deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.95) 100%), ${theme}`,
             }}
@@ -50,7 +50,7 @@ const Card = ({ img_src, title, tags, link, theme }: cardProps) => (
             <Link href={link.path}>{link.label}</Link>
           </span>
           <span>
-            <HiArrowRight style={{ height: 24, width: 24 }} />
+            <HiArrowRight style={{ height: 12, width: 12 }} />
           </span>
         </button>
       </div>
@@ -67,7 +67,7 @@ export default function Page() {
       className="flex relative min-h-screen w-screen h-screen overflow-auto p-4"
       style={{ justifyContent: "safe center", alignItems: "safe center" }}
     >
-      <div className="z-0 flex max-w-full flex-col justify-center items-center gap-10 p-10 m-auto">
+      <div className="z-0 flex max-w-full flex-col justify-center items-center gap-10 pt-10 m-auto">
         <div className="flex flex-col justify-center items-center gap-[5px]">
           <Image
             className="undraggable"
