@@ -19,3 +19,15 @@ export async function updateData(
 export async function getAll() {
     return await repo.query();
 }
+
+export async function deleteData(id: string) {
+    return await repo.delete(id);
+}
+
+export async function deleteAll() {
+    const data = await repo.query();
+    data.forEach(async (item) => {
+        if (!item._id) return;
+        await repo.delete(item._id.toHexString());
+    });
+}

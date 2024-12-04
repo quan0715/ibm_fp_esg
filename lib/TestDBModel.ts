@@ -1,12 +1,14 @@
 import { Document, ObjectId } from "mongodb";
 import clientPromise from "./mongoClient";
 
-export interface Parser<T> {
+export type DBModel = Document & { _id?: ObjectId };
+
+export interface Parser<T extends DBModel> {
   parse(data: Document): T;
 }
 
 const documentMondoDB = "Documents";
-export class MongoRepo<T extends Document> {
+export class MongoRepo<T extends DBModel> {
   private documentCollection: string = `${__dirname.replace(/\/|\\/, "_")}_${__filename}_doc`;
   constructor(
     private parser: Parser<T>,

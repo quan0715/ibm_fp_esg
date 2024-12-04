@@ -59,8 +59,13 @@ export type DataTableRefType = {
 const DataTable = memo(forwardRef<DataTableRefType, { dataColumns: string[], data: Record<string, any>[] }>(({ dataColumns, data }, ref) => {
     useImperativeHandle(ref, () => ({
         downloadCurrentDataCsv: () => {
-            const csv = dataColumns.join(",") + "\n" + data.map((d) => {
-                return dataColumns.map((col) => d[col]).join(",")
+            if (data.length === 0) {
+                alert("No data to download")
+                return;
+            };
+            const keys = Object.keys(data[0])
+            const csv = keys.join(",") + "\n" + data.map((d) => {
+                return keys.map((col) => d[col]).join(",")
             }).join("\n")
 
             const blob = new Blob([csv], { type: 'text/csv' });
@@ -71,7 +76,7 @@ const DataTable = memo(forwardRef<DataTableRefType, { dataColumns: string[], dat
             a.click();
             window.URL.revokeObjectURL(url);
         }
-    }), [dataColumns, data])
+    }), [data])
     return (<Table className="overflow-auto">
         <TableHeader>
             <TableRow>
@@ -80,14 +85,14 @@ const DataTable = memo(forwardRef<DataTableRefType, { dataColumns: string[], dat
             </TableRow>
         </TableHeader>
         <TableBody>
-            {data.map((d, i) => (
+            {data.length ? data.map((d, i) => (
                 <TableRow key={i}>
                     <TableCell className="text-nowrap flex justify-center items-center pr-0">
                         <InfoSheet data={d} />
                     </TableCell>
                     {dataColumns.map((col) => <TableCell className="text-nowrap" key={col}>{d[col]}</TableCell>)}
                 </TableRow>
-            ))}
+            )) : <TableRow><TableCell colSpan={dataColumns.length + 1} className="text-center">No Data</TableCell></TableRow>}
         </TableBody>
     </Table>
     )
