@@ -18,7 +18,7 @@ export default memo<{ data: { label: string, value: any }[], title: string, clas
         <Card className={cn(["flex flex-col h-fit @container", className])}>
             <CardHeader className="space-y-0 border-b p-0">
                 <div className="gap-1 px-6 py-5">
-                    <CardTitle className="text-wrap text-left">{title}</CardTitle>
+                    <CardTitle className="text-wrap text-left max-sm:text-xl">{title}</CardTitle>
                     <CardDescription></CardDescription>
                 </div>
             </CardHeader>

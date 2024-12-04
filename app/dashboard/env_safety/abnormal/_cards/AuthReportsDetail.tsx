@@ -35,7 +35,7 @@ export default function Component({ data, className }: { data: PlantAuthorityRep
             <CardHeader className="space-y-0 border-b p-0">
                 <div className="gap-1 px-6 py-5">
                     <CardTitle className="w-full flex justify-between items-center">
-                        <span className="text-xl">今年度違反法令事項統計</span>
+                        <span className="max-sm:text-xl">今年度違反法令事項統計</span>
                         <Button variant="secondary" color="primary" size={"sm"}
                             onClick={() => dataTableRef.current?.downloadCurrentDataCsv()}><LuDownload />Excel 下載</Button>
                     </CardTitle>

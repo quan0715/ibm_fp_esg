@@ -14,7 +14,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Root } from "../_fake_data_type"
 import { cn } from "@nextui-org/react"
 
 import {
@@ -26,6 +25,7 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Data } from "../_db/DataType"
 
 const labelStyle = "p-1 h-5 border py-0.5 text-xs font-semibold transition-colors focus:outline-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-primary/80 rounded-[10px]"
 
@@ -35,7 +35,7 @@ const GroupBy = ({ values, value, onChange }: { values: string[], value: string,
             <ToggleGroup type="single" className="px-4 gap-2 flex justify-start flex-row flex-wrap grow" value={value} onValueChange={onChange}>
                 {values.map((f) => (
                     <ToggleGroupItem variant={"outline"} className={labelStyle} key={f} value={f} aria-label={`Toggle ${f}`}>
-                        <span className="text-xs">{f}</span>
+                        <span className="text-xs text-nowrap">{f}</span>
                     </ToggleGroupItem>
                 ))}
             </ToggleGroup>
@@ -63,15 +63,15 @@ const barChartConfig = {
 } satisfies ChartConfig
 
 
-export default function Component({ data, className }: { data: Root, className?: string }) {
+export default function Component({ data, className }: { data: Data[], className?: string }) {
     const [groupBy, setGroupBy] = React.useState("依場處")
     return (
         <Card className={cn(["flex flex-col h-fit", className])}>
             <CardHeader className="space-y-0 border-b p-0">
                 <div className="gap-1 px-6 py-5">
                     <CardTitle className="flex w-full justify-between items-center">
-                        <span className="text-xl">今年度罰單資訊資料統計</span>
-                        <GroupBy value={groupBy} onChange={setGroupBy} values={["依場處", "依汙染物種類"]} />
+                        <span className="max-sm:text-xl">今年度罰單資訊資料統計</span>
+                        <GroupBy value={groupBy} onChange={setGroupBy} values={["依場處", "依汙染物"]} />
                     </CardTitle>
                 </div>
             </CardHeader>

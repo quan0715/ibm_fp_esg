@@ -14,7 +14,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Root } from "../_fake_data_type"
 import { cn } from "@nextui-org/react"
 
 import {
@@ -25,6 +24,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import { Data } from "../_db/DataType"
 const pieChartData = [
     { browser: "烯烴部", visitors: 275, fill: "var(--color-烯烴部)" },
     { browser: "保養中心", visitors: 200, fill: "var(--color-保養中心)" },
@@ -65,7 +65,7 @@ const pieChartConfig = {
 } satisfies ChartConfig
 
 
-export default function Component({ data, className }: { data: Root, className?: string }) {
+export default function Component({ data, className }: { data: Data[], className?: string }) {
     const totalVisitors = React.useMemo(() => {
         return pieChartData.reduce((acc, curr) => acc + curr.visitors, 0)
     }, [])

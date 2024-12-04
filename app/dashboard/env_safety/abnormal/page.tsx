@@ -22,6 +22,8 @@ import DataForm from '../../_components/DataForm';
 import { Data } from './_fake_data_type';
 import { useMemo } from 'react';
 import AuthReportsDetail from './_cards/AuthReportsDetail';
+import EnvReportsDetail from './_cards/EnvReportsDetail';
+import ExternalInspectionReportDetail from './_cards/ExternalInspectionReportDetail';
 const data = test_data as Data
 async function Page() {
     const test = [{ label: "testl", value: 123 }, { label: "test2", value: 123 }, { label: "test3", value: 123 }]
@@ -34,8 +36,8 @@ async function Page() {
 
     const tabs = useMemo<Record<string, any>>(() => ({
         "今年度主管機關稽核通報單": <AuthReportsDetail data={data["今年度主管機關稽核通報單"]} />,
-        // "今年度環保通報單":,
-        // "今年度外稽檢核異常與結案":,
+        "今年度環保通報單": <EnvReportsDetail data={data["今年度環保通報單"]} />,
+        "今年度外稽檢核異常與結案": <ExternalInspectionReportDetail data={data["今年度外稽檢核異常與結案"]} />,
         // "今年度環保異常報告單":,
     }), [data])
 
