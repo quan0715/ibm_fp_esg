@@ -1,26 +1,34 @@
 export interface Root {
-  kpiData: KPI[];
-  pollutionData: PollutionData[];
-  baseLine: BaseLine[];
+  kpiData: KPI;
+  permites: Permite[];
 }
 
 export interface KPI {
-  title: string;
-  unit: string;
-  value: number;
-}
-export type PollutionType = "TSP" | "SOx" | "NOx" | "VOCs" | "CO";
-
-export interface PollutionData {
-  year: number;
-  month: number;
-  unit: string;
-  pollution: PollutionType;
-  emission: number;
+  license: LicenseKPI[];
+  responsibleStaff: ResponsibleStaffKPI[];
 }
 
-export interface BaseLine {
-  unit: string;
-  pollution: PollutionType;
-  baseLineValue: number;
+export interface LicenseKPI {
+  pollutionType: string;
+  numberOfLicense: number;
+  latestExpirationDate: string;
+}
+
+export interface ResponsibleStaffKPI {
+  location: string;
+  numberOfStaff: number;
+}
+
+export interface Permite {
+  permitId: string;
+  permitType: string;
+  validity: string;
+  staffRequired: number;
+  staffAssigned: number;
+  responsibleStaff: {
+    staffId: string;
+    department: string;
+    licenseGrade: string;
+    expirationDate: string;
+  }[];
 }

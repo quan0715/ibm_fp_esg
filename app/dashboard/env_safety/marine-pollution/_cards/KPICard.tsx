@@ -31,8 +31,8 @@ export default function Component({
       </CardHeader>
       <CardContent className="grow p-3 flex">
         <div className="flex flex-row justify-center items-center grow shrink space-x-4">
-          <div className={"bg-blue-50 p-4 rounded-xl"}>
-            <Label className={"text-blue-500"}>完善率%</Label>
+          <div className={"bg-blue-50 p-4 rounded-xl flex-1"}>
+            <Label className={"text-blue-500 "}>完善率%</Label>
             <CountUpComponent
               end={
                 (kpi.numberOfCheckedEquipment / kpi.numberOfTotalEquipment) *
@@ -42,14 +42,14 @@ export default function Component({
               suffix={"%"}
             />
           </div>
-          <div className={"p-4 rounded-xl"}>
+          <div className={"p-4 rounded-xl flex-1"}>
             <Label className={"text-blue-500"}>清點數量</Label>
             <CountUpComponent
               end={kpi.numberOfCheckedEquipment}
               duration={800}
             />
           </div>
-          <div className={"bg-blue-50 p-4 rounded-xl"}>
+          <div className={"bg-blue-50 p-4 rounded-x flex-1"}>
             <Label className={"text-blue-500"}>應變器材數量</Label>
             <CountUpComponent end={kpi.numberOfTotalEquipment} duration={800} />
           </div>
