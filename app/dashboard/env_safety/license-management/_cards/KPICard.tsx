@@ -11,8 +11,42 @@ import {
 } from "@/components/ui/card";
 import { KPI } from "../_fake_data_type";
 import { cn } from "@nextui-org/react";
-import CountUpComponent from "@/app/dashboard/_components/CountUpAnimationComponent";
 
+const CountUpComponent = ({
+  end,
+  duration,
+}: {
+  end: number;
+  duration: number;
+}) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const stepTime = duration / end; // 計算每次增加的時間間隔（毫秒）
+    const startTime = performance.now();
+
+    const increment = (timestamp: number) => {
+      const elapsed = timestamp - startTime;
+      const currentCount = Math.min(end, Math.floor(elapsed / stepTime));
+      setCount(currentCount);
+
+      if (currentCount < end) {
+        requestAnimationFrame(increment);
+      }
+    };
+
+    requestAnimationFrame(increment);
+  }, [end, duration]);
+
+  return (
+    <p className={"text-4xl font-semibold p-2 text-blue-500"}>
+      {new Intl.NumberFormat("en-IN", {
+        maximumSignificantDigits: 3,
+      }).format(count)}
+    </p>
+  );
+};
 export default function Component({
   kpi,
   className,
@@ -31,7 +65,7 @@ export default function Component({
       <CardContent className="grow p-3 flex">
         <div className="flex flex-col justify-center items-center grow shrink">
           <CountUpComponent end={kpi.value} duration={800} />
-          <p className={"text-md fon  t-normal text-primary/50"}>{kpi.unit}</p>
+          <p className={"text-md font-normal text-primary/50"}>{kpi.unit}</p>
           {/*{chartData.map(({ label, value }, i) => {*/}
           {/*    return (*/}
           {/*        <div*/}

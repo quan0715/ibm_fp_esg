@@ -1,0 +1,128 @@
+{
+  "kpiData" : [
+    {
+      "location": "麥寮港",
+      "equipmentType": "應變器材",
+      "numberOfTotalEquipment": 9434,
+      "numberOfCheckedEquipment": 9345
+    },
+    {
+      "location": "台北港",
+      "equipmentType": "應變器材",
+      "numberOfTotalEquipment": 8765,
+      "numberOfCheckedEquipment": 8654
+    }
+  ],
+  "materials": [
+    {
+      "materialType": "撇油設備",
+      "materialLocation": "麥寮港",
+      "materialCategory": "撇油索注水機",
+      "materialItem": "-",
+      "materialSpecification": "出水量500L/min",
+      "unit": "台",
+      "inventory": 4,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "攔油設備",
+      "materialLocation": "麥寮港",
+      "materialCategory": "攔油索充氣機",
+      "materialItem": "-",
+      "materialSpecification": "-",
+      "unit": "台",
+      "inventory": 4,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "攔油設備",
+      "materialLocation": "麥寮港",
+      "materialCategory": "攔油索",
+      "materialItem": "潮間帶型",
+      "materialSpecification": "高度56cm,長度25M",
+      "unit": "條",
+      "inventory": 4,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "攔油設備",
+      "materialLocation": "台北港",
+      "materialCategory": "攔油索",
+      "materialItem": "外海型",
+      "materialSpecification": "高度160cm,長度150M",
+      "unit": "條",
+      "inventory": 4,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "海上運輸",
+      "materialCategory": "除汙船",
+      "materialLocation": "台北港",
+      "materialItem": "-",
+      "materialSpecification": "出水量120ton",
+      "unit": "艘",
+      "inventory": 1,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "吸附設備",
+      "materialLocation": "台北港",
+      "materialCategory": "化學吸液棉",
+      "materialItem": "片狀",
+      "materialSpecification": "處理量0.343Gallon",
+      "unit": "箱",
+      "inventory": 10,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "吸附設備",
+      "materialLocation": "台北港",
+      "materialCategory": "吸油棉",
+      "materialItem": "索狀",
+      "materialSpecification": "長度10英呎,直徑8英呎,每箱4條",
+      "unit": "包",
+      "inventory": 15,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "海上運輸",
+      "materialLocation": "麥寮港",
+      "materialCategory": "消防船",
+      "materialItem": "-",
+      "materialSpecification": "出水量326ton",
+      "unit": "艘",
+      "inventory": 4,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    },
+    {
+      "materialType": "海上運輸",
+      "materialCategory": "消防船",
+      "materialLocation": "麥寮港",
+      "materialItem": "-",
+      "materialSpecification": "出水量430ton",
+      "unit": "艘",
+      "inventory": 2,
+      "inspectionDate": "2023/11/01",
+      "cleanStatus": true,
+      "maintenanceStatus": true
+    }
+  ]
+}
+
+
