@@ -44,7 +44,7 @@ async function Page() {
     return <div className="p-4 max-w-full w-full flex flex-col">
         <Tabs defaultValue="今年度主管機關稽核通報單" className="w-full">
             <TabsList className="grid w-full h-fit md:grid-cols-[1fr_1fr] min-[1440px]:grid-cols-[1fr_1fr_1fr_1fr] max-md:grid-cols-[1fr_1fr_1fr_1fr] max-sm:grid-cols-[1fr_1fr]  [&>*]:p-2 [&>*]:h-full">
-                {sum_cards.map(({ name, sum_card }) => <TabsTrigger key={name} className="max-md:hidden" value={name}>{sum_card}</TabsTrigger>)}
+                {sum_cards.map(({ name, sum_card }) => <TabsTrigger key={name} className="max-md:hidden data-[state=active]:shadow-[0px_0px_4px_black_inset] dark:data-[state=active]:shadow-[0px_0px_4px_white_inset]" value={name}>{sum_card}</TabsTrigger>)}
                 {sum_cards.map(({ name }) => <TabsTrigger key={name} className="md:hidden text-[10px] " value={name}>{name}</TabsTrigger>)}
             </TabsList>
             {sum_cards.map(({ name, sum_card }) => <TabsContent key={name} value={name}>
