@@ -26,8 +26,7 @@ import {
 } from "@/components/ui/chart"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Data } from "../_db/DataType"
-
-const labelStyle = "p-1 h-5 border py-0.5 text-xs font-semibold transition-colors focus:outline-none border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-primary/80 rounded-[10px]"
+import { labelStyle } from "@/app/dashboard/_components/labelStyle"
 
 const GroupBy = ({ values, value, onChange }: { values: string[], value: string, onChange: React.Dispatch<React.SetStateAction<string>> }) => {
     return (
