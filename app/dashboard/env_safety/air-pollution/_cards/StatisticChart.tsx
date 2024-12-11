@@ -225,7 +225,7 @@ export default function Component({
             </Select>
           </div>
         </div>
-        <div className={"w-full flex flex-row"}>
+        <div className={"w-full flex flex-col lg:flex-row"}>
           <div className={"flex-1 grow"}>
             <Label>污染物折線圖數據</Label>
             <ChartContainer

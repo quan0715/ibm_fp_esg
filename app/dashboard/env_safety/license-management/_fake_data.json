@@ -1,0 +1,99 @@
+{
+  "kpiData" : {
+    "license" : [
+      {
+        "pollutionType" : "空汙",
+        "numberOfLicense" : 10,
+        "latestExpirationDate" : "2020-12-31"
+      },
+        {
+            "pollutionType" : "水汙",
+            "numberOfLicense" : 10,
+            "latestExpirationDate" : "2020-12-31"
+        },
+        {
+            "pollutionType" : "廢棄物",
+            "numberOfLicense" : 10,
+            "latestExpirationDate" : "2020-12-31"
+        },
+        {
+            "pollutionType" : "毒化物",
+            "numberOfLicense" : 10,
+            "latestExpirationDate" : "2020-12-31"
+        },
+        {
+            "pollutionType" : "海汙",
+            "numberOfLicense" : 10,
+            "latestExpirationDate" : "2020-12-31"
+        }
+    ],
+    "responsibleStaff": [
+      {
+        "location": "空汙",
+        "numberOfStaff": 10
+      },
+        {
+            "location": "水污",
+            "numberOfStaff": 10
+        },
+        {
+            "location": "廢棄物",
+            "numberOfStaff": 10
+        },
+        {
+            "location": "毒化物",
+            "numberOfStaff": 96
+        },
+      {
+        "location": "健康風險",
+        "numberOfStaff": 10
+      }
+    ]
+  },
+  "permits": [
+    {
+      "permitId": "P5801728",
+      "permitType": "A空氣汙染防制",
+      "validity": "2020-12-31",
+      "staffRequired": 2,
+      "staffAssigned": 2,
+      "responsibleStaff": [
+        {
+          "staffId": "N00035821",
+          "department": "E1A0 OL-1廠務",
+          "licenseGrade": "1甲級",
+          "expirationDate": "2025-01-01"
+        },
+        {
+          "staffId": "N00035822",
+          "department": "JA51 環安衛組",
+          "licenseGrade": "1甲級",
+          "expirationDate": "2025-01-01"
+        }
+      ]
+    },
+    {
+      "permitId": "P5801728",
+      "permitType": "A空氣汙染防制",
+      "validity": "2020-12-31",
+      "staffRequired": 2,
+      "staffAssigned": 2,
+      "responsibleStaff": [
+        {
+          "staffId": "N00035821",
+          "department": "E1A0 OL-1廠務",
+          "licenseGrade": "1甲級",
+          "expirationDate": "2025-01-01"
+        },
+        {
+          "staffId": "N00035822",
+          "department": "JA51 環安衛組",
+          "licenseGrade": "1甲級",
+          "expirationDate": "2025-01-01"
+        }
+      ]
+    }
+  ]
+}
+
+

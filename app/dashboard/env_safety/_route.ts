@@ -1,7 +1,7 @@
 import { Route } from "../_route_type";
 
 import air_polution_routes from "./air-pollution/_route";
-
+import license_management_routes from "./license-management/_route";
 const base_route = "/dashboard/env_safety";
 const routes: Route[] = [
   { name: "環保KPI", route: base_route + "", subroute: [] },
@@ -17,7 +17,11 @@ const routes: Route[] = [
   { name: "毒化物", route: base_route + "/hazardous-materials", subroute: [] },
   { name: "土壤地下水", route: base_route + "/soil-groundwater", subroute: [] },
   { name: "海汙", route: base_route + "/marine-pollution", subroute: [] },
-  { name: "證照管理", route: base_route + "/license-management", subroute: [] },
+  {
+    name: "證照管理",
+    route: base_route + "/license-management",
+    subroute: license_management_routes,
+  },
   {
     name: "節水節能",
     route: base_route + "/water-energy-saving",
