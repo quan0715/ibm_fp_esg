@@ -37,7 +37,7 @@ export default memo<{ data: { label: string, value: any }[], title: string, clas
                                 </span>
                                 <div className="grow flex w-full justify-center @sm:py-4">
                                     <span className="text-lg font-bold leading-none sm:text-3xl self-center">
-                                        <CountUpComponent end={value.toLocaleString()} duration={800} />{}
+                                        <CountUpComponent end={value >= 0 ? Math.abs(value) + 1e-20 : value} duration={800} />{ }
                                     </span>
                                 </div>
                             </div>
