@@ -37,7 +37,7 @@ export default function Component({ data, className }: { data: Data[], className
     const filteredData = React.useMemo(() => data.filter((d) => {
         if (factoryFilterArr.length > 0 && !factoryFilterArr.includes(d["廠處"])) return false;
         if (pollutionFilterArr.length == 0) return true;
-        return pollutionFilterArr.includes(d["廠處"])
+        return pollutionFilterArr.filter(genera => genera.includes(d["汙染類別"][2])).length > 0;
     }), [data, factoryFilterArr, pollutionFilterArr])
 
     const dataTableRef = React.useRef<DataTableRefType>(null);

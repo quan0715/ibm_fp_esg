@@ -1,17 +1,6 @@
 "use server";
 
 import test_data from './_fake_data.json'
-import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
     Tabs,
     TabsContent,
@@ -24,21 +13,61 @@ import { useMemo } from 'react';
 import AuthReportsDetail from './_cards/AuthReportsDetail';
 import EnvReportsDetail from './_cards/EnvReportsDetail';
 import ExternalInspectionReportDetail from './_cards/ExternalInspectionReportDetail';
+import EnvAbnormalReportDetail from './_cards/EnvAbnormalReportDetail';
 const data = test_data as Data
 async function Page() {
-    const test = [{ label: "testl", value: 123 }, { label: "test2", value: 123 }, { label: "test3", value: 123 }]
     const sum_cards = useMemo(() => [
-        { name: "今年度主管機關稽核通報單", sum_card: <DataForm className="w-full h-full" data={test} title="今年度主管機關稽核通報單" /> },
-        { name: "今年度環保通報單", sum_card: <DataForm className="w-full h-full" data={test} title="今年度環保通報單" /> },
-        { name: "今年度外稽檢核異常與結案", sum_card: <DataForm className="w-full h-full" data={test} title="今年度外稽檢核異常與結案" /> },
-        { name: "今年度環保異常報告單", sum_card: <DataForm className="w-full h-full" data={test} title="今年度環保異常報告單" /> },
+        {
+            name: "今年度主管機關稽核通報單", sum_card: <DataForm className="w-full h-full" data={[
+                {
+                    label: '稽核異常事項',
+                    value: 0
+                },
+                {
+                    label: '總稽核通報單數',
+                    value: 21
+                }
+            ]} title="今年度主管機關稽核通報單" />
+        },
+        {
+            name: "今年度環保通報單", sum_card: <DataForm className="w-full h-full" data={[
+                {
+                    label: '環保通報單數',
+                    value: 10
+                }
+            ]} title="今年度環保通報單" />
+        },
+        {
+            name: "今年度外稽檢核異常與結案", sum_card: <DataForm className="w-full h-full" data={[
+                {
+                    label: '結案單數',
+                    value: 19
+                },
+                {
+                    label: '總稽核異常單數',
+                    value: 21
+                }
+            ]} title="今年度外稽檢核異常與結案" />
+        },
+        {
+            name: "今年度環保異常報告單", sum_card: <DataForm className="w-full h-full" data={[
+                {
+                    label: '已銷案單數',
+                    value: 5
+                },
+                {
+                    label: '總環保異常單數',
+                    value: 6
+                }
+            ]} title="今年度環保異常報告單" />
+        },
     ], [data])
 
     const tabs = useMemo<Record<string, any>>(() => ({
         "今年度主管機關稽核通報單": <AuthReportsDetail data={data["今年度主管機關稽核通報單"]} />,
         "今年度環保通報單": <EnvReportsDetail data={data["今年度環保通報單"]} />,
         "今年度外稽檢核異常與結案": <ExternalInspectionReportDetail data={data["今年度外稽檢核異常與結案"]} />,
-        // "今年度環保異常報告單":,
+        "今年度環保異常報告單": <EnvAbnormalReportDetail data={data["今年度環保異常報告單"]} />,
     }), [data])
 
     return <div className="p-4 max-w-full w-full flex flex-col">
