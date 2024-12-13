@@ -67,7 +67,7 @@ export default function Page() {
       className="flex relative min-h-screen w-screen h-screen overflow-auto p-4"
       style={{ justifyContent: "safe center", alignItems: "safe center" }}
     >
-      <div className="z-0 flex max-w-full flex-col justify-center items-center gap-10 pt-10 m-auto">
+      <div className="z-0 flex max-w-full flex-col justify-center items-center gap-10 sm:pt-10 pt-8 m-auto">
         <div className="flex flex-col justify-center items-center gap-[5px]">
           <Image
             className="undraggable"
@@ -78,7 +78,7 @@ export default function Page() {
             alt="IBM"
           ></Image>
         </div>
-        <div className="flex flex-wrap max-w-full justify-center items-center gap-10 self-stretch p-10">
+        <div className="flex flex-wrap max-w-full justify-center items-center gap-10 self-stretch px-5">
           <Card
             img_src="/dashboard_img1.png"
             title="工作安全 ESG 儀表板"

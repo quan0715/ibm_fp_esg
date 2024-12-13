@@ -39,6 +39,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { labelStyle } from "@/app/dashboard/_components/labelStyle";
 
 // get pollution type list
 export default function Component({
@@ -67,7 +69,7 @@ export default function Component({
     ),
   );
   const [pollutionFilterList, setPollutionFilterList] =
-    useState<PollutionType[]>(pollutionTypeList);
+    useState<string[]>(pollutionTypeList);
   const [dataTargetFilter, setDataTargetFilter] = useState<string>(
     dataTargetList[0],
   );
@@ -104,15 +106,6 @@ export default function Component({
     return Object.values(tableData);
   }
 
-  const editPollutionFilter = (pollution: PollutionType) => {
-    if (pollutionFilterList.includes(pollution)) {
-      setPollutionFilterList(
-        pollutionFilterList.filter((type) => type !== pollution),
-      );
-    } else {
-      setPollutionFilterList([...pollutionFilterList, pollution]);
-    }
-  };
   return (
     <Card className={cn(["flex flex-col h-fit", className])}>
       <CardHeader className="space-y-0 border-b p-0">
@@ -131,43 +124,23 @@ export default function Component({
       <CardContent className="flex flex-col gap-2 p-2 justify-start">
         <div>
           <Label>污染物篩選</Label>
-          <div className={"flex flex-row gap-4 justify-start items-center p-2"}>
-            {pollutionTypeList.map((pollutionType) => {
-              return (
-                <Badge
-                  key={pollutionType}
-                  variant={
-                    pollutionFilterList.includes(pollutionType)
-                      ? "default"
-                      : "secondary"
-                  }
-                  onClick={() => editPollutionFilter(pollutionType)}
-                  className={"cursor-pointer"}
-                >
-                  <span className={"text-md select-none"}>{pollutionType}</span>
-                </Badge>
-              );
-            })}
-          </div>
+          <ToggleGroup type="multiple" className="flex flex-row gap-4 justify-start items-center p-2" value={pollutionFilterList} onValueChange={setPollutionFilterList}>
+            {pollutionTypeList.map((f) => (
+              <ToggleGroupItem variant={"outline"} className={labelStyle} key={f} value={f} aria-label={`Toggle ${f}`}>
+                <span className="text-xs">{f}</span>
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
         </div>
         <div>
           <Label>資料類別</Label>
-          <div className={"flex flex-row gap-4 justify-start items-center p-2"}>
-            {dataTargetList.map((dataTarget) => {
-              return (
-                <Badge
-                  key={dataTarget}
-                  variant={
-                    dataTarget === dataTargetFilter ? "default" : "secondary"
-                  }
-                  onClick={() => setDataTargetFilter(dataTarget)}
-                  className={"cursor-pointer"}
-                >
-                  <span className={"text-md select-none"}>{dataTarget}</span>
-                </Badge>
-              );
-            })}
-          </div>
+          <ToggleGroup type="single" className="flex flex-row gap-4 justify-start items-center p-2" value={dataTargetFilter} onValueChange={setDataTargetFilter}>
+            {dataTargetList.map((f) => (
+              <ToggleGroupItem variant={"outline"} className={labelStyle} key={f} value={f} aria-label={`Toggle ${f}`}>
+                <span className="text-xs">{f}</span>
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
         </div>
         <div>
           <Label>資料時間（年月）</Label>

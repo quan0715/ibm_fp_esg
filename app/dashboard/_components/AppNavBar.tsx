@@ -125,7 +125,7 @@ const SubMenu = function SubMenu({ routes, current_route }: { routes: Route[], c
       {routes.map(({ name, route }) => (
         <Badge
           variant={current_route == route ? "default" : "secondary"}
-          className="rounded-[5px] px-[0.4rem]"
+          className={"rounded-[5px] px-[0.4rem] border-none" + (current_route == route ? " shadow-[0px_0px_6px_0px_black_inset] dark:shadow-[0px_0px_6px_0px_hsl(var(--secondary))_inset]" : "")}
           key={route}
         >
           <Link href={route} prefetch className="text-nowrap">{name}</Link>
@@ -161,7 +161,7 @@ const PathBar = forwardRef<{ currentRoutes: Route[] }, { routeArray: string[], s
   return (
     <Breadcrumb>
       <BreadcrumbList className="px-4 max-md:px-2">
-        <BreadcrumbItem className="max-md:hidden" onMouseEnter={() => { console.log('test'); setSubMenuRoute?.(routes) }}>
+        <BreadcrumbItem className="max-md:hidden" onMouseEnter={() => { setSubMenuRoute?.(routes) }}>
           <BreadcrumbLink asChild>
             <Link href="/">
               <p className="text-lg">IBM ESG PLATFORM</p>
