@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import { cn } from "@nextui-org/react"
 import { memo } from "react"
+import CountUpComponent from "./CountUpAnimationComponent"
 
 export default memo<{ data: { label: string, value: any }[], title: string, className?: string }>(function Component({ data, className, title }) {
 
@@ -36,7 +37,7 @@ export default memo<{ data: { label: string, value: any }[], title: string, clas
                                 </span>
                                 <div className="grow flex w-full justify-center @sm:py-4">
                                     <span className="text-lg font-bold leading-none sm:text-3xl self-center">
-                                        {value.toLocaleString()}
+                                        <CountUpComponent end={value.toLocaleString()} duration={800} />{}
                                     </span>
                                 </div>
                             </div>
