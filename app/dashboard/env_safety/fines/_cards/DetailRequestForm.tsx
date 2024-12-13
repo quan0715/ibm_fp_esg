@@ -67,13 +67,13 @@ export default function Component({ data, className }: { data: Data[], className
     return (
         <Card className={cn(["flex flex-col h-fit", className])}>
             <CardHeader className="space-y-0 border-b p-0">
-                <div className="gap-1 px-6 py-5">
-                    <CardTitle className="w-full flex justify-between items-center">
-                        <span className="text-xl">今年度違反法令事項統計</span>
-                        <div className="flex flex-row gap-3">
-                            <Button variant="secondary" color="primary" size={"sm"}
+                <div className="gap-1 px-6 py-5 @container">
+                    <CardTitle className="w-full flex justify-between items-center gap-3 flex-wrap @[390px]:flex-nowrap">
+                        <span className="text-xl shrink-0">今年度違反法令事項統計</span>
+                        <div className="flex flex-row gap-3 @[390px]:flex-wrap justify-end shrink self-end">
+                            <Button className="w-[115px]" variant="secondary" color="primary" size={"sm"}
                                 onClick={uploadData}><LuUpload />上傳資料</Button>
-                            <Button variant="secondary" color="primary" size={"sm"}
+                            <Button className="w-[115px]" variant="secondary" color="primary" size={"sm"}
                                 onClick={() => dataTableRef.current?.downloadCurrentDataCsv()}><LuDownload />Excel 下載</Button>
                         </div>
                     </CardTitle>

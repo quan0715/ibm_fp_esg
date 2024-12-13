@@ -27,6 +27,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Data } from "../_db/DataType"
 import { labelStyle } from "@/app/dashboard/_components/labelStyle"
+import { useMemo } from "react"
 
 const GroupBy = ({ values, value, onChange }: { values: string[], value: string, onChange: React.Dispatch<React.SetStateAction<string>> }) => {
     return (
@@ -42,14 +43,6 @@ const GroupBy = ({ values, value, onChange }: { values: string[], value: string,
     )
 }
 
-const BarChartData = [
-    { month: "烯烴部", desktop: 186, mobile: 80 },
-    { month: "保養中心", desktop: 305, mobile: 200 },
-    { month: "碼槽處", desktop: 237, mobile: 120 },
-    { month: "公用部", desktop: 73, mobile: 190 },
-    { month: "公務部", desktop: 209, mobile: 130 },
-    { month: "煉油部", desktop: 214, mobile: 140 },
-]
 const barChartConfig = {
     desktop: {
         label: "罰單金額",
@@ -60,10 +53,20 @@ const barChartConfig = {
         color: "hsl(var(--chart-2))",
     },
 } satisfies ChartConfig
+const departments = ["烯烴部", "保養中心", "碼槽處", "公用部", "公務部", "煉油部"]
 
 
 export default function Component({ data, className }: { data: Data[], className?: string }) {
     const [groupBy, setGroupBy] = React.useState("依場處")
+
+    const BarChartData = useMemo(() => departments.map((department) => {
+        const filter = data.filter((item) => item["廠處"] === department)
+        return {
+            month: department,
+            desktop: Math.round(filter.reduce((acc, curr) => acc + curr["損失金額(千元)"], 0) / 1000),
+            mobile: filter.length,
+        }
+    }), [data])
     return (
         <Card className={cn(["flex flex-col h-fit", className])}>
             <CardHeader className="space-y-0 border-b p-0">

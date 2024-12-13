@@ -24,19 +24,12 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import { useMemo } from "react"
 import { Data } from "../_db/DataType"
-const pieChartData = [
-    { browser: "烯烴部", visitors: 275, fill: "var(--color-烯烴部)" },
-    { browser: "保養中心", visitors: 200, fill: "var(--color-保養中心)" },
-    { browser: "碼槽處", visitors: 287, fill: "var(--color-碼槽處)" },
-    { browser: "公用部", visitors: 173, fill: "var(--color-公用部)" },
-    { browser: "公務部", visitors: 190, fill: "var(--color-公務部)" },
-    { browser: "煉油部", visitors: 190, fill: "var(--color-煉油部)" },
-]
 
 const pieChartConfig = {
-    visitors: {
-        label: "Visitors",
+    number: {
+        label: "number",
     },
     "烯烴部": {
         label: "烯烴部",
@@ -65,10 +58,16 @@ const pieChartConfig = {
 } satisfies ChartConfig
 
 
+const departments = ["烯烴部", "保養中心", "碼槽處", "公用部", "公務部", "煉油部"]
 export default function Component({ data, className }: { data: Data[], className?: string }) {
-    const totalVisitors = React.useMemo(() => {
-        return pieChartData.reduce((acc, curr) => acc + curr.visitors, 0)
-    }, [])
+    const pieChartData = useMemo(() => departments.map((department) => ({
+        department,
+        number: data.filter((item) => item["廠處"] === department).length,
+        fill: `var(--color-${department})`
+    })), [data])
+    const totalTickets = useMemo(() => {
+        return pieChartData.reduce((acc, curr) => acc + curr.number, 0)
+    }, [pieChartData])
 
     return (
         <Card className={cn(["flex flex-col h-fit", className])}>
@@ -91,8 +90,8 @@ export default function Component({ data, className }: { data: Data[], className
 
                         <Pie
                             data={pieChartData}
-                            dataKey="visitors"
-                            nameKey="browser"
+                            dataKey="number"
+                            nameKey="department"
                             innerRadius={60}
                             strokeWidth={5}
                         >
@@ -111,7 +110,7 @@ export default function Component({ data, className }: { data: Data[], className
                                                     y={(viewBox.cy || 0) + 10}
                                                     className="fill-foreground text-2xl font-bold"
                                                 >
-                                                    {totalVisitors.toLocaleString()}張
+                                                    {totalTickets.toLocaleString()}張
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
@@ -135,8 +134,8 @@ export default function Component({ data, className }: { data: Data[], className
                     <PieChart className="flex flex-row">
                         <Pie
                             data={pieChartData}
-                            dataKey="visitors"
-                            nameKey="browser"
+                            dataKey="number"
+                            nameKey="department"
                             innerRadius={70}
                             strokeWidth={5}
                         >
@@ -155,7 +154,7 @@ export default function Component({ data, className }: { data: Data[], className
                                                     y={(viewBox.cy || 0) + 10}
                                                     className="fill-foreground text-2xl font-bold"
                                                 >
-                                                    {totalVisitors.toLocaleString()}張
+                                                    {totalTickets.toLocaleString()}張
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
@@ -174,7 +173,7 @@ export default function Component({ data, className }: { data: Data[], className
                             layout="vertical"
                             align="right"
                             verticalAlign="middle"
-                            content={<ChartLegendContent nameKey="browser" />}
+                            content={<ChartLegendContent nameKey="department" />}
                             className="flex flex-col -translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-start items-stretch"
                         />
                     </PieChart>

@@ -11,7 +11,7 @@ export default function Component({ data, className }: { data: Data[], className
             label: "總罰單數量", value: data.length,
         },
         {
-            label: "總罰單金額（萬）", value: data.reduce((acc, item) => acc + item["損失金額(千元)"], 0),
+            label: "總罰單金額（萬）", value: Math.round(data.reduce((acc, item) => acc + item["損失金額(千元)"], 0) / 1e4),
         }]),
         [data]
     )
