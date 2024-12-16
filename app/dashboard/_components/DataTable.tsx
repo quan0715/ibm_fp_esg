@@ -39,9 +39,9 @@ function InfoSheet({ data }: { data: { [s: string]: any; } }) {
 export const Filter = ({ title, values, value, onChange }: { title: string, values: string[], value: string[], onChange: React.Dispatch<React.SetStateAction<string[]>> }) => {
 
     return (
-        <div className="w-full flex flex-row justify-start items-center px-3 py-2 border rounded-md" data-active>
-            <span className="text-s text-nowrap">{title}</span>
-            <ToggleGroup type="multiple" className="px-4 gap-2 flex justify-start flex-row flex-wrap grow" value={value} onValueChange={onChange}>
+        <div className="w-full flex flex-row justify-between items-center border rounded-md @container p-1" data-active>
+            <span className="max-sm:text-sm text-nowrap @xl:px-4 px-2">{title}</span>
+            <ToggleGroup type="multiple" className="gap-2 flex justify-start flex-row flex-wrap grow @xl:py-3 py-2" value={value} onValueChange={onChange}>
                 {values.map((f) => (
                     <ToggleGroupItem variant={"outline"} className={labelStyle} key={f} value={f} aria-label={`Toggle ${f}`}>
                         <span className="text-xs">{f}</span>
@@ -59,8 +59,13 @@ export type DataTableRefType = {
 const DataTable = memo(forwardRef<DataTableRefType, { dataColumns: string[], data: Record<string, any>[] }>(({ dataColumns, data }, ref) => {
     useImperativeHandle(ref, () => ({
         downloadCurrentDataCsv: () => {
-            const csv = dataColumns.join(",") + "\n" + data.map((d) => {
-                return dataColumns.map((col) => d[col]).join(",")
+            if (data.length === 0) {
+                alert("No data to download")
+                return;
+            };
+            const keys = Object.keys(data[0])
+            const csv = keys.join(",") + "\n" + data.map((d) => {
+                return keys.map((col) => d[col]).join(",")
             }).join("\n")
 
             const blob = new Blob([csv], { type: 'text/csv' });
@@ -71,7 +76,7 @@ const DataTable = memo(forwardRef<DataTableRefType, { dataColumns: string[], dat
             a.click();
             window.URL.revokeObjectURL(url);
         }
-    }), [dataColumns, data])
+    }), [data])
     return (<Table className="overflow-auto">
         <TableHeader>
             <TableRow>
@@ -80,14 +85,14 @@ const DataTable = memo(forwardRef<DataTableRefType, { dataColumns: string[], dat
             </TableRow>
         </TableHeader>
         <TableBody>
-            {data.map((d, i) => (
+            {data.length ? data.map((d, i) => (
                 <TableRow key={i}>
                     <TableCell className="text-nowrap flex justify-center items-center pr-0">
                         <InfoSheet data={d} />
                     </TableCell>
                     {dataColumns.map((col) => <TableCell className="text-nowrap" key={col}>{d[col]}</TableCell>)}
                 </TableRow>
-            ))}
+            )) : <TableRow><TableCell colSpan={dataColumns.length + 1} className="text-center">No Data</TableCell></TableRow>}
         </TableBody>
     </Table>
     )
